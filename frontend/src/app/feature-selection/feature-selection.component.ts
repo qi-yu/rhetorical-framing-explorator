@@ -10,53 +10,37 @@ import { IFeature } from './feature';
 })
 export class FeatureSelectionComponent implements OnInit {
   checked: boolean = true;
-  features: any;
+  selectedFeatures: Array<IFeature> = [];
+  allFeatures: Array<IFeature> = [];
+  allDimensions: Array<string> = [];
+  selectAll: boolean = false;
   errorMsg: any;
 
   constructor(private featureService: FeatureService) {
 
   }
 
-  onSelectAllFeatures() {
-    console.log(this.features)
+  onToggleSelectAll() {
+    if(this.selectAll === false) {
+      this.featureService.getAllFeatures()
+        .subscribe({
+          next: data => this.selectedFeatures = data
+        })
+
+      this.selectAll = !this.selectAll
+
+    } else {
+      this.selectedFeatures = [];
+      this.selectAll = !this.selectAll;
+    }
   }
 
   ngOnInit(): void {
-    this.features = this.featureService.getAllFeatures()
-      .subscribe({
-        next: data => {
-          this.features = data;
-          console.log(data);
-        },
-        error: error => this.errorMsg = error
-      })
+    this.featureService.getAllFeatures().subscribe({
+      next: data => {
+        this.allFeatures = data;
+        this.allDimensions = [...new Set(data.map((item) => item.dimension))]
+      }
+    })
   }
-
-  // affectiveFeatures: Array<String> = [
-  //   "Intensifier",
-  //   "Hedging"
-  // ];
-
-  // nonPropositionalFeatures: Array<String> = [
-  //   "Adverb for Iteration/Continuation",
-  //   "Scalar Particle",
-  //   "Factive Verb",
-  //   "Modal Particle for Common Ground",
-  //   "Modal Particle for Resigned Acceptance",
-  //   "Modal Particle for Weakened Commitment"
-  // ]
-
-  // sentenceTypeFeatures: Array<String> = [
-  //   "Question",
-  //   "Exclamation"
-  // ]
-
-  // discourseRelationFeatures: Array<String> = [
-  //   "Causal / Concessive",
-  //   "Conditional",
-  //   "Concessive",
-  //   "Adversative"
-  // ]
-
-  
 }

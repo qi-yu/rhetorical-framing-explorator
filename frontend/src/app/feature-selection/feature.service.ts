@@ -20,7 +20,4 @@ export class FeatureService {
     return throwError(() => (error.message || 'Server Error'));
   }
 
-  // getFeatureByDimension(dimension: string) {
-  //   return this.features
-  // }
 }
