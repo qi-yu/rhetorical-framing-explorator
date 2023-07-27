@@ -9,6 +9,7 @@ body {
 .not-full-width {
     width: 95%;
     margin: auto;
+    padding: 20px;
 }
 
 .center {

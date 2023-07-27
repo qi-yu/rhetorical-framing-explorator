@@ -1,5 +1,5 @@
 
-<div class="not-full-width container">
+<div class="not-full-width">
     <p-card header="Select Features to Annotate:">
         <div style="padding-bottom: 20px;">
             <p-toggleButton 
@@ -17,8 +17,7 @@
                 <p-fieldset [legend]="dimension">
                     <div *ngFor="let feature of allFeatures">
                         <div *ngIf="feature.dimension === dimension" style="padding-bottom: 10px;">
-                            <p-checkbox name="group" [value]="feature" [(ngModel)]="selectedFeatures"></p-checkbox>
-                            <label [for]="feature" style="padding-left: 10px;">{{ feature.name }}</label>
+                            <p-checkbox name="group" [value]="feature" [label]="feature.name" [(ngModel)]="selectedFeatures"></p-checkbox>
                         </div>
                     </div>
                 </p-fieldset> 

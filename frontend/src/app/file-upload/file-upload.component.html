@@ -1,11 +1,12 @@
 <div class="card flex justify-content-center" class="not-full-width">
-    <h3>Upload file to annotate:</h3>
-    <p-fileUpload name="myfile[]" url="https://www.primefaces.org/cdn/api/upload.php" [multiple]="true" accept=".xml" [maxFileSize]="1000000">
-        <ng-template let-file pTemplate="file">
-            <div>Custom UI to display a file</div>
-        </ng-template>
-        <ng-template pTemplate="content" let-files>
-            <div>Additional content.</div>
-        </ng-template>
-    </p-fileUpload>
+    <p-card header="Upload file to annotate:">
+        <p-fileUpload name="myfile[]" [url]="url" [multiple]="true" accept=".xml" [maxFileSize]="1000000">
+            <ng-template let-file pTemplate="file">
+                <div>Custom UI to display a file</div>
+            </ng-template>
+            <ng-template pTemplate="content" let-files>
+                <div>Load document to annotate.</div>
+            </ng-template>
+        </p-fileUpload>
+    </p-card>
 </div>
