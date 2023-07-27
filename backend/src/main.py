@@ -1,6 +1,7 @@
 import json
 import psycopg2
 from flask import Flask, jsonify
+from flask_cors import CORS
 
 # PostgreSQL connection parameters
 db_params = {
@@ -12,6 +13,7 @@ db_params = {
 }
 
 app = Flask(__name__)
+CORS(app)
 
 def create_table():
     # Connect to the database
@@ -29,10 +31,30 @@ def create_table():
     '''
     cursor.execute(create_table_query)
 
-    # Commit changes and close the connection
-    conn.commit()
-    cursor.close()
-    conn.close()
+
+def read_data_from_database():
+    try:
+        # Connect to the database
+        conn = psycopg2.connect(**db_params)
+        cursor = conn.cursor()
+
+        # Retrieve data from the database
+        select_query = '''
+        SELECT name, dimension FROM rhetorical_framing_features
+        '''
+        cursor.execute(select_query)
+
+        # Fetch all data and store in a list of dictionaries
+        data = [{'name': row[0], 'dimension': row[1]} for row in cursor.fetchall()]
+
+        # Close the connection
+        cursor.close()
+        conn.close()
+
+        return data
+
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 @app.route('/')
 def read_json_and_insert():
@@ -58,7 +80,9 @@ def read_json_and_insert():
         cursor.close()
         conn.close()
 
-        return jsonify({'message': 'Data inserted successfully'})
+        # Return the data added to the database
+        return jsonify(read_data_from_database())
+
     except Exception as e:
         return jsonify({'error': str(e)})
 

@@ -10,7 +10,7 @@ import { IFeature } from './feature';
 })
 export class FeatureSelectionComponent implements OnInit {
   checked: boolean = true;
-  features: Array<IFeature> = [];
+  features: any;
   errorMsg: any;
 
   constructor(private featureService: FeatureService) {
@@ -22,7 +22,7 @@ export class FeatureSelectionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.featureService.getAllFeatures()
+    this.features = this.featureService.getAllFeatures()
       .subscribe({
         next: data => {
           this.features = data;
