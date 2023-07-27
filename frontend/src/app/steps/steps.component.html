@@ -1,0 +1,27 @@
+<div class="not-full-width">
+    <p-steps [model]="items" [readonly]="false" [(activeIndex)]="activeIndex" (activeIndexChange)="onActiveIndexChange($event)"></p-steps>
+</div>
+<app-file-upload *ngIf="activeIndex === 0"></app-file-upload>
+<app-feature-selection *ngIf="activeIndex === 1"></app-feature-selection>
+<div class="center" style="padding-top: 15px;">
+    <span style="padding-right: 30px;">
+        <p-button 
+            label="Previous Step" 
+            icon="pi pi-angle-left" 
+            styleClass="p-button-rounded p-button-text p-button-raised"
+            [disabled]="activeIndex <= 0"
+            (click)="goToPreviousStep()"
+            ></p-button>
+    </span>
+    <span>
+        <p-button 
+            label="Next Step" 
+            icon="pi pi-angle-right" 
+            iconPos="right" 
+            styleClass="p-button-rounded p-button-text p-button-raised"
+            (click)="goToNextStep()"
+            [disabled]="activeIndex >= items.length - 1"
+        ></p-button>
+    </span>
+</div>
+

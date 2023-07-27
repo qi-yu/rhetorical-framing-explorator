@@ -1,0 +1,23 @@
+@import "primeng/resources/themes/soho-light/theme.css"; 
+@import "primeng/resources/primeng.css";
+@import 'primeicons/primeicons.css';
+
+body {
+    font-family: var(--font-family);
+}
+
+.not-full-width {
+    width: 90%;
+    margin: auto;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-gap: 10px; /* Optional: Add gap between cards */
+}

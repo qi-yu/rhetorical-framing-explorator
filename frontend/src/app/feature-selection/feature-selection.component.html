@@ -1,0 +1,56 @@
+
+<div class="not-full-width container">
+    <p-card header="Select Features to Annotate:">
+        <div style="padding-bottom: 20px;">
+            <p-toggleButton 
+                [(ngModel)]="checked" 
+                onLabel="SELECT ALL FEATURES" 
+                offLabel="CLEAR SELECTION"
+                onIcon="pi pi-check" 
+                offIcon="pi pi-times"
+                (click)="onSelectAllFeatures()"
+            ></p-toggleButton>
+        </div>
+
+        <div class="grid-container">
+            <!-- <p-fieldset legend="Language Affectiveness">
+                <div *ngFor="let category of affectiveFeatures" class="field-checkbox" >
+                    <p-checkbox name="group" [value]="category" [(ngModel)]="selectedFeatures"></p-checkbox>
+                    <label [for]="category" style="padding-left: 10px;">{{ category }}</label>
+                </div>
+            </p-fieldset> -->
+    
+            <!-- <p-fieldset>
+                <ng-template pTemplate="header">
+                    <span class="fieldset-header">Non-Propositional Content</span>
+                </ng-template>
+                <div *ngFor="let category of nonPropositionalFeatures" class="field-checkbox" style="padding-bottom: 10px;">
+                    <p-checkbox name="group" [value]="category" [(ngModel)]="selectedFeatures"></p-checkbox>
+                    <label [for]="category" style="padding-left: 10px;">{{ category }}</label>
+                </div>
+            </p-fieldset> -->
+
+            <!-- <p-fieldset>
+                <ng-template pTemplate="header">
+                    <span class="fieldset-header">Sentence Type</span>
+                </ng-template>
+                <div *ngFor="let category of sentenceTypeFeatures" class="field-checkbox" style="padding-bottom: 10px;">
+                    <p-checkbox name="group" [value]="category" [(ngModel)]="selectedFeatures"></p-checkbox>
+                    <label [for]="category" style="padding-left: 10px;">{{ category }}</label>
+                </div>
+            </p-fieldset> -->
+
+            <!-- <p-fieldset>
+                <ng-template pTemplate="header">
+                    <span class="fieldset-header">Discourse Relation</span>
+                </ng-template>
+                <div *ngFor="let category of discourseRelationFeatures" class="field-checkbox" style="padding-bottom: 10px;">
+                    <p-checkbox name="group" [value]="category" [(ngModel)]="selectedFeatures"></p-checkbox>
+                    <label [for]="category" style="padding-left: 10px;">{{ category }}</label>
+                </div>
+            </p-fieldset> -->
+        </div>
+    </p-card>
+</div>
+
+
