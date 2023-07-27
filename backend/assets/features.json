@@ -1,0 +1,58 @@
+[
+    {
+        "name": "Intensifier",
+        "dimension": "Language Affectiveness"
+    },
+    {
+        "name": "Hedging",
+        "dimension": "Language Affectiveness"
+    },
+    {
+        "name": "Adverb for Iteration/Continuation",
+        "dimension": "Non-Propositional Content"
+    },
+    {
+        "name": "Scalar Particle",
+        "dimension": "Non-Propositional Content"
+    },
+    {
+        "name": "Factive Verb",
+        "dimension": "Non-Propositional Content"
+    },
+    {
+        "name": "Modal Particle for Common Ground",
+        "dimension": "Non-Propositional Content"
+    },
+    {
+        "name": "Modal Particle for Resigned Acceptance",
+        "dimension": "Non-Propositional Content"
+    },
+    {
+        "name": "Modal Particle for Weakened Commitment",
+        "dimension": "Non-Propositional Content"
+    },
+    {
+        "name": "Question",
+        "dimension": "Sentence Type"
+    },
+    {
+        "name": "Exclamation",
+        "dimension": "Sentence Type"
+    },
+    {
+        "name": "Causal / Concessive",
+        "dimension": "Discourse Relation"
+    },
+    {
+        "name": "Conditional",
+        "dimension": "Discourse Relation"
+    },
+    {
+        "name": "Concessive",
+        "dimension": "Discourse Relation"
+    },
+    {
+        "name": "Adversative",
+        "dimension": "Discourse Relation"
+    }
+]
