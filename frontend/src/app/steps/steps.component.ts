@@ -9,7 +9,7 @@ import { MenuItem } from 'primeng/api';
 export class StepsComponent {
   items: Array<MenuItem> = [];
   activeIndex = 0;
-  uploadCompleted?: boolean;
+  nextStepAllowed = false;
 
   constructor() {}
 
@@ -26,12 +26,19 @@ export class StepsComponent {
   }
 
   goToNextStep() {
-    this.activeIndex += 1;
-
+    if (this.nextStepAllowed) {
+      this.activeIndex += 1;
+    }
+    
     if(this.activeIndex >= this.items.length - 1) {
       this.activeIndex = this.items.length - 1
     }
    }
+
+  onUploadStatusChange(uploadCompleted: boolean) {
+    this.nextStepAllowed = uploadCompleted;
+    console.log(this.nextStepAllowed);
+  }
   
   ngOnInit() {
     this.items = [

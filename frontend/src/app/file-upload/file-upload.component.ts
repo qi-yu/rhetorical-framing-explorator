@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Input } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { API_URL } from '../env';
 import { IFile } from './file';
 
@@ -12,11 +12,14 @@ import { IFile } from './file';
 
 
 export class FileUploadComponent {
+  @Output() uploadCompletedEvent = new EventEmitter<boolean>();
+
   url = `${API_URL}/upload`;
   selectedFiles: File[] = [];
   selectedFileName = '';
   selectedFileSize = 0;
   formData: FormData = new FormData();
+  uploadCompleted = false;
   
 
   constructor(private http: HttpClient) {}
@@ -52,6 +55,9 @@ export class FileUploadComponent {
       },
       error: err => console.log(err)
     });
+
+    this.uploadCompleted = true;
+    this.uploadCompletedEvent.emit(this.uploadCompleted);
   }
 
 }
