@@ -8,7 +8,8 @@ import { MenuItem } from 'primeng/api';
 })
 export class StepsComponent {
   items: Array<MenuItem> = [];
-  activeIndex: number = 0;
+  activeIndex = 0;
+  uploadCompleted?: boolean;
 
   constructor() {}
 

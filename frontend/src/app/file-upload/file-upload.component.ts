@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { API_URL } from '../env';
 import { IFile } from './file';
 
@@ -13,27 +13,45 @@ import { IFile } from './file';
 
 export class FileUploadComponent {
   url = `${API_URL}/upload`;
-  uploadedFileName = "";
-  uploadedFileSize = 0;
+  selectedFiles: File[] = [];
+  selectedFileName = '';
+  selectedFileSize = 0;
+  formData: FormData = new FormData();
+  
 
   constructor(private http: HttpClient) {}
 
-  onFileUpload(event: any) {
-    const file = event.files[0];
-    const formData: FormData = new FormData();
-    formData.append('myfile', file);
+  onSelectFile(event: any): void {
+    this.selectedFiles = event.files;
+    this.formData = new FormData();
 
-    this.http.post<IFile>(this.url, formData).subscribe({
+    for (const file of this.selectedFiles) {
+      this.formData.append('myfile', file);
+    }
+    
+    if (this.selectedFiles.length > 0) {
+      this.selectedFileName = this.selectedFiles[0].name;
+      this.selectedFileSize = this.selectedFiles[0].size;
+    } else {
+      this.selectedFileName = '';
+      this.selectedFileSize = 0;
+    }
+  }
+
+  onDeleteSelection (): void {
+    this.selectedFiles = [];
+    this.formData = new FormData();
+    this.selectedFileName = '';
+    this.selectedFileSize = 0;
+  }
+
+  onFileUpload(event: any): void {
+    this.http.post<IFile>(this.url, this.formData).subscribe({
       next: (data) => {
-        this.uploadedFileName = data.filename;
-        this.uploadedFileSize = data.size;
         console.log("Uploaded successfully", data);
       },
       error: err => console.log(err)
     });
   }
 
-  onDeleteFile (file: IFile) {
-
-  }
 }

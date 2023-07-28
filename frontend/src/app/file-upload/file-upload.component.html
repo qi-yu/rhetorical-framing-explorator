@@ -3,21 +3,22 @@
         <p-fileUpload 
             name="myfile" 
             [url]="url" 
-            [multiple]="true" 
-            accept=".xml" 
+            [multiple]="false" 
+            accept=".xml, .csv, .tsv" 
             [maxFileSize]="1000000"
+            (onSelect)="onSelectFile($event)"
             (onUpload)="onFileUpload($event)" 
         >
             <ng-template let-file pTemplate="file">
                 <div>
-                    <div class="button-container">
+                    <div *ngIf="selectedFileName === file.name" class="button-container">
                         <p-button 
                             icon="pi pi-trash" 
                             styleClass="p-button-rounded p-button-danger p-button-text"
-                            (click)="onDeleteFile(file)"
+                            (click)="onDeleteSelection()"
                         ></p-button>
-                        <p>{{ file.name }}</p>
-                        <p>(size: {{ file.size | fileSize}})</p>
+                        <p>{{ selectedFileName }}</p>
+                        <p>(size: {{ selectedFileSize | fileSize}})</p>
                     </div>
                 </div>
             </ng-template>
