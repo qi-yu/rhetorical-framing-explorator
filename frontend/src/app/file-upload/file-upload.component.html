@@ -1,3 +1,5 @@
+<p-toast [position]="'top-center'"></p-toast>
+
 <div class="card flex justify-content-center" class="not-full-width">
     <p-card header="Upload File to Annotate:">
         <p-fileUpload 
@@ -7,16 +9,24 @@
             accept=".xml, .csv, .tsv" 
             [maxFileSize]="1000000"
             (onSelect)="onSelectFile($event)"
-            (onUpload)="onFileUpload($event)" 
+            (onUpload)="onFileUpload($event)"
+            [disabled]="uploadCompleted === true"
         >
             <ng-template let-file pTemplate="file">
                 <div>
-                    <div *ngIf="selectedFileName === file.name" class="button-container">
-                        <p-button 
-                            icon="pi pi-trash" 
-                            styleClass="p-button-rounded p-button-danger p-button-text"
-                            (click)="onDeleteSelection()"
-                        ></p-button>
+                    <p><b>SELECTED FILE:</b></p>
+                    <div *ngIf="selectedFileName !== ''" class="button-container">
+                        <i class="pi pi-file"></i>
+                        <p>{{ selectedFileName }}</p>
+                        <p>(size: {{ selectedFileSize | fileSize}})</p>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <div *ngIf="uploadCompleted === true">
+                    <p><b>SELECTED FILE:</b></p>
+                    <div class="button-container">
+                        <i class="pi pi-file"></i>
                         <p>{{ selectedFileName }}</p>
                         <p>(size: {{ selectedFileSize | fileSize}})</p>
                     </div>

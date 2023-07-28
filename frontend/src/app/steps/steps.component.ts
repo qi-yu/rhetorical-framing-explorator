@@ -37,7 +37,6 @@ export class StepsComponent {
 
   onUploadStatusChange(uploadCompleted: boolean) {
     this.nextStepAllowed = uploadCompleted;
-    console.log(this.nextStepAllowed);
   }
   
   ngOnInit() {

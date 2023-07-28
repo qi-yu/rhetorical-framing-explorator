@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Component, Output, EventEmitter } from '@angular/core';
 import { API_URL } from '../env';
 import { IFile } from './file';
-
+import { MessageService, Message } from 'primeng/api';
 
 @Component({
   selector: 'app-file-upload',
   templateUrl: './file-upload.component.html',
-  styleUrls: ['./file-upload.component.css']
+  styleUrls: ['./file-upload.component.css'],
+  providers: [MessageService]
 })
 
 
@@ -20,9 +21,24 @@ export class FileUploadComponent {
   selectedFileSize = 0;
   formData: FormData = new FormData();
   uploadCompleted = false;
-  
 
-  constructor(private http: HttpClient) {}
+  successMessage: Message[] = [
+    {
+      severity: 'success',
+      summary: 'Success',
+      detail: 'File uploaded successfully!',
+    }
+  ]
+
+  errorMessage: Message[] = [
+    {
+      severity: 'error',
+      summary: 'Error',
+      detail: 'File cannot be uploaded successfully!',
+    }
+  ]
+
+  constructor(private http: HttpClient, private messageService: MessageService) {}
 
   onSelectFile(event: any): void {
     this.selectedFiles = event.files;
@@ -31,14 +47,9 @@ export class FileUploadComponent {
     for (const file of this.selectedFiles) {
       this.formData.append('myfile', file);
     }
-    
-    if (this.selectedFiles.length > 0) {
-      this.selectedFileName = this.selectedFiles[0].name;
-      this.selectedFileSize = this.selectedFiles[0].size;
-    } else {
-      this.selectedFileName = '';
-      this.selectedFileSize = 0;
-    }
+
+    this.selectedFileName = this.selectedFiles[0].name;
+    this.selectedFileSize = this.selectedFiles[0].size;
   }
 
   onDeleteSelection (): void {
@@ -50,14 +61,25 @@ export class FileUploadComponent {
 
   onFileUpload(event: any): void {
     this.http.post<IFile>(this.url, this.formData).subscribe({
-      next: (data) => {
-        console.log("Uploaded successfully", data);
+      next: () => {
+        this.uploadCompleted = true;
+        this.uploadCompletedEvent.emit(this.uploadCompleted);
+        this.showSuccessMessage();
       },
-      error: err => console.log(err)
+      error: () => {
+        this.uploadCompleted = false; 
+        this.uploadCompletedEvent.emit(this.uploadCompleted);
+        this.showErrorMessage();
+      }
     });
+  }
 
-    this.uploadCompleted = true;
-    this.uploadCompletedEvent.emit(this.uploadCompleted);
+  showSuccessMessage() {
+    this.messageService.addAll(this.successMessage);
+  }
+
+  showErrorMessage() {
+    this.messageService.addAll(this.errorMessage);
   }
 
 }

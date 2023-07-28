@@ -1,4 +1,4 @@
-import json, os
+import json, os, shutil
 import psycopg2
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -20,6 +20,10 @@ CORS(app)
 def create_upload_folder():
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
+    else:
+        shutil.rmtree(UPLOAD_FOLDER)
+        os.makedirs(UPLOAD_FOLDER)
+
 
 def create_table():
     # Connect to the database
@@ -61,6 +65,7 @@ def read_data_from_database():
 
     except Exception as e:
         return jsonify({'error': str(e)})
+
 
 @app.route('/')
 def read_json_and_insert():

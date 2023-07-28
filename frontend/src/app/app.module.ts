@@ -18,7 +18,8 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { FileSizePipe } from './file-upload/file-size.pipe';
-import { TableModule } from 'primeng/table';
+import { MessagesModule } from 'primeng/messages';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { TableModule } from 'primeng/table';
     FormsModule,
     ReactiveFormsModule,
     ToggleButtonModule,
-    TableModule
+    MessagesModule,
+    ToastModule
   ],
   providers: [],
   bootstrap: [AppComponent]
