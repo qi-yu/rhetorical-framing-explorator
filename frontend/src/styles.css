@@ -22,3 +22,15 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     grid-gap: 10px; /* Optional: Add gap between cards */
 }
+
+
+.button-container {
+    display: flex;
+    align-items: center;
+  }
+
+.button-container p {
+    margin-top: 10px;
+    margin-left: 4px; 
+    margin-right: 20px;
+}

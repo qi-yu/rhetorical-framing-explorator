@@ -1,7 +1,8 @@
-import json
+import json, os
 import psycopg2
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 
 # PostgreSQL connection parameters
 db_params = {
@@ -12,8 +13,13 @@ db_params = {
     'port': '5432'
 }
 
+UPLOAD_FOLDER = 'upload'
 app = Flask(__name__)
 CORS(app)
+
+def create_upload_folder():
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
 
 def create_table():
     # Connect to the database
@@ -85,6 +91,39 @@ def read_json_and_insert():
 
     except Exception as e:
         return jsonify({'error': str(e)})
+    
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    try:
+        # Check if the POST request has the file part
+        if 'myfile' not in request.files:
+            return jsonify({'error': 'No file part'})
+
+        file = request.files['myfile']
+
+        # If the user does not select a file, the browser submits an empty file without a filename
+        if file.filename == '':
+            return jsonify({'error': 'No selected file'})
+        
+        # Create the 'upload' folder if it doesn't exist
+        create_upload_folder()
+
+        # Save the uploaded file to the specified folder
+        if file:
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(UPLOAD_FOLDER, filename)
+            file.save(file_path)
+
+            file_size = os.path.getsize(file_path)
+
+            return jsonify({'filename': filename, 'size': file_size})
+
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    
+
+
 
 if __name__ == '__main__':
     create_table()  # Create the table when the script is executed

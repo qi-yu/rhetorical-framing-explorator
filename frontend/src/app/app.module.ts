@@ -17,13 +17,16 @@ import { FieldsetModule } from 'primeng/fieldset';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToggleButtonModule } from 'primeng/togglebutton';
+import { FileSizePipe } from './file-upload/file-size.pipe';
+import { TableModule } from 'primeng/table';
 
 @NgModule({
   declarations: [
     AppComponent,
     FileUploadComponent,
     StepsComponent,
-    FeatureSelectionComponent
+    FeatureSelectionComponent,
+    FileSizePipe
   ],
   imports: [
     BrowserModule,
@@ -39,7 +42,8 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
     CheckboxModule,
     FormsModule,
     ReactiveFormsModule,
-    ToggleButtonModule
+    ToggleButtonModule,
+    TableModule
   ],
   providers: [],
   bootstrap: [AppComponent]
