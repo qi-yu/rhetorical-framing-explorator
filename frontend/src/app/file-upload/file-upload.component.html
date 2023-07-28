@@ -1,11 +1,25 @@
 <div class="card flex justify-content-center" class="not-full-width">
-    <p-card header="Upload file to annotate:">
-        <p-fileUpload name="myfile[]" [url]="url" [multiple]="true" accept=".xml" [maxFileSize]="1000000">
+    <p-card header="Upload File to Annotate:">
+        <p-fileUpload 
+            name="myfile" 
+            [url]="url" 
+            [multiple]="true" 
+            accept=".xml" 
+            [maxFileSize]="1000000"
+            (onUpload)="onFileUpload($event)" 
+        >
             <ng-template let-file pTemplate="file">
-                <div>Custom UI to display a file</div>
-            </ng-template>
-            <ng-template pTemplate="content" let-files>
-                <div>Load document to annotate.</div>
+                <div>
+                    <div class="button-container">
+                        <p-button 
+                            icon="pi pi-trash" 
+                            styleClass="p-button-rounded p-button-danger p-button-text"
+                            (click)="onDeleteFile(file)"
+                        ></p-button>
+                        <p>{{ file.name }}</p>
+                        <p>(size: {{ file.size | fileSize}})</p>
+                    </div>
+                </div>
             </ng-template>
         </p-fileUpload>
     </p-card>
