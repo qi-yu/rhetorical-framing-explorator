@@ -1,5 +1,4 @@
-<p-toast [position]="'top-center'"></p-toast>
-
+<p-toast [position]="'top-right'"></p-toast>
 <div class="card flex justify-content-center" class="not-full-width">
     <p-card header="Upload File to Annotate:">
         <p-fileUpload 
@@ -12,13 +11,19 @@
             (onUpload)="onUploadFile($event)"
             [disabled]="uploadCompleted === true"
         >
-            <!-- <ng-template let-file pTemplate="file">
-                <p><b>FILE TO UPLOAD:</b></p>
-                <div *ngIf="selectedFileName !== ''" class="container" style="padding: 10px; margin-bottom: 10px;">
-                    <p>{{ selectedFileName }}</p>
-                    <p style="margin-left: 10px;">(size: {{ selectedFileSize | fileSize}})</p>
+            <!-- <ng-template let-file let-i="index" pTemplate="file">
+                <div class="container">
+                    <label for="'remove-selected-' + i"> 
+                        <b style="margin-right: 5px;">FILE SELECTED:</b> 
+                        {{ file.name }} 
+                    </label>
+                    <p-button 
+                        icon="pi pi-trash" 
+                        styleClass="p-button-rounded p-button-danger p-button-text"
+                        pTooltip="Remove selected file"
+                        (click)="onRemoveSelectedFile(file)"
+                    ></p-button>
                 </div>
-                <p-divider></p-divider>
             </ng-template> -->
             <ng-template pTemplate="content">
                 <p-divider></p-divider>

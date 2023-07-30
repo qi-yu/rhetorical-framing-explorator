@@ -1,4 +1,4 @@
-import json, os, logging
+import json, os, logging, shutil
 import psycopg2
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -96,10 +96,6 @@ def create_uploaded_files_table():
     conn.close()
 
 
-def create_file_upload_folder():
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.makedirs(UPLOAD_FOLDER)
-
 
 @app.route('/')
 def read_json_and_insert_features():
@@ -146,7 +142,8 @@ def upload_file():
             return jsonify({'error': 'No selected files'})
 
         # Create the 'upload' folder if it doesn't exist
-        create_file_upload_folder()
+        if not os.path.exists(UPLOAD_FOLDER):
+            os.makedirs(UPLOAD_FOLDER)
 
         uploaded_files_info = []
 
@@ -252,6 +249,9 @@ def delete_file(filename):
 
 
 if __name__ == '__main__':
+    if os.path.exists(UPLOAD_FOLDER):
+        shutil.rmtree(UPLOAD_FOLDER)
+
     create_feature_table()  # Create the table when the script is executed
     create_uploaded_files_table()  # Create the 'uploaded_files' table when the script is executed
     app.run(debug=True)
