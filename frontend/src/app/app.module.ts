@@ -20,6 +20,8 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 import { FileSizePipe } from './file-upload/file-size.pipe';
 import { MessagesModule } from 'primeng/messages';
 import { ToastModule } from 'primeng/toast';
+import { TableModule } from 'primeng/table';
+import { DividerModule } from 'primeng/divider';
 
 @NgModule({
   declarations: [
@@ -45,7 +47,9 @@ import { ToastModule } from 'primeng/toast';
     ReactiveFormsModule,
     ToggleButtonModule,
     MessagesModule,
-    ToastModule
+    ToastModule,
+    TableModule,
+    DividerModule
   ],
   providers: [],
   bootstrap: [AppComponent]

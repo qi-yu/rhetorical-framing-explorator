@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { API_URL } from '../env';
 import { IFile } from './file';
 import { MessageService, Message } from 'primeng/api';
+import { FileService } from './file.service';
 
 @Component({
   selector: 'app-file-upload',
@@ -12,33 +13,21 @@ import { MessageService, Message } from 'primeng/api';
 })
 
 
-export class FileUploadComponent {
+export class FileUploadComponent implements OnInit {
   @Output() uploadCompletedEvent = new EventEmitter<boolean>();
 
   url = `${API_URL}/upload`;
   selectedFiles: File[] = [];
   selectedFileName = '';
   selectedFileSize = 0;
+  uploadedFiles: IFile[] = [];
   formData: FormData = new FormData();
   uploadCompleted = false;
+  uploadSuccessMessage: Message[] = [ {severity: 'success', summary: 'Success', detail: 'File uploaded successfully!'} ]
+  uploadErrorMessage: Message[] = [ {severity: 'error', summary: 'Error', detail: 'File cannot be uploaded successfully!'} ]
+  fileToAnalyze: IFile[] = [];
 
-  successMessage: Message[] = [
-    {
-      severity: 'success',
-      summary: 'Success',
-      detail: 'File uploaded successfully!',
-    }
-  ]
-
-  errorMessage: Message[] = [
-    {
-      severity: 'error',
-      summary: 'Error',
-      detail: 'File cannot be uploaded successfully!',
-    }
-  ]
-
-  constructor(private http: HttpClient, private messageService: MessageService) {}
+  constructor(private http: HttpClient, private messageService: MessageService, private fileService: FileService) {}
 
   onSelectFile(event: any): void {
     this.selectedFiles = event.files;
@@ -65,6 +54,11 @@ export class FileUploadComponent {
         this.uploadCompleted = true;
         this.uploadCompletedEvent.emit(this.uploadCompleted);
         this.showSuccessMessage();
+
+        // Fetch the updated list of uploaded files
+        this.fileService.getAllFiles().subscribe((data) => {
+          this.uploadedFiles = data;
+        });
       },
       error: () => {
         this.uploadCompleted = false; 
@@ -74,12 +68,17 @@ export class FileUploadComponent {
     });
   }
 
-  showSuccessMessage() {
-    this.messageService.addAll(this.successMessage);
+  showSuccessMessage(): void {
+    this.messageService.addAll(this.uploadSuccessMessage);
   }
 
-  showErrorMessage() {
-    this.messageService.addAll(this.errorMessage);
+  showErrorMessage(): void {
+    this.messageService.addAll(this.uploadErrorMessage);
+  }
+
+  ngOnInit(): void {
+    this.fileService.getAllFiles()
+      .subscribe((data) => this.uploadedFiles = data)
   }
 
 }

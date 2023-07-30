@@ -24,13 +24,7 @@ body {
 }
 
 
-.button-container {
+.container {
     display: flex;
     align-items: center;
   }
-
-.button-container p {
-    margin-top: 10px;
-    margin-left: 4px; 
-    margin-right: 20px;
-}

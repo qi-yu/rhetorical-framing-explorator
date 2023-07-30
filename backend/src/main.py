@@ -1,4 +1,4 @@
-import json, os, shutil
+import json, os
 import psycopg2
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -14,18 +14,12 @@ db_params = {
 }
 
 UPLOAD_FOLDER = 'upload'
+
 app = Flask(__name__)
 CORS(app)
 
-def create_upload_folder():
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.makedirs(UPLOAD_FOLDER)
-    else:
-        shutil.rmtree(UPLOAD_FOLDER)
-        os.makedirs(UPLOAD_FOLDER)
 
-
-def create_table():
+def create_feature_table():
     # Connect to the database
     conn = psycopg2.connect(**db_params)
     cursor = conn.cursor()
@@ -42,7 +36,7 @@ def create_table():
     cursor.execute(create_table_query)
 
 
-def read_data_from_database():
+def read_feature_from_database():
     try:
         # Connect to the database
         conn = psycopg2.connect(**db_params)
@@ -67,8 +61,13 @@ def read_data_from_database():
         return jsonify({'error': str(e)})
 
 
+def create_file_upload_folder():
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+
+
 @app.route('/')
-def read_json_and_insert():
+def read_json_and_insert_features():
     try:
         # Read data from the JSON file
         with open('../backend/assets/features.json', 'r') as json_file:
@@ -92,7 +91,7 @@ def read_json_and_insert():
         conn.close()
 
         # Return the data added to the database
-        return jsonify(read_data_from_database())
+        return jsonify(read_feature_from_database())
 
     except Exception as e:
         return jsonify({'error': str(e)})
@@ -112,7 +111,7 @@ def upload_file():
             return jsonify({'error': 'No selected file'})
         
         # Create the 'upload' folder if it doesn't exist
-        create_upload_folder()
+        create_file_upload_folder()
 
         # Save the uploaded file to the specified folder
         if file:
@@ -129,7 +128,22 @@ def upload_file():
     
 
 
+@app.route('/upload')
+def get_uploaded_files():
+    try:
+        uploaded_files = []
+
+        for filename in os.listdir(UPLOAD_FOLDER):
+            file_path = os.path.join(UPLOAD_FOLDER, filename)
+            file_size = os.path.getsize(file_path)
+            uploaded_files.append({'filename': filename, 'size': file_size})
+        
+        return jsonify(uploaded_files)
+    
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    
 
 if __name__ == '__main__':
-    create_table()  # Create the table when the script is executed
+    create_feature_table()  # Create the table when the script is executed
     app.run(debug=True)
