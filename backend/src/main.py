@@ -73,26 +73,26 @@ def create_uploaded_files_table():
     table_exists = cursor.fetchone()[0]
 
     # Create the table if it doesn't exist
-    if not table_exists:
-        # Create the table if it doesn't exist
-        create_table_query = '''
-        CREATE TABLE uploaded_files (
-            id SERIAL PRIMARY KEY,
-            filename TEXT NOT NULL,
-            size INTEGER NOT NULL,
-            selectedForAnalyses BOOLEAN NOT NULL
-        )
-        '''
-        cursor.execute(create_table_query)
-        conn.commit()
-        logging.info("Table 'uploaded_files' created.")
-    else:
+    if table_exists:
         drop_table_query = '''
         DROP TABLE IF EXISTS uploaded_files
         '''
         cursor.execute(drop_table_query)
         conn.commit()
 
+    # Create the table if it doesn't exist
+    create_table_query = '''
+    CREATE TABLE uploaded_files (
+        id SERIAL PRIMARY KEY,
+        filename TEXT NOT NULL,
+        size INTEGER NOT NULL,
+        selectedForAnalyses BOOLEAN NOT NULL
+    )
+    '''
+    cursor.execute(create_table_query)
+    conn.commit()
+    logging.info("Table 'uploaded_files' created.")
+       
     cursor.close()
     conn.close()
 
@@ -169,11 +169,14 @@ def upload_file():
             cursor.execute(select_query, (filename,))
             result = cursor.fetchone()
 
-            insert_query = '''
-            INSERT INTO uploaded_files (filename, size, selectedForAnalyses) VALUES (%s, %s, %s)
-            '''
-            cursor.execute(insert_query, (filename, file_size, selectedForAnalyses))
-            conn.commit()
+            if not result:  # If the file doesn't exist in the database, insert it
+                insert_query = '''
+                INSERT INTO uploaded_files (filename, size, selectedForAnalyses) VALUES (%s, %s, %s)
+                '''
+                
+                cursor.execute(insert_query, (filename, file_size, selectedForAnalyses))
+                conn.commit()
+            
             cursor.close()
             conn.close()
 
