@@ -16,7 +16,7 @@ import { FileService } from './file.service';
 export class FileUploadComponent implements OnInit {
   @Output() uploadCompletedEvent = new EventEmitter<boolean>();
 
-  url = `${API_URL}/upload`;
+  url = `${API_URL}`;
   selectedFiles: File[] = [];
   selectedFileName = '';
   selectedFileSize = 0;
@@ -25,7 +25,6 @@ export class FileUploadComponent implements OnInit {
   uploadCompleted = false;
   uploadSuccessMessage: Message[] = [ {severity: 'success', summary: 'Success', detail: 'File uploaded successfully!'} ]
   uploadErrorMessage: Message[] = [ {severity: 'error', summary: 'Error', detail: 'File cannot be uploaded successfully!'} ]
-  fileToAnalyze: IFile[] = [];
 
   constructor(private http: HttpClient, private messageService: MessageService, private fileService: FileService) {}
 
@@ -41,15 +40,9 @@ export class FileUploadComponent implements OnInit {
     this.selectedFileSize = this.selectedFiles[0].size;
   }
 
-  onDeleteSelection (): void {
-    this.selectedFiles = [];
-    this.formData = new FormData();
-    this.selectedFileName = '';
-    this.selectedFileSize = 0;
-  }
 
   onFileUpload(event: any): void {
-    this.http.post<IFile>(this.url, this.formData).subscribe({
+    this.http.post<IFile>(`${this.url}/upload`, this.formData).subscribe({
       next: () => {
         this.uploadCompleted = true;
         this.uploadCompletedEvent.emit(this.uploadCompleted);
@@ -67,6 +60,20 @@ export class FileUploadComponent implements OnInit {
       }
     });
   }
+
+
+  onDeleteFile(file: IFile): void {
+    this.fileService.deleteFile(file.filename).subscribe({
+      next: () => {
+        this.uploadedFiles = this.uploadedFiles.filter((uploadedFile) => uploadedFile.filename !== file.filename);
+        console.log('File deleted successfully!');
+      }, 
+      error: () => {
+        console.log('Failed to delete the file.');
+      }
+    });
+  }
+
 
   showSuccessMessage(): void {
     this.messageService.addAll(this.uploadSuccessMessage);

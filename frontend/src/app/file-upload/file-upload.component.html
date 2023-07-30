@@ -4,7 +4,7 @@
     <p-card header="Upload File to Annotate:">
         <p-fileUpload 
             name="myfile" 
-            [url]="url" 
+            [url]="url+'/upload'" 
             [multiple]="false" 
             accept=".xml, .csv, .tsv" 
             [maxFileSize]="1000000"
@@ -37,10 +37,10 @@
                                 <td>{{ file.size | fileSize }}</td>
                                 <td>
                                     <div class="container">
-                                        <p-checkbox [(ngModel)]="fileToAnalyze" [binary]="true" [inputId]="'fileToAnalyze-' + i"></p-checkbox>
+                                        <p-checkbox [(ngModel)]="file.selectedForAnalyses" [binary]="true" [inputId]="'fileToAnalyze-' + i"></p-checkbox>
                                         <label [for]="'fileToAnalyze-' + i" style="padding-left: 10px;">SELECT FOR ANALYSES</label>
                                         <span class="container" style="padding-left: 20px;">
-                                            <p-button [id]="'delete' + i" icon="pi pi-trash" styleClass="p-button-rounded p-button-danger p-button-text"></p-button>
+                                            <p-button (click)="onDeleteFile(file)" [id]="'delete' + i" icon="pi pi-trash" styleClass="p-button-rounded p-button-danger p-button-text"></p-button>
                                             <label [for]="'delete' + i">DELETE</label>
                                         </span>
                                     </div>

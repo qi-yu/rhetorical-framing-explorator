@@ -1,4 +1,5 @@
 export interface IFile {
     filename: string,
-    size: number
+    size: number,
+    selectedForAnalyses: boolean
 }
