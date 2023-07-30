@@ -5,22 +5,23 @@
         <p-fileUpload 
             name="myfile" 
             [url]="url+'/upload'" 
-            [multiple]="false" 
+            [multiple]="true" 
             accept=".xml, .csv, .tsv" 
             [maxFileSize]="1000000"
             (onSelect)="onSelectFile($event)"
-            (onUpload)="onFileUpload($event)"
+            (onUpload)="onUploadFile($event)"
             [disabled]="uploadCompleted === true"
         >
-            <ng-template let-file pTemplate="file">
+            <!-- <ng-template let-file pTemplate="file">
                 <p><b>FILE TO UPLOAD:</b></p>
                 <div *ngIf="selectedFileName !== ''" class="container" style="padding: 10px; margin-bottom: 10px;">
                     <p>{{ selectedFileName }}</p>
                     <p style="margin-left: 10px;">(size: {{ selectedFileSize | fileSize}})</p>
                 </div>
                 <p-divider></p-divider>
-            </ng-template>
+            </ng-template> -->
             <ng-template pTemplate="content">
+                <p-divider></p-divider>
                 <p><b>UPLOADED FILES:</b></p>
                 <ng-container *ngIf="uploadedFiles.length > 0; else noFileMessage">
                     <p-table [value]="uploadedFiles" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-gridlines p-datatable-striped">

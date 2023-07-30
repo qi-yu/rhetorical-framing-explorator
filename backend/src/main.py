@@ -72,7 +72,7 @@ def create_uploaded_files_table():
     cursor.execute("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'uploaded_files')")
     table_exists = cursor.fetchone()[0]
 
-    # Create the table if it doesn't exist
+    # Delete table if it already exists
     if table_exists:
         drop_table_query = '''
         DROP TABLE IF EXISTS uploaded_files
@@ -80,7 +80,6 @@ def create_uploaded_files_table():
         cursor.execute(drop_table_query)
         conn.commit()
 
-    # Create the table if it doesn't exist
     create_table_query = '''
     CREATE TABLE uploaded_files (
         id SERIAL PRIMARY KEY,
@@ -140,17 +139,21 @@ def upload_file():
         if 'myfile' not in request.files:
             return jsonify({'error': 'No file part'})
 
-        file = request.files['myfile']
+        # Get the list of uploaded files
+        files = request.files.getlist('myfile')
 
-        # If the user does not select a file, the browser submits an empty file without a filename
-        if file.filename == '':
-            return jsonify({'error': 'No selected file'})
-        
+        if not files:
+            return jsonify({'error': 'No selected files'})
+
         # Create the 'upload' folder if it doesn't exist
         create_file_upload_folder()
 
-        # Save the uploaded file to the specified folder
-        if file:
+        uploaded_files_info = []
+
+        for file in files:
+            if file.filename == '':
+                return jsonify({'error': 'No file selected'})
+
             filename = secure_filename(file.filename)
             file_path = os.path.join(UPLOAD_FOLDER, filename)
             file.save(file_path)
@@ -158,32 +161,35 @@ def upload_file():
             file_size = os.path.getsize(file_path)
             selectedForAnalyses = True
 
-            # Insert the file details into the 'uploaded_files' table
+            # ----- Insert the file details into the 'uploaded_files' table -----
             conn = psycopg2.connect(**db_params)
             cursor = conn.cursor()
 
-            # Check if the file already exists in the database
+            ## Check if the file already exists in the database
             select_query = '''
             SELECT id FROM uploaded_files WHERE filename = %s
             '''
             cursor.execute(select_query, (filename,))
             result = cursor.fetchone()
 
-            if not result:  # If the file doesn't exist in the database, insert it
+            if not result: 
                 insert_query = '''
                 INSERT INTO uploaded_files (filename, size, selectedForAnalyses) VALUES (%s, %s, %s)
                 '''
-                
+
                 cursor.execute(insert_query, (filename, file_size, selectedForAnalyses))
                 conn.commit()
-            
+
             cursor.close()
             conn.close()
 
-            return jsonify({'filename': filename, 'size': file_size, 'selectedForAnalyses': selectedForAnalyses})
+            uploaded_files_info.append({'filename': filename, 'size': file_size, 'selectedForAnalyses': selectedForAnalyses})
+
+        return jsonify(uploaded_files_info)
 
     except Exception as e:
         return jsonify({'error': str(e)})
+
     
 
 @app.route('/uploaded_files')

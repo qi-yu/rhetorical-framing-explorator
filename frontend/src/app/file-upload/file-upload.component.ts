@@ -18,8 +18,8 @@ export class FileUploadComponent implements OnInit {
 
   url = `${API_URL}`;
   selectedFiles: File[] = [];
-  selectedFileName = '';
-  selectedFileSize = 0;
+  selectedFileName: Array<string> = [];
+  selectedFileSize: Array<number> = [];
   uploadedFiles: IFile[] = [];
   formData: FormData = new FormData();
   uploadCompleted = false;
@@ -30,18 +30,18 @@ export class FileUploadComponent implements OnInit {
 
   onSelectFile(event: any): void {
     this.selectedFiles = event.files;
+    console.log(this.selectedFiles)
     this.formData = new FormData();
 
     for (const file of this.selectedFiles) {
       this.formData.append('myfile', file);
+      this.selectedFileName.push(file.name);
+      this.selectedFileSize.push(file.size)
     }
-
-    this.selectedFileName = this.selectedFiles[0].name;
-    this.selectedFileSize = this.selectedFiles[0].size;
   }
 
 
-  onFileUpload(event: any): void {
+  onUploadFile(event: any): void {
     this.http.post<IFile>(`${this.url}/upload`, this.formData).subscribe({
       next: () => {
         this.uploadCompleted = true;
