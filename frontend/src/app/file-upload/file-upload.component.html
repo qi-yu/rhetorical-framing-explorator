@@ -11,23 +11,9 @@
             (onUpload)="onUploadFile($event)"
             [disabled]="uploadCompleted === true"
         >
-            <!-- <ng-template let-file let-i="index" pTemplate="file">
-                <div class="container">
-                    <label for="'remove-selected-' + i"> 
-                        <b style="margin-right: 5px;">FILE SELECTED:</b> 
-                        {{ file.name }} 
-                    </label>
-                    <p-button 
-                        icon="pi pi-trash" 
-                        styleClass="p-button-rounded p-button-danger p-button-text"
-                        pTooltip="Remove selected file"
-                        (click)="onRemoveSelectedFile(file)"
-                    ></p-button>
-                </div>
-            </ng-template> -->
             <ng-template pTemplate="content">
                 <p-divider></p-divider>
-                <p><b>UPLOADED FILES:</b></p>
+                <p><b>EXISTING FILES:</b></p>
                 <ng-container *ngIf="uploadedFiles.length > 0; else noFileMessage">
                     <p-table [value]="uploadedFiles" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-gridlines p-datatable-striped">
                         <ng-template pTemplate="header">
@@ -43,10 +29,15 @@
                                 <td>{{ file.size | fileSize }}</td>
                                 <td>
                                     <div class="container">
-                                        <p-checkbox [(ngModel)]="file.selectedForAnalyses" [binary]="true" [inputId]="'fileToAnalyze-' + i"></p-checkbox>
-                                        <label [for]="'fileToAnalyze-' + i" style="padding-left: 10px;">SELECT FOR ANALYSES</label>
+                                        <p-checkbox 
+                                            [(ngModel)]="file.selectedForAnalyses" 
+                                            [binary]="true" 
+                                            [inputId]="'fileToAnalyze-' + i"
+                                            (click)="onToggleFileForAnalyses(file)"
+                                        ></p-checkbox>
+                                        <label [for]="'fileToAnalyze-' + i" style="padding-left: 10px;">USE FOR ANALYSES</label>
                                         <span class="container" style="padding-left: 20px;">
-                                            <p-button (click)="onDeleteFile(file)" [id]="'delete' + i" icon="pi pi-trash" styleClass="p-button-rounded p-button-danger p-button-text"></p-button>
+                                            <p-button (click)="onDeleteUploadedFile(file)" [id]="'delete' + i" icon="pi pi-trash" styleClass="p-button-rounded p-button-danger p-button-text"></p-button>
                                             <label [for]="'delete' + i">DELETE</label>
                                         </span>
                                     </div>

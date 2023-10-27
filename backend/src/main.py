@@ -197,7 +197,7 @@ def get_uploaded_files():
         for filename in os.listdir(UPLOAD_FOLDER):
             file_path = os.path.join(UPLOAD_FOLDER, filename)
             file_size = os.path.getsize(file_path)
-            uploaded_files.append({'filename': filename, 'size': file_size})
+            uploaded_files.append({'filename': filename, 'size': file_size, 'selectedForAnalyses': True})
         
         return jsonify(uploaded_files)
     
