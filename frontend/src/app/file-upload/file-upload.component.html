@@ -7,15 +7,22 @@
             [multiple]="true" 
             accept=".xml, .csv, .tsv" 
             [maxFileSize]="1000000"
-            (onSelect)="onSelectFile($event)"
+            [auto]="true"
             (onUpload)="onUploadFile($event)"
             [disabled]="uploadCompleted === true"
         >
             <ng-template pTemplate="content">
-                <p-divider></p-divider>
-                <p><b>EXISTING FILES:</b></p>
+                <div (dragenter)="onDragEnter($event)" (dragleave)="onDragLeave($event)">
+                   <div class="drag-and-drop-box" [ngClass]="{'drag-over': isFileDragOver}">
+                        <p>(Drag and drop files here to upload)</p>
+                   </div>
+                </div>       
+                
                 <ng-container *ngIf="uploadedFiles.length > 0; else noFileMessage">
                     <p-table [value]="uploadedFiles" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-gridlines p-datatable-striped">
+                        <ng-template pTemplate="caption">
+                            <div class="flex align-items-center justify-content-between">Uploaded Files:</div>
+                        </ng-template>
                         <ng-template pTemplate="header">
                             <tr>
                                 <th>File</th>

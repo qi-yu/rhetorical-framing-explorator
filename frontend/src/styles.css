@@ -28,3 +28,21 @@ body {
     display: flex;
     align-items: center;
 } 
+
+.drag-and-drop-box {
+    width: 80%;
+    margin: auto;
+    margin-bottom: 30px;
+    height: 200px;
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    align-items: center;
+    display: grid;
+    color: #777;
+    background-color: #eeeeee;
+}
+
+.drag-over {
+    border-color: #6d58ea !important;
+  }
