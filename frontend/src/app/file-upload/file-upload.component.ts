@@ -39,12 +39,13 @@ export class FileUploadComponent implements OnInit {
     this.isFileDragOver = false;
   }
   
-  onUploadFile(event: any): void {
+  onUploadFiles(event: any): void {
     this.http.post<IFile>(`${this.url}/upload`, event.files).subscribe({
       next: () => {
         this.fileService.getAllFiles().subscribe((data) => {
           this.uploadedFiles = data;
           this.filesSelectedForAnalyses = data;
+          this.onSelectFiles();
         });
 
         this.messageService.add({severity: 'success', summary: 'Success', detail: 'File(s) uploaded successfully!'});
@@ -56,24 +57,26 @@ export class FileUploadComponent implements OnInit {
     });
   }
 
-  onDeleteUploadedFile(file: IFile): void {
-    this.fileService.deleteFile(file.filename).subscribe({
-      next: () => {
-        this.uploadedFiles = this.uploadedFiles.filter((uploadedFile) => uploadedFile.filename !== file.filename);
-        this.filesSelectedForAnalyses = this.filesSelectedForAnalyses.filter((selectedFile) => selectedFile.filename !== file.filename);
-        this.messageService.add({severity: 'success', summary: 'Success', detail: 'File(s) deleted successfully!'});
-      }, 
-      error: () => {
-        this.messageService.add({severity: 'error', summary: 'Error', detail: 'File(s) cannot be deleted successfully!'});
-      }
-    });
+  onDeleteFiles(): void{
+    for(let i = 0; i < this.filesSelectedForAnalyses.length; i++) {
+      this.fileService.deleteFile(this.filesSelectedForAnalyses[i].filename).subscribe({
+        next: () => {
+          this.uploadedFiles = this.uploadedFiles.filter((uploadedFile) => uploadedFile.filename !== this.filesSelectedForAnalyses[i].filename);
+          this.filesSelectedForAnalyses.splice(i, 1);
+          this.onSelectFiles();
+        },
+        error: () => {
+          this.messageService.add({severity: 'error', summary: 'Error', detail: 'File(s) cannot be deleted successfully!'});
+        }
+      })
+    }
   }
 
   onChangeSelectionStatus(fileToChange: IFile): void {
     this.filesSelectedForAnalyses = this.filesSelectedForAnalyses.filter((file) => file.selectedForAnalyses === true);
   }
 
-  onFileSelection(): void {
+  onSelectFiles(): void {
    this.filesSelectedForAnalyses.length > 0
     ? this.fileSelectionEvent.emit(true)
     : this.fileSelectionEvent.emit(false);
@@ -84,7 +87,7 @@ export class FileUploadComponent implements OnInit {
       .subscribe((data) => {
         this.uploadedFiles = data;
         this.filesSelectedForAnalyses = data;
-        this.onFileSelection();
+        this.onSelectFiles();
       })
   }
 }
