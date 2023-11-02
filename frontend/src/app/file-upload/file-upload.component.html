@@ -18,44 +18,64 @@
                    </div>
                 </div>       
                 
-                <ng-container *ngIf="uploadedFiles.length > 0; else noFileMessage">
-                    <p-table [value]="uploadedFiles" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-gridlines p-datatable-striped">
+                <ng-container>
+                    <p-table 
+                        [value]="uploadedFiles" 
+                        [(selection)]="filesSelectedForAnalyses" 
+                        dataKey="filename"
+                        [paginator]="true"
+                        [rows]="5"
+                        [showCurrentPageReport]="true"
+                        [tableStyle]="{ 'min-width': '50rem' }"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" 
+                        styleClass="p-datatable-striped"
+                    >
                         <ng-template pTemplate="caption">
-                            <div class="flex align-items-center justify-content-between">Uploaded Files:</div>
+                            <div style="display: flex; align-items: center;">
+                                <div>The following files will be used for analyses:</div>
+                                <!-- <span>
+                                    <button pButton type="button" icon="pi pi-check" label="SELECT ALL" class="p-button-sm p-button-outlined" style="margin: 5px;"></button>
+                                    <button pButton type="button" icon="pi pi-trash" label="DELETE ALL" class="p-button-sm p-button-outlined p-button-danger" style="margin: 5px;"></button>
+                                </span> -->
+                            </div>
                         </ng-template>
                         <ng-template pTemplate="header">
                             <tr>
+                                <th style="width: 4rem">
+                                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                </th>
                                 <th>File</th>
                                 <th>Size</th>
                                 <th>Actions</th>
                             </tr>
                         </ng-template>
-                        <ng-template pTemplate="body" let-file let-i="index">
+                        <ng-template pTemplate="body" let-file let-index>
                             <tr>
+                                <td>
+                                    <p-tableCheckbox [value]="file" (click)="onChangeSelectionStatus(file)"></p-tableCheckbox>
+                                </td>
                                 <td>{{ file.filename }}</td>
                                 <td>{{ file.size | fileSize }}</td>
                                 <td>
                                     <div class="container">
-                                        <p-checkbox 
+<!--                                         <p-checkbox 
                                             [(ngModel)]="file.selectedForAnalyses" 
-                                            [binary]="true" 
-                                            [inputId]="'fileToAnalyze-' + i"
-                                            (click)="onToggleFileForAnalyses(file)"
-                                        ></p-checkbox>
-                                        <label [for]="'fileToAnalyze-' + i" style="padding-left: 10px;">USE FOR ANALYSES</label>
-                                        <span class="container" style="padding-left: 20px;">
-                                            <p-button (click)="onDeleteUploadedFile(file)" [id]="'delete' + i" icon="pi pi-trash" styleClass="p-button-rounded p-button-danger p-button-text"></p-button>
-                                            <label [for]="'delete' + i">DELETE</label>
-                                        </span>
+                                            (onChange)="onChangeSelection(file)"
+                                            [binary]="true"
+                                            label="USE FOR ANALYSES"
+                                        ></p-checkbox> -->
+                                        <p-button label="DELETE" (click)="onDeleteUploadedFile(file)" [id]="'delete' + index" icon="pi pi-trash" styleClass="p-button-rounded p-button-danger p-button-text"></p-button>
                                     </div>
                                 </td>
                             </tr>
                         </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="3">No files uploaded yet.</td>
+                            </tr>
+                        </ng-template>
                     </p-table>
                 </ng-container>
-                <ng-template #noFileMessage>
-                    <p>(No file uploaded yet)</p>
-                </ng-template>
             </ng-template>
         </p-fileUpload>
     </p-card>

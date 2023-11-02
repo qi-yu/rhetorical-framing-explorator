@@ -4,6 +4,7 @@ import { API_URL } from '../env';
 import { IFile } from './file';
 import { MessageService, Message } from 'primeng/api';
 import { FileService } from './file.service';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-file-upload',
@@ -19,11 +20,9 @@ export class FileUploadComponent implements OnInit {
   url = `${API_URL}`;
   isFileDragOver: boolean = false;
   uploadedFiles: IFile[] = [];
-  formData: FormData = new FormData();
   filesSelectedForAnalyses: IFile[] = [];
+  formData: FormData = new FormData();
   uploadCompleted = false;
-  uploadSuccessMessage: Message[] = [ {severity: 'success', summary: 'Success', detail: 'File uploaded successfully!'} ]
-  uploadErrorMessage: Message[] = [ {severity: 'error', summary: 'Error', detail: 'File cannot be uploaded successfully!'} ]
 
   constructor(
     private http: HttpClient, 
@@ -46,7 +45,7 @@ export class FileUploadComponent implements OnInit {
       next: () => {
         this.uploadCompleted = true;
         this.uploadCompletedEvent.emit(this.uploadCompleted);
-        this.showSuccessMessage();
+        this.messageService.add({severity: 'success', summary: 'Success', detail: 'File(s) uploaded successfully!'});
 
         // Fetch the updated list of uploaded files
         this.fileService.getAllFiles().subscribe((data) => {
@@ -58,7 +57,7 @@ export class FileUploadComponent implements OnInit {
       error: () => {
         this.uploadCompleted = false; 
         this.uploadCompletedEvent.emit(this.uploadCompleted);
-        this.showErrorMessage();
+        this.messageService.add({severity: 'error', summary: 'Error', detail: 'File(s) cannot be uploaded successfully!'});
       }
     });
   }
@@ -67,31 +66,18 @@ export class FileUploadComponent implements OnInit {
     this.fileService.deleteFile(file.filename).subscribe({
       next: () => {
         this.uploadedFiles = this.uploadedFiles.filter((uploadedFile) => uploadedFile.filename !== file.filename);
-        console.log('File deleted successfully!');
+        this.filesSelectedForAnalyses = this.filesSelectedForAnalyses.filter((selectedFile) => selectedFile.filename !== file.filename)
+        this.messageService.add({severity: 'success', summary: 'Success', detail: 'File(s) deleted successfully!'});
       }, 
       error: () => {
-        console.log('Failed to delete the file.');
+        this.messageService.add({severity: 'error', summary: 'Error', detail: 'File(s) cannot be deleted successfully!'});
       }
     });
   }
 
-  onToggleFileForAnalyses(file: IFile): void {
-    for(let i = 0; i < this.filesSelectedForAnalyses.length - 1; i++) {
-      if(this.filesSelectedForAnalyses[i].filename === file.filename) {
-        this.filesSelectedForAnalyses[i].selectedForAnalyses = !this.filesSelectedForAnalyses[i].selectedForAnalyses
-      }
-    }
-    
+  onChangeSelectionStatus(fileToChange: IFile): void {
     this.filesSelectedForAnalyses = this.filesSelectedForAnalyses.filter((file) => file.selectedForAnalyses === true);
     console.log(this.filesSelectedForAnalyses)
-  }
-
-  showSuccessMessage(): void {
-    this.messageService.addAll(this.uploadSuccessMessage);
-  }
-
-  showErrorMessage(): void {
-    this.messageService.addAll(this.uploadErrorMessage);
   }
 
   ngOnInit(): void {
