@@ -1,17 +1,18 @@
 import { Component } from '@angular/core';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-steps',
   templateUrl: './steps.component.html',
-  styleUrls: ['./steps.component.css']
+  styleUrls: ['./steps.component.css'],
+  providers: [MessageService]
 })
 export class StepsComponent {
   items: Array<MenuItem> = [];
   activeIndex = 0;
   nextStepAllowed = false;
 
-  constructor() {}
+  constructor(private messageService: MessageService) {}
 
   onActiveIndexChange(event: number) {
     this.activeIndex = event;
@@ -20,7 +21,7 @@ export class StepsComponent {
   goToPreviousStep() {
     this.activeIndex -= 1;
 
-    if(this.activeIndex <= 0) {
+    if(this.activeIndex < 0) {
       this.activeIndex = 0;
     }
   }
@@ -30,12 +31,12 @@ export class StepsComponent {
       this.activeIndex += 1;
     }
     
-    if(this.activeIndex >= this.items.length - 1) {
+    if (this.activeIndex > this.items.length - 1) {
       this.activeIndex = this.items.length - 1
     }
    }
 
-  onUploadStatusChange(uploadCompleted: boolean) {
+  onFileSelectionChange(uploadCompleted: boolean) {
     this.nextStepAllowed = uploadCompleted;
   }
   

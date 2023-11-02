@@ -15,14 +15,13 @@ import { ButtonModule } from 'primeng/button';
 
 
 export class FileUploadComponent implements OnInit {
-  @Output() uploadCompletedEvent = new EventEmitter<boolean>();
+  @Output() fileSelectionEvent: EventEmitter<boolean> = new EventEmitter();
 
   url = `${API_URL}`;
   isFileDragOver: boolean = false;
   uploadedFiles: IFile[] = [];
   filesSelectedForAnalyses: IFile[] = [];
   formData: FormData = new FormData();
-  uploadCompleted = false;
 
   constructor(
     private http: HttpClient, 
@@ -43,20 +42,15 @@ export class FileUploadComponent implements OnInit {
   onUploadFile(event: any): void {
     this.http.post<IFile>(`${this.url}/upload`, event.files).subscribe({
       next: () => {
-        this.uploadCompleted = true;
-        this.uploadCompletedEvent.emit(this.uploadCompleted);
-        this.messageService.add({severity: 'success', summary: 'Success', detail: 'File(s) uploaded successfully!'});
-
-        // Fetch the updated list of uploaded files
         this.fileService.getAllFiles().subscribe((data) => {
           this.uploadedFiles = data;
           this.filesSelectedForAnalyses = data;
         });
+
+        this.messageService.add({severity: 'success', summary: 'Success', detail: 'File(s) uploaded successfully!'});
       },
 
       error: () => {
-        this.uploadCompleted = false; 
-        this.uploadCompletedEvent.emit(this.uploadCompleted);
         this.messageService.add({severity: 'error', summary: 'Error', detail: 'File(s) cannot be uploaded successfully!'});
       }
     });
@@ -66,7 +60,7 @@ export class FileUploadComponent implements OnInit {
     this.fileService.deleteFile(file.filename).subscribe({
       next: () => {
         this.uploadedFiles = this.uploadedFiles.filter((uploadedFile) => uploadedFile.filename !== file.filename);
-        this.filesSelectedForAnalyses = this.filesSelectedForAnalyses.filter((selectedFile) => selectedFile.filename !== file.filename)
+        this.filesSelectedForAnalyses = this.filesSelectedForAnalyses.filter((selectedFile) => selectedFile.filename !== file.filename);
         this.messageService.add({severity: 'success', summary: 'Success', detail: 'File(s) deleted successfully!'});
       }, 
       error: () => {
@@ -77,7 +71,12 @@ export class FileUploadComponent implements OnInit {
 
   onChangeSelectionStatus(fileToChange: IFile): void {
     this.filesSelectedForAnalyses = this.filesSelectedForAnalyses.filter((file) => file.selectedForAnalyses === true);
-    console.log(this.filesSelectedForAnalyses)
+  }
+
+  onFileSelection(): void {
+   this.filesSelectedForAnalyses.length > 0
+    ? this.fileSelectionEvent.emit(true)
+    : this.fileSelectionEvent.emit(false);
   }
 
   ngOnInit(): void {
@@ -85,7 +84,7 @@ export class FileUploadComponent implements OnInit {
       .subscribe((data) => {
         this.uploadedFiles = data;
         this.filesSelectedForAnalyses = data;
+        this.onFileSelection();
       })
   }
-
 }

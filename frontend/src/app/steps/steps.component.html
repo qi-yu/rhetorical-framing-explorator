@@ -1,7 +1,7 @@
 <div class="not-full-width">
     <p-steps [model]="items" [readonly]="true" [(activeIndex)]="activeIndex" (activeIndexChange)="onActiveIndexChange($event)"></p-steps>
 </div>
-<app-file-upload *ngIf="activeIndex === 0" (uploadCompletedEvent)="onUploadStatusChange($event)"></app-file-upload>
+<app-file-upload *ngIf="activeIndex === 0" (fileSelectionEvent)="onFileSelectionChange($event)"></app-file-upload>
 <app-feature-selection *ngIf="activeIndex === 1"></app-feature-selection>
 <div class="center" style="padding-top: 15px;">
     <span style="padding-right: 30px;">

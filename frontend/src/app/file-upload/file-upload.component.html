@@ -9,7 +9,6 @@
             [maxFileSize]="1000000"
             [auto]="true"
             (onUpload)="onUploadFile($event)"
-            [disabled]="uploadCompleted === true"
         >
             <ng-template pTemplate="content">
                 <div (dragenter)="onDragEnter($event)" (dragleave)="onDragLeave($event)">
@@ -42,7 +41,7 @@
                         <ng-template pTemplate="header">
                             <tr>
                                 <th style="width: 4rem">
-                                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                    <p-tableHeaderCheckbox (click)="onFileSelection()"></p-tableHeaderCheckbox>
                                 </th>
                                 <th>File</th>
                                 <th>Size</th>
@@ -52,18 +51,12 @@
                         <ng-template pTemplate="body" let-file let-index>
                             <tr>
                                 <td>
-                                    <p-tableCheckbox [value]="file" (click)="onChangeSelectionStatus(file)"></p-tableCheckbox>
+                                    <p-tableCheckbox [value]="file" (click)="onChangeSelectionStatus(file); onFileSelection()"></p-tableCheckbox>
                                 </td>
                                 <td>{{ file.filename }}</td>
                                 <td>{{ file.size | fileSize }}</td>
                                 <td>
                                     <div class="container">
-<!--                                         <p-checkbox 
-                                            [(ngModel)]="file.selectedForAnalyses" 
-                                            (onChange)="onChangeSelection(file)"
-                                            [binary]="true"
-                                            label="USE FOR ANALYSES"
-                                        ></p-checkbox> -->
                                         <p-button label="DELETE" (click)="onDeleteUploadedFile(file)" [id]="'delete' + index" icon="pi pi-trash" styleClass="p-button-rounded p-button-danger p-button-text"></p-button>
                                     </div>
                                 </td>
