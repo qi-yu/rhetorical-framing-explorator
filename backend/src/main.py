@@ -194,11 +194,24 @@ def get_uploaded_files():
     try:
         uploaded_files = []
 
-        for filename in os.listdir(UPLOAD_FOLDER):
-            file_path = os.path.join(UPLOAD_FOLDER, filename)
-            file_size = os.path.getsize(file_path)
-            uploaded_files.append({'filename': filename, 'size': file_size, 'selectedForAnalyses': True})
-        
+        # Connect to the database
+        conn = psycopg2.connect(**db_params)
+        cursor = conn.cursor()
+
+        # Retrieve the file details from the database
+        select_query = '''
+        SELECT id, filename, size, selectedForAnalyses FROM uploaded_files
+        '''
+        cursor.execute(select_query)
+        results = cursor.fetchall()
+
+        for result in results:
+            file_id, filename, size, selected_for_analyses = result
+            uploaded_files.append({'id': file_id, 'filename': filename, 'size': size, 'selectedForAnalyses': selected_for_analyses})
+
+        cursor.close()
+        conn.close()
+
         return jsonify(uploaded_files)
     
     except Exception as e:
