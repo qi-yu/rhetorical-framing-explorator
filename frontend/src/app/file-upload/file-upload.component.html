@@ -46,8 +46,9 @@
                                         ></button>
                                     </div>
                                 </th>
-                                <th>File</th>
-                                <th>Size</th>
+                                <th pSortableColumn="filename">File <p-sortIcon field="filename"></p-sortIcon></th>
+                                <th pSortableColumn="size">Size <p-sortIcon field="size"></p-sortIcon></th>
+                                <th></th>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-file let-index>
