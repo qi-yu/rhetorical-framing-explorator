@@ -65,7 +65,7 @@
                         <ng-template pTemplate="body" let-file let-editing="editing" let-ri="rowIndex">
                             <tr [pEditableRow]="file">
                                 <td>
-                                    <p-tableCheckbox [value]="file" (click)="onChangeSelectionStatus(file); onSelectFiles()"></p-tableCheckbox>
+                                    <p-tableCheckbox [value]="file" (click)="onChangeSelectionStatus(); onSelectFiles()"></p-tableCheckbox>
                                 </td>
                                 <td>
                                     <p-cellEditor>

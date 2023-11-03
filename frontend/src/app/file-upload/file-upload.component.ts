@@ -54,9 +54,7 @@ export class FileUploadComponent implements OnInit {
         this.messageService.add({severity: 'success', summary: 'Success', detail: 'File(s) uploaded successfully!'});
       },
 
-      error: () => {
-        this.messageService.add({severity: 'error', summary: 'Error', detail: 'File(s) cannot be uploaded successfully!'});
-      }
+      error: () => this.messageService.add({severity: 'error', summary: 'Error', detail: 'File(s) cannot be uploaded'}) 
     });
   }
 
@@ -78,14 +76,12 @@ export class FileUploadComponent implements OnInit {
   
           this.onSelectFiles();
         },
-        error: () => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'File(s) cannot be deleted successfully!' });
-        },
+        error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'File(s) cannot be deleted' })
       });
     }
   }  
 
-  onChangeSelectionStatus(fileToChange: IFile): void {
+  onChangeSelectionStatus(): void {
     this.filesSelectedForAnalyses = this.filesSelectedForAnalyses.filter((file) => file.selectedForAnalyses === true);
   }
 
@@ -106,12 +102,9 @@ export class FileUploadComponent implements OnInit {
   }
 
   onRowEditSave(file: IFile) {
-    if (file.filename.length > 0) {
-    } else {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid file name' });
-    }
-
-    console.log(this.uploadedFiles)
+    file.filename.length > 0 
+      ? delete this.clonedFiles[file.id]
+      : this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid file name' });
   }
 
   onRowEditCancel(file: IFile, index: number) {
