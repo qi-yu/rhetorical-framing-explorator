@@ -18,8 +18,9 @@
                 </div>       
                 
                 <ng-container>
-                    <h1><b>The following files will be used for analyses:</b></h1>
+                    <h1><b>Files selected for analyses:</b></h1>
                     <p-table 
+                        #dt
                         [value]="uploadedFiles" 
                         [(selection)]="filesSelectedForAnalyses" 
                         dataKey="id"
@@ -28,6 +29,7 @@
                         [showCurrentPageReport]="true"
                         [tableStyle]="{ 'min-width': '50rem' }"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" 
+                        [globalFilterFields]="['filename']"
                         styleClass="p-datatable-striped"
                     >
                         <ng-template pTemplate="header">
@@ -50,6 +52,14 @@
                                 <th pSortableColumn="size">Size <p-sortIcon field="size"></p-sortIcon></th>
                                 <th></th>
                             </tr>
+                            <tr>
+                                <th></th>
+                                <th>
+                                    <input pInputText type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Search by Name">
+                                </th>
+                                <th></th>
+                                <th></th>
+                            </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-file let-index>
                             <tr>
@@ -58,11 +68,12 @@
                                 </td>
                                 <td>{{ file.filename }}</td>
                                 <td>{{ file.size | fileSize }}</td>
+                                <td></td>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="emptymessage">
                             <tr>
-                                <td colspan="4">No files uploaded yet.</td>
+                                <td colspan="4">No file found.</td>
                             </tr>
                         </ng-template>
                     </p-table>

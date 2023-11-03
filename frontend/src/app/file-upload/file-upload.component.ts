@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, ViewChild } from '@angular/core';
 import { API_URL } from '../env';
 import { IFile } from './file';
 import { MessageService } from 'primeng/api';
 import { FileService } from './file.service';
+import { Table } from 'primeng/table'
 
 
 @Component({
@@ -16,6 +17,7 @@ import { FileService } from './file.service';
 
 export class FileUploadComponent implements OnInit {
   @Output() fileSelectionEvent: EventEmitter<boolean> = new EventEmitter();
+  @ViewChild('dt') dt: Table | undefined;
 
   url = `${API_URL}`;
   isFileDragOver: boolean = false;
@@ -76,11 +78,7 @@ export class FileUploadComponent implements OnInit {
           this.onSelectFiles();
         },
         error: () => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'File(s) cannot be deleted successfully!',
-          });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'File(s) cannot be deleted successfully!' });
         },
       });
     }
@@ -94,6 +92,12 @@ export class FileUploadComponent implements OnInit {
    this.filesSelectedForAnalyses.length > 0
     ? this.fileSelectionEvent.emit(true)
     : this.fileSelectionEvent.emit(false);
+  }
+
+  applyFilterGlobal($event: any, stringVal: any) {
+    if (this.dt?.rows != 0) {
+      this.dt?.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
+    }
   }
 
   ngOnInit(): void {
