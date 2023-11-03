@@ -30,6 +30,7 @@
                         [tableStyle]="{ 'min-width': '50rem' }"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" 
                         [globalFilterFields]="['filename']"
+                        editMode="row"
                         styleClass="p-datatable-striped"
                     >
                         <ng-template pTemplate="header">
@@ -61,14 +62,30 @@
                                 <th></th>
                             </tr>
                         </ng-template>
-                        <ng-template pTemplate="body" let-file let-index>
-                            <tr>
+                        <ng-template pTemplate="body" let-file let-editing="editing" let-ri="rowIndex">
+                            <tr [pEditableRow]="file">
                                 <td>
                                     <p-tableCheckbox [value]="file" (click)="onChangeSelectionStatus(file); onSelectFiles()"></p-tableCheckbox>
                                 </td>
-                                <td>{{ file.filename }}</td>
+                                <td>
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <input pInputText type="text" [(ngModel)]="file.filename">
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            {{file.filename}}
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <!-- <td>{{ file.filename }}</td> -->
                                 <td>{{ file.size | fileSize }}</td>
-                                <td></td>
+                                <td>
+                                    <div class="flex align-items-center justify-content-center gap-2">
+                                        <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(file)" class="p-button-rounded p-button-text"></button>
+                                        <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="onRowEditSave(file)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                                        <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times" (click)="onRowEditCancel(file, ri)" class="p-button-rounded p-button-text p-button-danger"></button>
+                                    </div>
+                                </td>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="emptymessage">

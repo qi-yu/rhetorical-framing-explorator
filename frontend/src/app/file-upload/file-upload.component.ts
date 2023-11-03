@@ -24,6 +24,7 @@ export class FileUploadComponent implements OnInit {
   uploadedFiles: IFile[] = [];
   filesSelectedForAnalyses: IFile[] = [];
   formData: FormData = new FormData();
+  clonedFiles: { [s: string]: IFile } = {};
 
   constructor(
     private http: HttpClient, 
@@ -98,6 +99,24 @@ export class FileUploadComponent implements OnInit {
     if (this.dt?.rows != 0) {
       this.dt?.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
     }
+  }
+
+  onRowEditInit(file: IFile) {
+    this.clonedFiles[file.id] = { ...file };
+  }
+
+  onRowEditSave(file: IFile) {
+    if (file.filename.length > 0) {
+    } else {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid file name' });
+    }
+
+    console.log(this.uploadedFiles)
+  }
+
+  onRowEditCancel(file: IFile, index: number) {
+    this.uploadedFiles[index] = this.clonedFiles[file.id];
+    delete this.clonedFiles[file.id];
   }
 
   ngOnInit(): void {
