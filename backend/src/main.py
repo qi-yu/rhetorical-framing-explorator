@@ -44,7 +44,6 @@ def create_feature_table():
 
 def read_feature_from_database():
     try:
-        # Connect to the database
         conn = psycopg2.connect(**db_params)
         cursor = conn.cursor()
 
@@ -57,7 +56,6 @@ def read_feature_from_database():
         # Fetch all data and store in a list of dictionaries
         data = [{'name': row[0], 'dimension': row[1]} for row in cursor.fetchall()]
 
-        # Close the connection
         cursor.close()
         conn.close()
 
@@ -68,7 +66,6 @@ def read_feature_from_database():
 
 
 def create_uploaded_files_table():
-    # Connect to the database
     conn = psycopg2.connect(**db_params)
     cursor = conn.cursor()
 
@@ -109,7 +106,6 @@ def read_json_and_insert_features():
         with open('../backend/assets/features.json', 'r') as json_file:
             data = json.load(json_file)
 
-        # Connect to the database
         conn = psycopg2.connect(**db_params)
         cursor = conn.cursor()
 
@@ -121,12 +117,10 @@ def read_json_and_insert_features():
             '''
             cursor.execute(insert_query, (item['name'], item['dimension']))
 
-        # Commit changes and close the connection
         conn.commit()
         cursor.close()
         conn.close()
 
-        # Return the data added to the database
         return jsonify(read_feature_from_database())
 
     except Exception as e:
@@ -179,7 +173,6 @@ def upload_file():
                 insert_query = '''
                 INSERT INTO uploaded_files (filename, format, size, selectedForAnalyses) VALUES (%s, %s, %s, %s)
                 '''
-
                 cursor.execute(insert_query, (filename, file_format, file_size, selectedForAnalyses))
                 conn.commit()
 
@@ -199,13 +192,12 @@ def get_uploaded_files():
     try:
         uploaded_files = []
 
-        # Connect to the database
         conn = psycopg2.connect(**db_params)
         cursor = conn.cursor()
 
-        # Retrieve the file details from the database
         select_query = '''
         SELECT id, filename, format, size, selectedForAnalyses FROM uploaded_files
+        ORDER BY id
         '''
         cursor.execute(select_query)
         results = cursor.fetchall()
@@ -226,11 +218,9 @@ def get_uploaded_files():
 @app.route('/delete/<filename>', methods=['DELETE'])
 def delete_file(filename):
     try:
-        # Connect to the database
         conn = psycopg2.connect(**db_params)
         cursor = conn.cursor()
 
-        # Retrieve the file details from the database
         select_query = '''
         SELECT filename FROM uploaded_files WHERE filename = %s
         '''
@@ -251,7 +241,7 @@ def delete_file(filename):
             logging.warning(f"File '{filename}' not found on the server.")
 
 
-        # Delete the file record from the database
+        # Delete the file from the database
         delete_query = '''
         DELETE FROM uploaded_files WHERE filename = %s
         '''
@@ -270,6 +260,7 @@ def delete_file(filename):
 def rename_file(id):
     try:
         new_filename = request.json.get('filename')
+
         conn = psycopg2.connect(**db_params)
         cursor = conn.cursor()
 
@@ -279,6 +270,7 @@ def rename_file(id):
         cursor.execute(select_query, (id,))
         old_filename = cursor.fetchone()[0]
 
+        # Rename the file at the database
         update_query = '''
         UPDATE uploaded_files
         SET filename = %s
@@ -289,6 +281,7 @@ def rename_file(id):
         cursor.close()
         conn.close()
 
+        # Rename the file at the server's upload folder
         os.rename(os.path.join(UPLOAD_FOLDER, old_filename), os.path.join(UPLOAD_FOLDER, new_filename))
 
         return jsonify({'message': 'File name updated successfully'})
@@ -301,6 +294,6 @@ if __name__ == '__main__':
     if os.path.exists(UPLOAD_FOLDER):
         shutil.rmtree(UPLOAD_FOLDER)
 
-    create_feature_table()  # Create the table when the script is executed
-    create_uploaded_files_table()  # Create the 'uploaded_files' table when the script is executed
+    create_feature_table()
+    create_uploaded_files_table()
     app.run(debug=True)

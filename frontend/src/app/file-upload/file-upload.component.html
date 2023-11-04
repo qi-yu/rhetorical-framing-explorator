@@ -50,16 +50,14 @@
                                     </div>
                                 </th>
                                 <th pSortableColumn="filename">File <p-sortIcon field="filename"></p-sortIcon></th>
-                                <th>Format</th>
+                                <th pSortableColumn="format">Format <p-sortIcon field="format"></p-sortIcon></th>
                                 <th pSortableColumn="size">Size <p-sortIcon field="size"></p-sortIcon></th>
-                                <th></th>
                             </tr>
                             <tr>
                                 <th></th>
                                 <th>
                                     <input pInputText type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Search by Name">
                                 </th>
-                                <th></th>
                                 <th></th>
                                 <th></th>
                             </tr>
@@ -70,29 +68,27 @@
                                     <p-tableCheckbox [value]="file" (click)="onChangeSelectionStatus(); onSelectFiles()"></p-tableCheckbox>
                                 </td>
                                 <td>
-                                    <p-cellEditor>
-                                        <ng-template pTemplate="input">
-                                            <input pInputText type="text" [(ngModel)]="file.filename">
-                                        </ng-template>
-                                        <ng-template pTemplate="output">
-                                            {{file.filename}}
-                                        </ng-template>
-                                    </p-cellEditor>
-                                </td>
-                                <td>{{ file.format }}</td>
-                                <td>{{ file.size | fileSize }}</td>
-                                <td>
-                                    <div class="flex align-items-center justify-content-center gap-2">
+                                    <div class="container">
+                                        <p-cellEditor>
+                                            <ng-template pTemplate="input">
+                                                <input pInputText type="text" [(ngModel)]="file.filename">
+                                            </ng-template>
+                                            <ng-template pTemplate="output">
+                                                {{file.filename}}
+                                            </ng-template>
+                                        </p-cellEditor>
                                         <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(file)" class="p-button-rounded p-button-text"></button>
                                         <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="onRowEditSave(file)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
                                         <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times" (click)="onRowEditCancel(file, ri)" class="p-button-rounded p-button-text p-button-danger"></button>
                                     </div>
                                 </td>
+                                <td>{{ file.format }}</td>
+                                <td>{{ file.size | fileSize }}</td>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="emptymessage">
                             <tr>
-                                <td colspan="5">No file found.</td>
+                                <td colspan="4">No file found.</td>
                             </tr>
                         </ng-template>
                     </p-table>
