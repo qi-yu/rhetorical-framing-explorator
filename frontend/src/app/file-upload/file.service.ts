@@ -21,6 +21,11 @@ export class FileService {
     return this.http.delete<void>(deleteUrl);
   }
 
+  renameFile(fileId: number, newFileName: string): Observable<any> {
+    const renameUrl = `${API_URL}/rename/${fileId}`;
+    const body = { filename: newFileName }; 
+    return this.http.put(renameUrl, body);
+  }
 
   errorHandler(error: HttpErrorResponse) {
     return throwError(() => (error.message || 'Server Error'));

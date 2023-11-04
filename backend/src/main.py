@@ -37,6 +37,10 @@ def create_feature_table():
     '''
     cursor.execute(create_table_query)
 
+    cursor.close()
+    conn.close()
+    logging.info('Table rhetorical_framing_features is created.')
+
 
 def read_feature_from_database():
     try:
@@ -79,6 +83,7 @@ def create_uploaded_files_table():
         '''
         cursor.execute(drop_table_query)
         conn.commit()
+        logging.info("The old table 'uploaded_files' is deleted.")
 
     create_table_query = '''
     CREATE TABLE uploaded_files (
@@ -91,11 +96,10 @@ def create_uploaded_files_table():
     '''
     cursor.execute(create_table_query)
     conn.commit()
-    logging.info("Table 'uploaded_files' created.")
+    logging.info("New table 'uploaded_files' is created.")
        
     cursor.close()
     conn.close()
-
 
 
 @app.route('/')
@@ -190,7 +194,6 @@ def upload_file():
         return jsonify({'error': str(e)})
 
     
-
 @app.route('/uploaded_files')
 def get_uploaded_files():
     try:
@@ -258,6 +261,37 @@ def delete_file(filename):
         conn.close()
 
         return jsonify({'message': 'File deleted successfully'})
+
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+
+@app.route('/rename/<id>', methods=['PUT'])
+def rename_file(id):
+    try:
+        new_filename = request.json.get('filename')
+        conn = psycopg2.connect(**db_params)
+        cursor = conn.cursor()
+
+        select_query = '''
+        SELECT filename FROM uploaded_files WHERE id = %s
+        '''
+        cursor.execute(select_query, (id,))
+        old_filename = cursor.fetchone()[0]
+
+        update_query = '''
+        UPDATE uploaded_files
+        SET filename = %s
+        WHERE id = %s
+        '''
+        cursor.execute(update_query, (new_filename, id))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        os.rename(os.path.join(UPLOAD_FOLDER, old_filename), os.path.join(UPLOAD_FOLDER, new_filename))
+
+        return jsonify({'message': 'File name updated successfully'})
 
     except Exception as e:
         return jsonify({'error': str(e)})

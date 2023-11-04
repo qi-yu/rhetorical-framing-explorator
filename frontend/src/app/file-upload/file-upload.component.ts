@@ -102,9 +102,22 @@ export class FileUploadComponent implements OnInit {
   }
 
   onRowEditSave(file: IFile) {
-    file.filename.length > 0 
-      ? delete this.clonedFiles[file.id]
-      : this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid file name' });
+    if (file.filename.length > 0) {
+      this.fileService.renameFile(file.id, file.filename).subscribe({
+        next: () => {
+          delete this.clonedFiles[file.id];
+
+          this.fileService.getAllFiles().subscribe((data) => {
+            this.uploadedFiles = data;
+            this.filesSelectedForAnalyses = data;
+            this.onSelectFiles();
+          })
+        },
+        error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to rename file' })
+      })
+    } else {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid file name' });
+    }
   }
 
   onRowEditCancel(file: IFile, index: number) {
