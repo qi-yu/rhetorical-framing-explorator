@@ -84,6 +84,7 @@ def create_uploaded_files_table():
     CREATE TABLE uploaded_files (
         id SERIAL PRIMARY KEY,
         filename TEXT NOT NULL,
+        format TEXT NOT NULL,
         size INTEGER NOT NULL,
         selectedForAnalyses BOOLEAN NOT NULL
     )
@@ -151,10 +152,11 @@ def upload_file():
             if file.filename == '':
                 return jsonify({'error': 'No file selected'})
 
-            filename = secure_filename(file.filename)
+            filename = secure_filename(file.filename).split('.')[0]
             file_path = os.path.join(UPLOAD_FOLDER, filename)
             file.save(file_path)
 
+            file_format = '.' + file.filename.split('.')[-1]
             file_size = os.path.getsize(file_path)
             selectedForAnalyses = True
 
@@ -171,16 +173,16 @@ def upload_file():
 
             if not result: 
                 insert_query = '''
-                INSERT INTO uploaded_files (filename, size, selectedForAnalyses) VALUES (%s, %s, %s)
+                INSERT INTO uploaded_files (filename, format, size, selectedForAnalyses) VALUES (%s, %s, %s, %s)
                 '''
 
-                cursor.execute(insert_query, (filename, file_size, selectedForAnalyses))
+                cursor.execute(insert_query, (filename, file_format, file_size, selectedForAnalyses))
                 conn.commit()
 
             cursor.close()
             conn.close()
 
-            uploaded_files_info.append({'filename': filename, 'size': file_size, 'selectedForAnalyses': selectedForAnalyses})
+            uploaded_files_info.append({'filename': filename, 'format': file_format, 'size': file_size, 'selectedForAnalyses': selectedForAnalyses})
 
         return jsonify(uploaded_files_info)
 
@@ -200,14 +202,14 @@ def get_uploaded_files():
 
         # Retrieve the file details from the database
         select_query = '''
-        SELECT id, filename, size, selectedForAnalyses FROM uploaded_files
+        SELECT id, filename, format, size, selectedForAnalyses FROM uploaded_files
         '''
         cursor.execute(select_query)
         results = cursor.fetchall()
 
         for result in results:
-            file_id, filename, size, selected_for_analyses = result
-            uploaded_files.append({'id': file_id, 'filename': filename, 'size': size, 'selectedForAnalyses': selected_for_analyses})
+            file_id, filename, format, size, selected_for_analyses = result
+            uploaded_files.append({'id': file_id, 'filename': filename, 'format': format, 'size': size, 'selectedForAnalyses': selected_for_analyses})
 
         cursor.close()
         conn.close()
