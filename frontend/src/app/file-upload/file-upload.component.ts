@@ -101,8 +101,8 @@ export class FileUploadComponent implements OnInit {
     this.clonedFiles[file.id] = { ...file };
   }
 
-  onRowEditSave(file: IFile) {
-    if (file.filename.length > 0) {
+  onRowEditSave(file: IFile, index: number) {
+    if (file.filename.length !== 0 && file.filename.trim() !== '') {
       this.fileService.renameFile(file.id, file.filename).subscribe({
         next: () => {
           delete this.clonedFiles[file.id];
@@ -116,7 +116,8 @@ export class FileUploadComponent implements OnInit {
         error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to rename file' })
       })
     } else {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid file name' });
+      this.onRowEditCancel(file, index);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid file name: the file name cannot be empty!' });
     }
   }
 
