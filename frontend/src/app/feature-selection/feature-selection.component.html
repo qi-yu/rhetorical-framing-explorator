@@ -8,7 +8,7 @@
                 offLabel="CLEAR SELECTION"
                 onIcon="pi pi-check" 
                 offIcon="pi pi-times"
-                (click)="onToggleSelectAll()"
+                (onChange)="onToggleSelectAll()"
             ></p-toggleButton>
         </div>
 
@@ -17,7 +17,7 @@
                 <p-fieldset [legend]="dimension">
                     <div *ngFor="let feature of allFeatures">
                         <div *ngIf="feature.dimension === dimension" style="padding-bottom: 10px;">
-                            <p-checkbox name="group" [value]="feature" [label]="feature.name" [(ngModel)]="selectedFeatures"></p-checkbox>
+                            <p-checkbox name="group" [value]="feature" [label]="feature.name" [(ngModel)]="selectedFeatures" (onChange)="onSelectFeature()"></p-checkbox>
                         </div>
                     </div>
                 </p-fieldset> 
