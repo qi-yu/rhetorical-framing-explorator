@@ -134,5 +134,3 @@ def get_feature_list():
 
     return feature_list
 
-def get_input_root():
-    return "/Users/qiyu/PycharmProjects/Qi_LiAnS_noDU/data/output/newspapers/preprocessed"
