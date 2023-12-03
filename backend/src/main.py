@@ -114,7 +114,6 @@ def get_features():
 
         # Fetch all data and store in a list of dictionaries
         data = [{'id': row[0], 'name': row[1], 'dimension': row[2], 'annotation_script_name': row[3]} for row in cursor.fetchall()]
-        # data = cursor.fetchall()
 
         cursor.close()
         conn.close()
@@ -305,21 +304,6 @@ def annotate():
         
     except Exception as e:
         return jsonify({'error': str(e)})
-
-    # if selected_features[0]['name'] == 'Questions':
-    #     try:
-    #         preprocessing_script = os.path.join(PREPROCESSING_BASE_PATH, 'preprocessing_stanza.py')
-    #         annotation_script = os.path.join(ANNOTATION_BASE_PATH, 'sentence_type.py')
-
-    #         subprocess.run(['python', preprocessing_script])
-    #         subprocess.run(['python', annotation_script])
-            
-    #         return jsonify({'message': 'Script executed successfully'})
-        
-    #     except Exception as e:
-    #         return jsonify({'error': str(e)})
-
-    # return jsonify({'error': 'Invalid feature selection'})
 
 
 if __name__ == '__main__':

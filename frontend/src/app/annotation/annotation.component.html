@@ -1,5 +1,10 @@
-<div>
-    <h1>Annotate the following features:</h1>
-    <p *ngFor="let feature of selectedFeatures">{{ feature.name }}</p>
+<div class="not-full-width">
+    <p-card header="Annotate the Following Features:">
+        <div *ngFor="let feature of selectedFeatures" class="grid-container">
+            <p >{{ feature.name }}</p>
+            <p-progressBar [value]="0"></p-progressBar>
+        </div>
+    </p-card>
+    
     <p-button label="START ANNOTATION" icon="pi pi-forward" (onClick)="onStartAnnotation()"></p-button>
 </div>

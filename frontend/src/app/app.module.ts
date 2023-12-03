@@ -23,6 +23,7 @@ import { ToastModule } from 'primeng/toast';
 import { TableModule } from 'primeng/table';
 import { DividerModule } from 'primeng/divider';
 import { AnnotationComponent } from './annotation/annotation.component';
+import { ProgressBarModule } from 'primeng/progressbar';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { AnnotationComponent } from './annotation/annotation.component';
     MessagesModule,
     ToastModule,
     TableModule,
-    DividerModule
+    DividerModule,
+    ProgressBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]
