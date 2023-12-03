@@ -1,0 +1,5 @@
+<div>
+    <h1>Annotate the following features:</h1>
+    <p *ngFor="let feature of selectedFeatures">{{ feature.name }}</p>
+    <p-button label="START ANNOTATION" icon="pi pi-forward" (onClick)="onStartAnnotation()"></p-button>
+</div>

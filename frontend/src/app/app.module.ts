@@ -22,6 +22,7 @@ import { MessagesModule } from 'primeng/messages';
 import { ToastModule } from 'primeng/toast';
 import { TableModule } from 'primeng/table';
 import { DividerModule } from 'primeng/divider';
+import { AnnotationComponent } from './annotation/annotation.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { DividerModule } from 'primeng/divider';
     FileUploadComponent,
     StepsComponent,
     FeatureSelectionComponent,
-    FileSizePipe
+    FileSizePipe,
+    AnnotationComponent
   ],
   imports: [
     BrowserModule,

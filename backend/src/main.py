@@ -1,4 +1,4 @@
-import json, os, logging, shutil
+import json, os, logging, shutil, subprocess
 import psycopg2
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -151,7 +151,7 @@ def upload_file():
                 return jsonify({'error': 'No file selected'})
 
             filename = secure_filename(file.filename).split('.')[0]
-            file_path = os.path.join(UPLOAD_FOLDER, filename)
+            file_path = os.path.join(UPLOAD_FOLDER, secure_filename(file.filename))
             file.save(file_path)
 
             file_format = '.' + file.filename.split('.')[-1]
@@ -265,10 +265,10 @@ def rename_file(id):
         cursor = conn.cursor()
 
         select_query = '''
-        SELECT filename FROM uploaded_files WHERE id = %s
+        SELECT filename, format FROM uploaded_files WHERE id = %s
         '''
         cursor.execute(select_query, (id,))
-        old_filename = cursor.fetchone()[0]
+        old_filename, format = cursor.fetchone()
 
         # Rename the file at the database
         update_query = '''
@@ -282,12 +282,34 @@ def rename_file(id):
         conn.close()
 
         # Rename the file at the server's upload folder
-        os.rename(os.path.join(UPLOAD_FOLDER, old_filename), os.path.join(UPLOAD_FOLDER, new_filename))
+        os.rename(os.path.join(UPLOAD_FOLDER, old_filename + format), os.path.join(UPLOAD_FOLDER, new_filename + format))
 
         return jsonify({'message': 'File name updated successfully'})
 
     except Exception as e:
         return jsonify({'error': str(e)})
+    
+
+@app.route('/annotate', methods=['POST'])
+def annotate():
+    selected_features = request.json.get('selected_features')
+    logging.info('Start annotation...')
+    logging.info(selected_features)
+
+    if selected_features[0]['name'] == 'Question':
+        try:
+            preprocessing_script = './src/annotation/preprocessing/preprocessing_stanza.py'
+            annotation_script = './src/annotation/features/sentence_type.py' 
+
+            subprocess.run(['python', preprocessing_script])
+            # subprocess.run(['python', annotation_script])
+            
+            return jsonify({'message': 'Script executed successfully'})
+        
+        except Exception as e:
+            return jsonify({'error': str(e)})
+
+    return jsonify({'error': 'Invalid feature selection'})
 
 
 if __name__ == '__main__':

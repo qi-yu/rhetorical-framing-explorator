@@ -45,3 +45,4 @@ Thumbs.db
 
 # Uploaded files from frontend
 /backend/upload
+/backend/output

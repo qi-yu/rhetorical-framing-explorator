@@ -33,6 +33,8 @@ export class FeatureSelectionComponent implements OnInit {
       this.selectedFeatures = [];
       this.selectedDimensions = [];
     }
+
+    this.featureService.setSelectedFeatures(this.selectedFeatures);
   }
 
   onSelectFeature(event: any) {
@@ -59,11 +61,13 @@ export class FeatureSelectionComponent implements OnInit {
     }
 
     this.selectedDimensions = allDimensionsSelected;
+    this.featureService.setSelectedFeatures(this.selectedFeatures);
   }
 
   onSelectDimension(event: any) {
     this.selectedFeatures = this.allFeatures.filter((feature) => event.checked.includes(feature.dimension));
     this.selectedFeatures.length === 0 ? this.checked  = true : this.checked = false;
+    this.featureService.setSelectedFeatures(this.selectedFeatures);
   }
 
   ngOnInit(): void {
@@ -73,5 +77,7 @@ export class FeatureSelectionComponent implements OnInit {
         this.allDimensions = [...new Set(data.map((item) => item.dimension))]
       }
     })
+    
+    this.featureService.setSelectedFeatures(this.selectedFeatures);
   }
 }
