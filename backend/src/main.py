@@ -292,22 +292,34 @@ def rename_file(id):
 def annotate():
     selected_features = request.json.get('selected_features')
     logging.info('Start annotation...')
-    logging.info(selected_features)
 
-    if selected_features[0]['name'] == 'Questions':
-        try:
-            preprocessing_script = os.path.join(PREPROCESSING_BASE_PATH, 'preprocessing_stanza.py')
-            annotation_script = os.path.join(ANNOTATION_BASE_PATH, 'sentence_type.py')
+    try:
+        preprocessing_script = os.path.join(PREPROCESSING_BASE_PATH, 'preprocessing_stanza.py')
+        subprocess.run(['python', preprocessing_script])
 
-            subprocess.run(['python', preprocessing_script])
+        for feature in selected_features:
+            annotation_script = os.path.join(ANNOTATION_BASE_PATH, feature['annotation_script_name'])
             subprocess.run(['python', annotation_script])
             
-            return jsonify({'message': 'Script executed successfully'})
+        return jsonify({'message': 'Script executed successfully'})
         
-        except Exception as e:
-            return jsonify({'error': str(e)})
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
-    return jsonify({'error': 'Invalid feature selection'})
+    # if selected_features[0]['name'] == 'Questions':
+    #     try:
+    #         preprocessing_script = os.path.join(PREPROCESSING_BASE_PATH, 'preprocessing_stanza.py')
+    #         annotation_script = os.path.join(ANNOTATION_BASE_PATH, 'sentence_type.py')
+
+    #         subprocess.run(['python', preprocessing_script])
+    #         subprocess.run(['python', annotation_script])
+            
+    #         return jsonify({'message': 'Script executed successfully'})
+        
+    #     except Exception as e:
+    #         return jsonify({'error': str(e)})
+
+    # return jsonify({'error': 'Invalid feature selection'})
 
 
 if __name__ == '__main__':

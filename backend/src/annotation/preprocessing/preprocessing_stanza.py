@@ -1,7 +1,7 @@
 import os, stanza, logging, shutil
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
-# from src.annotation.utils.annotation_utils import parse_xml_tree
+from src.annotation.config import Config
 
 
 def prettify(elem):
@@ -22,8 +22,8 @@ logging.basicConfig(level=logging.INFO)
 nlp = stanza.Pipeline(lang="de")
 
 # ----- Define the paths of input and output files -----
-inputRoot = "./upload"
-outputRoot = "./output"
+inputRoot = Config.RAW_FILE_PATH
+outputRoot = Config.PREPROCESSED_FILE_PATH
 
 
 # -----Start processsing -----
