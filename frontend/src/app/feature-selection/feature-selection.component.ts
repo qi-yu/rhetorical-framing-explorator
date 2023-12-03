@@ -27,14 +27,14 @@ export class FeatureSelectionComponent implements OnInit {
           next: (data) => {
             this.selectedFeatures = data;
             this.selectedDimensions = [...new Set(data.map((item) => item.dimension))];
+            this.featureService.setSelectedFeatures(this.selectedFeatures);
           }
         })
     } else {
       this.selectedFeatures = [];
       this.selectedDimensions = [];
+      this.featureService.setSelectedFeatures(this.selectedFeatures);
     }
-
-    this.featureService.setSelectedFeatures(this.selectedFeatures);
   }
 
   onSelectFeature(event: any) {
