@@ -14,6 +14,8 @@ db_params = {
 }
 
 UPLOAD_FOLDER = 'upload'
+PREPROCESSING_BASE_PATH = './src/annotation/preprocessing/'    
+ANNOTATION_BASE_PATH = './src/annotation/features'
 
 logging.basicConfig(level=logging.INFO)
 
@@ -26,16 +28,23 @@ def create_feature_table():
     conn = psycopg2.connect(**db_params)
     cursor = conn.cursor()
 
+    drop_table_query = '''
+    DROP TABLE IF EXISTS rhetorical_framing_features
+    '''
+    cursor.execute(drop_table_query)
+    conn.commit()
+
     # Create the table if it doesn't exist
     create_table_query = '''
-    CREATE TABLE IF NOT EXISTS rhetorical_framing_features (
+    CREATE TABLE rhetorical_framing_features (
         id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         dimension TEXT NOT NULL,
-        CONSTRAINT unique_name_dimension PRIMARY KEY (name, dimension)
+        CONSTRAINT unique_name_dimension UNIQUE (name, dimension)
     )
     '''
     cursor.execute(create_table_query)
+    conn.commit()
 
     cursor.close()
     conn.close()
@@ -296,13 +305,13 @@ def annotate():
     logging.info('Start annotation...')
     logging.info(selected_features)
 
-    if selected_features[0]['name'] == 'Question':
+    if selected_features[0]['name'] == 'Questions':
         try:
-            preprocessing_script = './src/annotation/preprocessing/preprocessing_stanza.py'
-            annotation_script = './src/annotation/features/sentence_type.py' 
+            preprocessing_script = os.path.join(PREPROCESSING_BASE_PATH, 'preprocessing_stanza.py')
+            annotation_script = os.path.join(ANNOTATION_BASE_PATH, 'sentence_type.py')
 
             subprocess.run(['python', preprocessing_script])
-            # subprocess.run(['python', annotation_script])
+            subprocess.run(['python', annotation_script])
             
             return jsonify({'message': 'Script executed successfully'})
         

@@ -1,21 +1,11 @@
-#!/usr/bin/env python3
+import os, logging
+from utils import parse_xml_tree, get_input_root, get_sentence_as_lexeme_list, get_sentence_as_text
 
-# Author: Qi Yu
-# Date: 17.02.2022
+logging.basicConfig(level=logging.INFO)
 
-#####################################################################################
-#                         Project Information
-#
-# This is a dictionary- and rule-based annotation for interrogatives and exclamatives.
-#
-#####################################################################################
+inputRoot = "./output"
 
-import os, re
-from main.utilities.annotation_utils import parse_xml_tree, get_input_root, get_sentence_as_lexeme_list, get_sentence_as_text
-
-inputRoot = get_input_root()
-
-print("Annotating sentence type...")
+logging.info("Annotating sentence type...")
 for r, d, f in os.walk(inputRoot):
     for filename in f:
         if filename.endswith(".xml"):
@@ -33,4 +23,4 @@ for r, d, f in os.walk(inputRoot):
 
             tree.write(os.path.join(r, filename), encoding="utf-8")
 
-print("Done with annotating sentence type.")
+logging.info("Done with annotating sentence type.")

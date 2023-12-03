@@ -33,31 +33,32 @@ os.mkdir(outputRoot)
 logging.info("Making XML structures...")
 for r, d, f in os.walk(inputRoot):
     for filename in f:
-        tree = ET.parse(os.path.join(r, filename))
-        root = tree.getroot()
+        if filename.endswith('.xml'):
+            tree = ET.parse(os.path.join(r, filename))
+            root = tree.getroot()
 
-        for utr in root.iter('utterance'):
-            currentUtr = nlp(utr.text)
+            for utr in root.iter('utterance'):
+                currentUtr = nlp(utr.text)
 
-            for s in currentUtr.sentences:
-                sentenceLabel = ET.SubElement(utr, "sentence")
-                for w in s.words:
-                    lexemeLabel = ET.SubElement(sentenceLabel, "lexeme")
-                    lexemeLabel.text = w.text
-                    lexemeLabel.set("index", str(w.id))
-                    lexemeLabel.set("lemma", str(w.lemma))
-                    lexemeLabel.set("pos", str(w.xpos))
-                    lexemeLabel.set("feats", str(w.feats))
-                    lexemeLabel.set("governor", str(w.head))
-                    lexemeLabel.set("dependency_relation", str(w.deprel))
+                for s in currentUtr.sentences:
+                    sentenceLabel = ET.SubElement(utr, "sentence")
+                    for w in s.words:
+                        lexemeLabel = ET.SubElement(sentenceLabel, "lexeme")
+                        lexemeLabel.text = w.text
+                        lexemeLabel.set("index", str(w.id))
+                        lexemeLabel.set("lemma", str(w.lemma))
+                        lexemeLabel.set("pos", str(w.xpos))
+                        lexemeLabel.set("feats", str(w.feats))
+                        lexemeLabel.set("governor", str(w.head))
+                        lexemeLabel.set("dependency_relation", str(w.deprel))
 
-                    if w.parent.ner != "O":
-                        lexemeLabel.set("ner", w.parent.ner)
+                        if w.parent.ner != "O":
+                            lexemeLabel.set("ner", w.parent.ner)
 
-            utr.text = None
+                utr.text = None
 
-        output = prettify(root)
-        with open(os.path.join(outputRoot, filename.split('.')[0] + "_DUS.xml"), mode="w", encoding="utf-8") as outputfile:
-            outputfile.write(output)
+            output = prettify(root)
+            with open(os.path.join(outputRoot, filename.split('.')[0] + "_DUS.xml"), mode="w", encoding="utf-8") as outputfile:
+                outputfile.write(output)
 
 logging.info("Done with preprocessing.")
