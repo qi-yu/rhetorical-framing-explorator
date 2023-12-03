@@ -23,11 +23,8 @@ nlp = stanza.Pipeline(lang="de")
 
 # ----- Define the paths of input and output files -----
 inputRoot = "./upload"
-
 outputRoot = "./output"
-if os.path.exists(outputRoot):
-    shutil.rmtree(outputRoot)
-os.mkdir(outputRoot)
+
 
 # -----Start processsing -----
 logging.info("Making XML structures...")

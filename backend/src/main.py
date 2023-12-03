@@ -14,6 +14,7 @@ db_params = {
 }
 
 UPLOAD_FOLDER = 'upload'
+OUTPUT_FOLDER = 'output'
 PREPROCESSING_BASE_PATH = './src/annotation/preprocessing/'    
 ANNOTATION_BASE_PATH = './src/annotation/features'
 
@@ -40,38 +41,29 @@ def create_feature_table():
         id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         dimension TEXT NOT NULL,
+        annotation_script_name TEXT NOT NULL,
         CONSTRAINT unique_name_dimension UNIQUE (name, dimension)
     )
     '''
     cursor.execute(create_table_query)
     conn.commit()
 
+    # Insert data into the database
+    with open('../backend/assets/features.json', 'r') as json_file:
+            data = json.load(json_file)
+
+    for item in data:
+        insert_query = '''
+        INSERT INTO rhetorical_framing_features (name, dimension, annotation_script_name) VALUES (%s, %s, %s)
+        ON CONFLICT (name, dimension) DO NOTHING
+        '''
+        cursor.execute(insert_query, (item['name'], item['dimension'], item['annotation_script_name']))
+
+    conn.commit()
+
     cursor.close()
     conn.close()
     logging.info('Table rhetorical_framing_features is created.')
-
-
-def read_feature_from_database():
-    try:
-        conn = psycopg2.connect(**db_params)
-        cursor = conn.cursor()
-
-        # Retrieve data from the database
-        select_query = '''
-        SELECT name, dimension FROM rhetorical_framing_features
-        '''
-        cursor.execute(select_query)
-
-        # Fetch all data and store in a list of dictionaries
-        data = [{'name': row[0], 'dimension': row[1]} for row in cursor.fetchall()]
-
-        cursor.close()
-        conn.close()
-
-        return data
-
-    except Exception as e:
-        return jsonify({'error': str(e)})
 
 
 def create_uploaded_files_table():
@@ -109,28 +101,25 @@ def create_uploaded_files_table():
 
 
 @app.route('/')
-def read_json_and_insert_features():
+def get_features():
     try:
-        # Read data from the JSON file
-        with open('../backend/assets/features.json', 'r') as json_file:
-            data = json.load(json_file)
-
         conn = psycopg2.connect(**db_params)
         cursor = conn.cursor()
 
-        # Insert data into the database
-        for item in data:
-            insert_query = '''
-            INSERT INTO rhetorical_framing_features (name, dimension) VALUES (%s, %s)
-            ON CONFLICT (name, dimension) DO NOTHING
-            '''
-            cursor.execute(insert_query, (item['name'], item['dimension']))
+        # Retrieve data from the database
+        select_query = '''
+        SELECT * FROM rhetorical_framing_features
+        '''
+        cursor.execute(select_query)
 
-        conn.commit()
+        # Fetch all data and store in a list of dictionaries
+        data = [{'id': row[0], 'name': row[1], 'dimension': row[2], 'annotation_script_name': row[3]} for row in cursor.fetchall()]
+        # data = cursor.fetchall()
+
         cursor.close()
         conn.close()
 
-        return jsonify(read_feature_from_database())
+        return jsonify(data)
 
     except Exception as e:
         return jsonify({'error': str(e)})
@@ -324,6 +313,10 @@ def annotate():
 if __name__ == '__main__':
     if os.path.exists(UPLOAD_FOLDER):
         shutil.rmtree(UPLOAD_FOLDER)
+
+    if os.path.exists(OUTPUT_FOLDER):
+        shutil.rmtree(OUTPUT_FOLDER)
+    os.mkdir(OUTPUT_FOLDER)
 
     create_feature_table()
     create_uploaded_files_table()
