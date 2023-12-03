@@ -4,7 +4,8 @@
             <p >{{ feature.name }}</p>
             <p-progressBar [value]="0"></p-progressBar>
         </div>
-    </p-card>
-    
-    <p-button label="START ANNOTATION" icon="pi pi-forward" (onClick)="onStartAnnotation()"></p-button>
+        <div style="display: flex; justify-content: center; margin-top: 2rem;">
+            <p-button label="START ANNOTATION" icon="pi pi-forward" (onClick)="onStartAnnotation()"></p-button>
+        </div>
+    </p-card>  
 </div>
