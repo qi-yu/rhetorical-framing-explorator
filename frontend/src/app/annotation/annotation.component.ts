@@ -22,11 +22,12 @@ export class AnnotationComponent {
   onStartAnnotation() {
     this.featureService.executeAnnotation(this.selectedFeatures).subscribe({
       next: () => {
-        console.log('start annotation');
         this.startProgressPolling();
       },
       error: (err) => this.messageService.add({severity: 'error', summary: 'Error', detail: err})
     });
+
+    this.startProgressPolling();
   }
 
   startProgressPolling() {
@@ -36,7 +37,6 @@ export class AnnotationComponent {
         next: (data) => {
           this.progressValues = data; // Update progress values
           this.updateProgressBars();
-          console.log('this.progressValues:', this.progressValues)
         },
         error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: err })
       });
@@ -47,10 +47,7 @@ export class AnnotationComponent {
     this.preprocessingProgressValue = Number(this.progressValues['preprocessing']);
 
     this.selectedFeatures.forEach((feature, index) => {
-      setTimeout(() => {
-        feature.progress = Number(this.progressValues[feature.annotation_script_name.split('.')[0]]);
-        console.log(feature, feature.progress);
-      }, index * 1000);
+      feature.progress = Number(this.progressValues[feature.annotation_script_name.split('.')[0]]);
     });
   }
 

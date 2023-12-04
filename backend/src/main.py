@@ -319,7 +319,6 @@ def get_progress():
             
             progress[feature_name] = feature_progress
         
-        logging.info(progress)
         return jsonify(progress)
     
     except Exception as e:

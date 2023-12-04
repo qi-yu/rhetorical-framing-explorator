@@ -32,13 +32,13 @@ step_count = 0
 # stanza.download("de")
 
 nlp = stanza.Pipeline(lang="de")
+
 step_count += 1
 progress = step_count / total_steps * 100
 update_progress(progress)
 
 logging.info("Making XML structures...")
 for r, d, f in os.walk(inputRoot):
-
     for filename in f:
         if filename.endswith('.xml'):
             tree, root = parse_xml_tree(os.path.join(r, filename))
