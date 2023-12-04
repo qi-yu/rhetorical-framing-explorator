@@ -1,6 +1,6 @@
 import os, re, logging
 from src.annotation.config import Config
-from utils import parse_xml_tree, get_sentence_as_lexeme_list, get_sentence_as_text, update_progress
+from src.annotation.utils import parse_xml_tree, get_sentence_as_lexeme_list, get_sentence_as_text, update_progress
 
 logging.basicConfig(level=logging.INFO)
 

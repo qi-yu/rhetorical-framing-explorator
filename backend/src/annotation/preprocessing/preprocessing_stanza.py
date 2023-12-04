@@ -2,6 +2,7 @@ import os, stanza, logging, shutil
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from src.annotation.config import Config
+from src.annotation.utils import parse_xml_tree
 from format_conversion import df_to_xml
 
 def prettify(elem):
@@ -33,8 +34,7 @@ logging.info("Making XML structures...")
 for r, d, f in os.walk(inputRoot):
     for filename in f:
         if filename.endswith('.xml'):
-            tree = ET.parse(os.path.join(r, filename))
-            root = tree.getroot()
+            tree, root = parse_xml_tree(os.path.join(r, filename))
 
             for utr in root.iter('utterance'):
                 currentUtr = nlp(utr.text)
