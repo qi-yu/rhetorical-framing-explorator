@@ -1,10 +1,10 @@
-# Author of the script: Marina Janka-Ramm
-# The implementation by Janka-Ramm is based on the architecture designed by Qi Yu
-# Adapted by: Qi Yu, Date of adaption: 12.12.2022
+# Declaration of authorship:
+# The first version of this script was implemented by Marina Janka-Ramm based on the architecture designed by Qi Yu
+# The original script was adapted by Qi Yu on 12.12.2022
 
 import os, logging
-from src.annotation.config import Config
-from backend.src.annotation.utils import parse_xml_tree, get_sentence_as_lexeme_list, get_sentence_as_text
+from src.config import Config
+from src.annotation.utils import parse_xml_tree, get_sentence_as_lexeme_list, get_sentence_as_text
 
 logging.basicConfig(level=logging.INFO)
 

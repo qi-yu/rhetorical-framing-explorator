@@ -13,6 +13,7 @@ import { interval, Subscription } from 'rxjs';
 export class AnnotationComponent {
 
   selectedFeatures: IFeature[] = [];
+  preprocessingProgressValue: number = 0;
   progressValues: { [key: string]: number } = {}; 
   progressSubscription: Subscription | undefined;
 
@@ -43,6 +44,8 @@ export class AnnotationComponent {
   }
 
   updateProgressBars() {
+    this.preprocessingProgressValue = Number(this.progressValues['preprocessing']);
+
     this.selectedFeatures.forEach((feature, index) => {
       setTimeout(() => {
         feature.progress = Number(this.progressValues[feature.annotation_script_name.split('.')[0]]);

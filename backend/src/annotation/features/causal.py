@@ -1,16 +1,17 @@
 import os, re, logging
-from src.annotation.config import Config
+from src.config import Config
 from src.annotation.utils import parse_xml_tree, get_sentence_as_lexeme_list, get_sentence_as_text, update_progress
 
 logging.basicConfig(level=logging.INFO)
 
 inputRoot = Config.PREPROCESSED_FILE_PATH
 
-total_files = len([filename for r, d, f in os.walk(inputRoot) for filename in f if filename.endswith(".xml")])
-processed_files = 0
 
 logging.info("Annotating causal connectors...")
 for r, d, f in os.walk(inputRoot):
+    total_files = len([filename for filename in f if filename.endswith(".xml")])
+    processed_files = 0
+
     for filename in f:
         if filename.endswith(".xml"):
             tree, root = parse_xml_tree(os.path.join(r, filename))

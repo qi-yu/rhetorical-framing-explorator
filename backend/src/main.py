@@ -3,7 +3,7 @@ import psycopg2
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
-from src.annotation.config import Config
+from src.config import Config
 
 # PostgreSQL connection parameters
 db_params = {
@@ -14,10 +14,10 @@ db_params = {
     'port': '5432'
 }
 
-UPLOAD_FOLDER = 'upload'
-OUTPUT_FOLDER = 'output'
-PREPROCESSING_BASE_PATH = './src/annotation/preprocessing/'    
-ANNOTATION_BASE_PATH = './src/annotation/features'
+UPLOAD_FOLDER = Config.RAW_FILE_PATH
+OUTPUT_FOLDER = Config.PREPROCESSED_FILE_PATH
+PREPROCESSING_BASE_PATH = Config.PREPROCESSING_SCRIPTS_BASE_PATH
+ANNOTATION_BASE_PATH = Config.ANNOTATION_SCRIPTS_BASE_PATH
 
 logging.basicConfig(level=logging.INFO)
 
@@ -295,7 +295,7 @@ def annotate():
 
     try:
         preprocessing_script = os.path.join(PREPROCESSING_BASE_PATH, 'preprocessing_stanza.py')
-        subprocess.run(['python', preprocessing_script])
+        subprocess.run(['python', preprocessing_script, 'preprocessing'])
 
         for feature in selected_features:
             annotation_script = os.path.join(ANNOTATION_BASE_PATH, feature['annotation_script_name'])

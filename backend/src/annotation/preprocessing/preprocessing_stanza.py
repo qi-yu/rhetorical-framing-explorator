@@ -1,8 +1,8 @@
 import os, stanza, logging, shutil
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
-from src.annotation.config import Config
-from src.annotation.utils import parse_xml_tree
+from src.config import Config
+from src.annotation.utils import parse_xml_tree, update_progress
 from format_conversion import df_to_xml
 
 def prettify(elem):
@@ -32,6 +32,9 @@ nlp = stanza.Pipeline(lang="de")
 
 logging.info("Making XML structures...")
 for r, d, f in os.walk(inputRoot):
+    total_files = len([filename for filename in f if filename.endswith(".xml")])
+    processed_files = 0
+
     for filename in f:
         if filename.endswith('.xml'):
             tree, root = parse_xml_tree(os.path.join(r, filename))
@@ -59,5 +62,10 @@ for r, d, f in os.walk(inputRoot):
             output = prettify(root)
             with open(os.path.join(outputRoot, filename.split('.')[0] + "_DUS.xml"), mode="w", encoding="utf-8") as outputfile:
                 outputfile.write(output)
+
+            processed_files += 1
+            progress = processed_files / total_files * 100
+            logging.info(progress)
+            update_progress(progress)
 
 logging.info("Done with preprocessing.")

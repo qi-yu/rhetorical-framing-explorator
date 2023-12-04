@@ -1,5 +1,5 @@
 import os, re, csv, shutil, sys
-from src.annotation.config import Config
+from src.config import Config
 import xml.etree.ElementTree as ET
 
 
