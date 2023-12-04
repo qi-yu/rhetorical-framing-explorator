@@ -2,7 +2,7 @@ import os, stanza, logging, shutil
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from src.annotation.config import Config
-
+from format_conversion import df_to_xml
 
 def prettify(elem):
     """Return a pretty-printed XML string for the Element.
@@ -16,17 +16,19 @@ def prettify(elem):
 
 logging.basicConfig(level=logging.INFO)
 
+inputRoot = Config.RAW_FILE_PATH
+outputRoot = Config.PREPROCESSED_FILE_PATH
+
+
+# ----- File format conversion -----
+df_to_xml(inputRoot)
+
+# -----Start processsing -----
 # Please uncomment this line to install the German model when running this programm for the first time.
 # stanza.download("de")
 
 nlp = stanza.Pipeline(lang="de")
 
-# ----- Define the paths of input and output files -----
-inputRoot = Config.RAW_FILE_PATH
-outputRoot = Config.PREPROCESSED_FILE_PATH
-
-
-# -----Start processsing -----
 logging.info("Making XML structures...")
 for r, d, f in os.walk(inputRoot):
     for filename in f:

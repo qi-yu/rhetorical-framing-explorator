@@ -46,10 +46,6 @@ export class AnnotationComponent {
     this.selectedFeatures.forEach((feature) => {
       feature.progress = Number(this.progressValues[feature.annotation_script_name.split('.')[0]]); 
       console.log(feature, feature.progress)
-      // if (this.progressValues[feature.name]) {
-      //   feature.progress = Number(this.progressValues[feature.name]); 
-      //   // console.log(feature, feature.progress)
-      // }
     });
   }
 

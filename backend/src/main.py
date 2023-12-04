@@ -313,7 +313,6 @@ def get_progress():
     progress = {}
 
     try:
-        # Assuming each feature has its own progress file in the progress folder
         for feature_file in os.listdir(progress_folder):
             feature_name = os.path.splitext(feature_file)[0]
             feature_progress_file = os.path.join(progress_folder, feature_file)
@@ -328,15 +327,6 @@ def get_progress():
     except Exception as e:
         return jsonify({'error': str(e)})
     
-    # progress_file = os.path.join(Config.PROGRESS_PATH, 'progress.txt')
-
-    # try:
-    #     with open(progress_file, 'r') as file:
-    #         progress = float(file.read())
-    #     return jsonify({'progress': progress})
-    # except FileNotFoundError:
-    #     return jsonify({'error': 'Progress file not found'})
-
 
 if __name__ == '__main__':
     if os.path.exists(UPLOAD_FOLDER):
