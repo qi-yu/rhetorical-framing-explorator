@@ -1,4 +1,4 @@
-import os, re, csv, shutil
+import os, re, csv, shutil, sys
 from src.annotation.config import Config
 import xml.etree.ElementTree as ET
 
@@ -126,7 +126,7 @@ def update_progress(progress):
     if not os.path.exists(Config.PROGRESS_PATH):
         os.mkdir(Config.PROGRESS_PATH)
         
-    progress_file = os.path.join(Config.PROGRESS_PATH, 'progress.txt') 
+    progress_file = os.path.join(Config.PROGRESS_PATH, sys.argv[1].split('.')[0] + '.txt') 
     with open(progress_file, 'w') as file:
         file.write(str(progress))
 

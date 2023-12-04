@@ -35,7 +35,7 @@ export class AnnotationComponent {
         next: (data) => {
           this.progressValues = data; // Update progress values
           this.updateProgressBars();
-          console.log(this.progressValues)
+          console.log('this.progressValues:', this.progressValues)
         },
         error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: err })
       });
@@ -44,10 +44,11 @@ export class AnnotationComponent {
 
   updateProgressBars() {
     this.selectedFeatures.forEach((feature) => {
-      feature.progress = Number(this.progressValues['progress']); 
+      feature.progress = Number(this.progressValues[feature.annotation_script_name.split('.')[0]]); 
       console.log(feature, feature.progress)
       // if (this.progressValues[feature.name]) {
       //   feature.progress = Number(this.progressValues[feature.name]); 
+      //   // console.log(feature, feature.progress)
       // }
     });
   }

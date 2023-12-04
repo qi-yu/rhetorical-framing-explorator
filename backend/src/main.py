@@ -299,7 +299,7 @@ def annotate():
 
         for feature in selected_features:
             annotation_script = os.path.join(ANNOTATION_BASE_PATH, feature['annotation_script_name'])
-            subprocess.run(['python', annotation_script])
+            subprocess.run(['python', annotation_script, feature['annotation_script_name']])
             
         return jsonify({'message': 'Script executed successfully'})
         
@@ -309,14 +309,33 @@ def annotate():
 
 @app.route('/progress', methods=['GET'])
 def get_progress():
-    progress_file = os.path.join(Config.PROGRESS_PATH, 'progress.txt')
+    progress_folder = os.path.join(Config.PROGRESS_PATH)
+    progress = {}
 
     try:
-        with open(progress_file, 'r') as file:
-            progress = float(file.read())
-        return jsonify({'progress': progress})
-    except FileNotFoundError:
-        return jsonify({'error': 'Progress file not found'})
+        # Assuming each feature has its own progress file in the progress folder
+        for feature_file in os.listdir(progress_folder):
+            feature_name = os.path.splitext(feature_file)[0]
+            feature_progress_file = os.path.join(progress_folder, feature_file)
+
+            with open(feature_progress_file, 'r') as file:
+                feature_progress = float(file.read())
+            
+            progress[feature_name] = feature_progress
+        
+        return jsonify(progress)
+    
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    
+    # progress_file = os.path.join(Config.PROGRESS_PATH, 'progress.txt')
+
+    # try:
+    #     with open(progress_file, 'r') as file:
+    #         progress = float(file.read())
+    #     return jsonify({'progress': progress})
+    # except FileNotFoundError:
+    #     return jsonify({'error': 'Progress file not found'})
 
 
 if __name__ == '__main__':
