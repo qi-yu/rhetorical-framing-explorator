@@ -119,16 +119,21 @@ def get_wordlist_from_txt(source):
     return keywordList
 
 
-def update_progress(progress):
+def update_progress(step_counter, total_step_amount):
     """
     Method for progress tracking.
     """
+    step_counter += 1
+    progress = step_counter / total_step_amount * 100
+
     if not os.path.exists(Config.PROGRESS_PATH):
         os.mkdir(Config.PROGRESS_PATH)
         
     progress_file = os.path.join(Config.PROGRESS_PATH, sys.argv[1].split('.')[0] + '.txt') 
     with open(progress_file, 'w') as file:
-        file.write(str(progress))
+        file.write(str(round(progress, 1)))
+
+    return step_counter
 
 
 def get_feature_list():

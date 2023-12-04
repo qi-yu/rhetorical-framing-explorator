@@ -9,8 +9,8 @@ inputRoot = Config.PREPROCESSED_FILE_PATH
 
 logging.info("Annotating sentence type...")
 for r, d, f in os.walk(inputRoot):
-    total_files = len([filename for filename in f if filename.endswith(".xml")])
-    processed_files = 0
+    total_steps = len([filename for filename in f if filename.endswith(".xml")])
+    step_count = 0
 
     for filename in f:
         if filename.endswith(".xml"):
@@ -27,9 +27,6 @@ for r, d, f in os.walk(inputRoot):
                         lexeme.set("exclamation", "y")
 
             tree.write(os.path.join(r, filename), encoding="utf-8")
-
-            processed_files += 1
-            progress = processed_files / total_files * 100
-            update_progress(progress)
+            step_count = update_progress(step_count, total_steps)
 
 logging.info("Done with annotating sentence type.")
