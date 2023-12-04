@@ -8,7 +8,7 @@ inputRoot = Config.PREPROCESSED_FILE_PATH
 
 hedges_list = get_wordlist_from_txt("./src/annotation/wordlists/hedges.txt")
 
-print("Annotating hedges...")
+logging.info("Annotating hedges...")
 for r, d, f in os.walk(inputRoot):
     for filename in f:
         if filename.endswith(".xml"):
@@ -125,4 +125,4 @@ for r, d, f in os.walk(inputRoot):
 
             tree.write(os.path.join(r, filename), encoding="utf-8")
 
-print("Done with annotating hedges.")
+logging.info("Done with annotating hedges.")
