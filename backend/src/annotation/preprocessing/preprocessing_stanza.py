@@ -25,15 +25,19 @@ outputRoot = Config.PREPROCESSED_FILE_PATH
 df_to_xml(inputRoot)
 
 # -----Start processsing -----
+total_steps = len([filename for r, d, f in os.walk(inputRoot) for filename in f if filename.endswith(".xml")]) + 1 # +1: count the step for loading stanza
+step_count = 0
+
 # Please uncomment this line to install the German model when running this programm for the first time.
 # stanza.download("de")
 
 nlp = stanza.Pipeline(lang="de")
+step_count += 1
+progress = step_count / total_steps * 100
+update_progress(progress)
 
 logging.info("Making XML structures...")
 for r, d, f in os.walk(inputRoot):
-    total_files = len([filename for filename in f if filename.endswith(".xml")])
-    processed_files = 0
 
     for filename in f:
         if filename.endswith('.xml'):
@@ -63,9 +67,8 @@ for r, d, f in os.walk(inputRoot):
             with open(os.path.join(outputRoot, filename.split('.')[0] + "_DUS.xml"), mode="w", encoding="utf-8") as outputfile:
                 outputfile.write(output)
 
-            processed_files += 1
-            progress = processed_files / total_files * 100
-            logging.info(progress)
+            step_count += 1
+            progress = step_count / total_steps * 100
             update_progress(progress)
 
 logging.info("Done with preprocessing.")

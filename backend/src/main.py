@@ -16,6 +16,7 @@ db_params = {
 
 UPLOAD_FOLDER = Config.RAW_FILE_PATH
 OUTPUT_FOLDER = Config.PREPROCESSED_FILE_PATH
+PROGRESS_FOLDER = Config.PROGRESS_PATH
 PREPROCESSING_BASE_PATH = Config.PREPROCESSING_SCRIPTS_BASE_PATH
 ANNOTATION_BASE_PATH = Config.ANNOTATION_SCRIPTS_BASE_PATH
 
@@ -137,10 +138,6 @@ def upload_file():
 
         if not files:
             return jsonify({'error': 'No selected files'})
-
-        # Create the 'upload' folder if it doesn't exist
-        if not os.path.exists(UPLOAD_FOLDER):
-            os.makedirs(UPLOAD_FOLDER)
 
         uploaded_files_info = []
 
@@ -322,6 +319,7 @@ def get_progress():
             
             progress[feature_name] = feature_progress
         
+        logging.info(progress)
         return jsonify(progress)
     
     except Exception as e:
@@ -329,12 +327,10 @@ def get_progress():
     
 
 if __name__ == '__main__':
-    if os.path.exists(UPLOAD_FOLDER):
-        shutil.rmtree(UPLOAD_FOLDER)
-
-    if os.path.exists(OUTPUT_FOLDER):
-        shutil.rmtree(OUTPUT_FOLDER)
-    os.mkdir(OUTPUT_FOLDER)
+    for folder in [UPLOAD_FOLDER, OUTPUT_FOLDER, PROGRESS_FOLDER]:
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
+        os.mkdir(folder)
 
     create_feature_table()
     create_uploaded_files_table()
