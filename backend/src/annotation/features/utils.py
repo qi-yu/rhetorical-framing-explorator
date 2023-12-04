@@ -1,4 +1,5 @@
 import os, re, csv, shutil
+from src.annotation.config import Config
 import xml.etree.ElementTree as ET
 
 
@@ -116,6 +117,19 @@ def get_wordlist_from_txt(source):
             if line.startswith("#") is False:
                 keywordList.append(line.strip())
     return keywordList
+
+
+def update_progress(progress):
+    """
+    Method for progress tracking.
+    """
+    if not os.path.exists(Config.PROGRESS_PATH):
+        os.mkdir(Config.PROGRESS_PATH)
+        
+    progress_file = os.path.join(Config.PROGRESS_PATH, 'progress.txt') 
+    with open(progress_file, 'w') as file:
+        file.write(str(progress))
+
 
 def get_feature_list():
     feature_list = [#"negation",

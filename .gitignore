@@ -43,6 +43,7 @@ __pycache__
 .DS_Store
 Thumbs.db
 
-# Uploaded files from frontend
+# Temporary files from frontend
 /backend/upload
 /backend/output
+/backend/progress

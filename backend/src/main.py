@@ -3,6 +3,7 @@ import psycopg2
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
+from src.annotation.config import Config
 
 # PostgreSQL connection parameters
 db_params = {
@@ -304,6 +305,18 @@ def annotate():
         
     except Exception as e:
         return jsonify({'error': str(e)})
+    
+
+@app.route('/progress', methods=['GET'])
+def get_progress():
+    progress_file = os.path.join(Config.PROGRESS_PATH, 'progress.txt')
+
+    try:
+        with open(progress_file, 'r') as file:
+            progress = float(file.read())
+        return jsonify({'progress': progress})
+    except FileNotFoundError:
+        return jsonify({'error': 'Progress file not found'})
 
 
 if __name__ == '__main__':

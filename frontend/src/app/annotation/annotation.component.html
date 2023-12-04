@@ -2,7 +2,7 @@
     <p-card header="Annotate the Following Features:">
         <div *ngFor="let feature of selectedFeatures" class="grid-container">
             <p >{{ feature.name }}</p>
-            <p-progressBar [value]="0"></p-progressBar>
+            <p-progressBar [value]="feature.progress"></p-progressBar>
         </div>
         <div style="display: flex; justify-content: center; margin-top: 2rem;">
             <p-button label="START ANNOTATION" icon="pi pi-forward" (onClick)="onStartAnnotation()"></p-button>

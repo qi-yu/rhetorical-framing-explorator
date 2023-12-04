@@ -31,6 +31,11 @@ export class FeatureService {
             .pipe(catchError(this.errorHandler))
   }
 
+  getProgress(): Observable<any> {
+    return this.http.get(`${API_URL}/progress`)
+            .pipe(catchError(this.errorHandler));
+  }
+
   errorHandler(error: HttpErrorResponse) {
     return throwError(() => (error.message || 'Server Error'));
   }
