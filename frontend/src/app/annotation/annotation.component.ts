@@ -43,9 +43,11 @@ export class AnnotationComponent {
   }
 
   updateProgressBars() {
-    this.selectedFeatures.forEach((feature) => {
-      feature.progress = Number(this.progressValues[feature.annotation_script_name.split('.')[0]]); 
-      console.log(feature, feature.progress)
+    this.selectedFeatures.forEach((feature, index) => {
+      setTimeout(() => {
+        feature.progress = Number(this.progressValues[feature.annotation_script_name.split('.')[0]]);
+        console.log(feature, feature.progress);
+      }, index * 1000);
     });
   }
 
