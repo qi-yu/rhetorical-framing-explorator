@@ -1,31 +1,20 @@
-import os, stanza, logging, shutil
+import os, stanza, logging
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from src.config import Config
-from src.annotation.utils import parse_xml_tree, update_progress
-from format_conversion import df_to_xml
+from src.annotation.utils import parse_xml_tree, update_progress, df_to_xml, prettify
 
-def prettify(elem):
-    """Return a pretty-printed XML string for the Element.
-
-    Args:
-        elem: The XML element to be prettified.
-    """
-    rough_string = ET.tostring(elem, 'utf-8')
-    reparsed = minidom.parseString(rough_string)
-    return reparsed.toprettyxml(indent="\t")
 
 logging.basicConfig(level=logging.INFO)
 
 inputRoot = Config.RAW_FILE_PATH
 outputRoot = Config.PREPROCESSED_FILE_PATH
 
-total_steps = len([filename for r, d, f in os.walk(inputRoot) for filename in f if filename.endswith(".xml")]) + 2 # +2: count the step for converting file format and loading stanza
 step_count = 0
 
-
 # ----- File format conversion -----
-df_to_xml(inputRoot)
+df_to_xml(inputRoot, inputRoot)
+total_steps = len([filename for r, d, f in os.walk(inputRoot) for filename in f if filename.endswith(".xml")]) + 2 # +2: count the step for converting file format and loading stanza
 step_count = update_progress(step_count, total_steps)
 
 # -----Start processsing -----
@@ -66,6 +55,5 @@ for r, d, f in os.walk(inputRoot):
                 outputfile.write(output)
 
             step_count = update_progress(step_count, total_steps)
-            logging.info(step_count)
 
 logging.info("Done with preprocessing.")

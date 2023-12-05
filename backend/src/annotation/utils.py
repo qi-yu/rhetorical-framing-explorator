@@ -1,6 +1,35 @@
-import os, re, csv, shutil, sys
-from src.config import Config
+import os, re, sys
+import pandas as pd
 import xml.etree.ElementTree as ET
+from xml.dom import minidom
+from src.config import Config
+
+
+def df_to_xml(filepath, outputRoot):
+    """
+    Convert raw pandas dataframes to XML.
+    """
+
+    for r, d, f in os.walk(filepath):
+        for filename in f:
+            if filename.endswith(".csv") or filename.endswith(".tsv"):
+                separator = ""
+                if filename.endswith('.tsv'):
+                    separator = "\t"
+                if filename.endswith('.csv'):
+                    separator = ","
+
+                df = pd.read_csv(os.path.join(r, filename), sep=separator, encoding="utf-8")
+
+                for idx, row in df.iterrows():
+                    section = ET.Element("section")
+                    topic = ET.SubElement(section, "topic")
+                    utterance = ET.SubElement(topic, "utterance")
+                    utterance.text = row["text"]
+
+                    currentFileName = row["id"]
+
+                    ET.ElementTree(section).write(os.path.join(outputRoot, currentFileName), encoding="utf-8", xml_declaration=True)
 
 
 def parse_xml_tree(filepath):
@@ -17,6 +46,18 @@ def parse_xml_tree(filepath):
     mytree = ET.parse(filepath)
     myroot = mytree.getroot()
     return mytree, myroot
+
+
+def prettify(elem):
+    """Return a pretty-printed XML string for the Element.
+
+    Args:
+        elem: The XML element to be prettified.
+    """
+    rough_string = ET.tostring(elem, 'utf-8')
+    reparsed = minidom.parseString(rough_string)
+    return reparsed.toprettyxml(indent="\t")
+
 
 def get_sentence_as_lexeme_list(sentence):
     """Get sentence as a list of lexemes.
