@@ -3,4 +3,4 @@ class Config:
     PREPROCESSED_FILE_PATH = "./output"
     PROGRESS_PATH = "./progress"
     PREPROCESSING_SCRIPT_PATH = './src/annotation/preprocessing.py'
-    ANNOTATION_SCRIPT_PATH = './src/annotation/execute.py'
+    ANNOTATION_SCRIPT_PATH = './src/annotation/annotating.py'
