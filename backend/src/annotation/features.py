@@ -1,7 +1,37 @@
 import re
-from src.annotation.utils import get_wordlist_from_txt, annotate_finite_particle_verbs
+from src.annotation.utils import get_wordlist_from_txt
 
 class Annotation:
+
+    def finite_particle_verbs(self, lexemeList, cueList, label):
+        stemIndex = None
+        stemListIndex = None
+        particleGov = None
+        particleListIndex = None
+
+        for idx, lexeme in enumerate(lexemeList):
+            if lexeme.get("pos") == "VVFIN":
+                stemIndex = lexeme.get("index")
+                stemListIndex = idx
+
+            if re.fullmatch("(PTKVZ|ADV)", lexeme.get("pos")):
+                particleGov = lexeme.get("governor")
+                particleListIndex = idx
+
+            if stemIndex and particleGov and particleGov == stemIndex:
+                particleLexeme = lexemeList[particleListIndex]
+                particleLemma = particleLexeme.get("lemma")
+                stemLexeme = lexemeList[stemListIndex]
+                stemLemma = stemLexeme.get("lemma")
+
+                stemOptionList = stemLemma.split("|")
+                for stem in stemOptionList:
+                    currentPV = particleLemma + stem
+                    if currentPV in cueList:
+                        stemLexeme.set(label, currentPV)
+                        particleLexeme.set(label + "_PTKVZ", currentPV)
+
+                    
     def questions(self, lexemeList):
         for lexeme in lexemeList:
             if lexeme.text == "?":
@@ -389,7 +419,7 @@ class Annotation:
                 lexeme.set("factive_verb", lexeme.get("lemma"))
 
         # ----- 2. Deal with particle verbs -----
-        annotate_finite_particle_verbs(lexemeList, factive_list, "factive_verb")
+        self.finite_particle_verbs(lexemeList, factive_list, "factive_verb")
 
 
     def hedges(self, lexemeList):
@@ -585,7 +615,7 @@ class Annotation:
 
 
     def adverbs_for_iteration_or_continuation(self, lexemeList):
-        iter_cont_list = get_wordlist_from_txt("./src/annotation/wordlists/iteratives_and_continuation.txt")
+        iter_cont_list = get_wordlist_from_txt("./src/annotation/wordlists/adverbs_for_iteration_or_continuation.txt")
         
         for idx, lexeme in enumerate(lexemeList):
             # ----- 1. Items that do not need disambiguation -----

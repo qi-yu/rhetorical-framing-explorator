@@ -159,40 +159,6 @@ def get_wordlist_from_txt(source):
     return keywordList
 
 
-def annotate_finite_particle_verbs(lexemeList, cueList, label):
-    """
-    Annotating finite particle verbs. 
-    They need to be handled specially, as their particle parts are separated from the verb stemms.
-    """
-    stemIndex = None
-    stemListIndex = None
-    particleGov = None
-    particleListIndex = None
-
-    for idx, lexeme in enumerate(lexemeList):
-        # ----- 1. Deal with particle verbs -----
-        if lexeme.get("pos") == "VVFIN":
-            stemIndex = lexeme.get("index")
-            stemListIndex = idx
-
-        if re.fullmatch("(PTKVZ|ADV)", lexeme.get("pos")):
-            particleGov = lexeme.get("governor")
-            particleListIndex = idx
-
-        if stemIndex and particleGov and particleGov == stemIndex:
-            particleLexeme = lexemeList[particleListIndex]
-            particleLemma = particleLexeme.get("lemma")
-            stemLexeme = lexemeList[stemListIndex]
-            stemLemma = stemLexeme.get("lemma")
-
-            stemOptionList = stemLemma.split("|")
-            for stem in stemOptionList:
-                currentPV = particleLemma + stem
-                if currentPV in cueList:
-                    stemLexeme.set(label, currentPV)
-                    particleLexeme.set(label + "_PTKVZ", currentPV)
-
-
 def update_progress(step_counter, total_step_amount, save_path):
     """
     Updating annotation progress.
