@@ -14,16 +14,10 @@ db_params = {
     'port': '5432'
 }
 
-UPLOAD_FOLDER = Config.RAW_FILE_PATH
-OUTPUT_FOLDER = Config.PREPROCESSED_FILE_PATH
-PROGRESS_FOLDER = Config.PROGRESS_PATH
-PREPROCESSING_SCRIPT_PATH = Config.PREPROCESSING_SCRIPT_PATH
-ANNOTATION_SCRIPT_PATH = Config.ANNOTATION_SCRIPT_PATH
-
-logging.basicConfig(level=logging.INFO)
-
 app = Flask(__name__)
 CORS(app)
+
+logging.basicConfig(level=logging.INFO)
 
 
 def create_feature_table():
@@ -51,8 +45,8 @@ def create_feature_table():
     conn.commit()
 
     # Insert data into the database
-    with open('../backend/assets/features.json', 'r') as json_file:
-            data = json.load(json_file)
+    with open(Config.FEATURE_CONFIG_PATH, 'r') as json_file:
+        data = json.load(json_file)
 
     for item in data:
         insert_query = '''
@@ -146,7 +140,7 @@ def upload_file():
                 return jsonify({'error': 'No file selected'})
 
             filename = secure_filename(file.filename).split('.')[0]
-            file_path = os.path.join(UPLOAD_FOLDER, secure_filename(file.filename))
+            file_path = os.path.join(Config.RAW_FILE_PATH, secure_filename(file.filename))
             file.save(file_path)
 
             file_format = '.' + file.filename.split('.')[-1]
@@ -226,7 +220,7 @@ def delete_file(filename):
             return jsonify({'error': 'File not found'})
 
         filename = result[0]
-        file_path = os.path.join(UPLOAD_FOLDER, filename)
+        file_path = os.path.join(Config.RAW_FILE_PATH, filename)
 
         # Delete the file from the server's upload folder
         if os.path.exists(file_path):
@@ -277,7 +271,7 @@ def rename_file(id):
         conn.close()
 
         # Rename the file at the server's upload folder
-        os.rename(os.path.join(UPLOAD_FOLDER, old_filename + format), os.path.join(UPLOAD_FOLDER, new_filename + format))
+        os.rename(os.path.join(Config.RAW_FILE_PATH, old_filename + format), os.path.join(Config.RAW_FILE_PATH, new_filename + format))
 
         return jsonify({'message': 'File name updated successfully'})
 
@@ -291,10 +285,10 @@ def annotate():
     logging.info('Start annotation...')
 
     try:
-        subprocess.run(['python', PREPROCESSING_SCRIPT_PATH, 'preprocessing'])
+        subprocess.run(['python', Config.PREPROCESSING_SCRIPT_PATH, 'preprocessing'])
 
         for feature in selected_features:
-            subprocess.run(['python', ANNOTATION_SCRIPT_PATH, feature['annotation_method']])
+            subprocess.run(['python', Config.ANNOTATION_SCRIPT_PATH, feature['annotation_method']])
             
         return jsonify({'message': 'Script executed successfully'})
         
@@ -324,7 +318,7 @@ def get_progress():
     
 
 if __name__ == '__main__':
-    for folder in [UPLOAD_FOLDER, OUTPUT_FOLDER, PROGRESS_FOLDER]:
+    for folder in [Config.RAW_FILE_PATH, Config.PREPROCESSED_FILE_PATH, Config.PROGRESS_PATH]:
         if os.path.exists(folder):
             shutil.rmtree(folder)
         os.mkdir(folder)
