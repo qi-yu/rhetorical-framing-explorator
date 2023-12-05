@@ -16,8 +16,8 @@ export class FileService {
             .pipe(catchError(this.errorHandler))
   }
 
-  deleteFile(fileName: string): Observable<void> {
-    const deleteUrl = `${API_URL}/delete/${fileName}`;
+  deleteFile(fileId: number): Observable<void> {
+    const deleteUrl = `${API_URL}/delete/${fileId}`;
     return this.http.delete<void>(deleteUrl);
   }
 

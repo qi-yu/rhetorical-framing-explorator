@@ -62,9 +62,9 @@ export class FileUploadComponent implements OnInit {
     const filesToDelete = [...this.filesSelectedForAnalyses];
   
     for (const file of filesToDelete) {
-      this.fileService.deleteFile(file.filename).subscribe({
+      this.fileService.deleteFile(file.id).subscribe({
         next: () => {
-          const indexInUploadedFiles = this.uploadedFiles.findIndex((uploadedFile) => uploadedFile.filename === file.filename);
+          const indexInUploadedFiles = this.uploadedFiles.findIndex((uploadedFile) => uploadedFile.id === file.id);
           if (indexInUploadedFiles !== -1) {
             this.uploadedFiles.splice(indexInUploadedFiles, 1);
           }

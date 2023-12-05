@@ -204,23 +204,24 @@ def get_uploaded_files():
         return jsonify({'error': str(e)})
 
 
-@app.route('/delete/<filename>', methods=['DELETE'])
-def delete_file(filename):
+@app.route('/delete/<id>', methods=['DELETE'])
+def delete_file(id):
     try:
         conn = psycopg2.connect(**db_params)
         cursor = conn.cursor()
 
         select_query = '''
-        SELECT filename FROM uploaded_files WHERE filename = %s
+        SELECT * FROM uploaded_files WHERE id = %s
         '''
-        cursor.execute(select_query, (filename,))
+        cursor.execute(select_query, (id,))
         result = cursor.fetchone()
 
         if not result:
             return jsonify({'error': 'File not found'})
 
-        filename = result[0]
-        file_path = os.path.join(Config.RAW_FILE_PATH, filename)
+        filename = result[1]
+        file_format = result[2]
+        file_path = os.path.join(Config.RAW_FILE_PATH, filename + file_format)
 
         # Delete the file from the server's upload folder
         if os.path.exists(file_path):
@@ -232,9 +233,9 @@ def delete_file(filename):
 
         # Delete the file from the database
         delete_query = '''
-        DELETE FROM uploaded_files WHERE filename = %s
+        DELETE FROM uploaded_files WHERE id = %s
         '''
-        cursor.execute(delete_query, (filename,))
+        cursor.execute(delete_query, (id,))
         conn.commit()
         cursor.close()
         conn.close()
