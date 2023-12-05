@@ -18,7 +18,7 @@ UPLOAD_FOLDER = Config.RAW_FILE_PATH
 OUTPUT_FOLDER = Config.PREPROCESSED_FILE_PATH
 PROGRESS_FOLDER = Config.PROGRESS_PATH
 PREPROCESSING_BASE_PATH = Config.PREPROCESSING_SCRIPTS_BASE_PATH
-ANNOTATION_BASE_PATH = Config.ANNOTATION_SCRIPTS_BASE_PATH
+ANNOTATION_SCRIPTS_PATH = Config.ANNOTATION_SCRIPTS_PATH
 
 logging.basicConfig(level=logging.INFO)
 
@@ -43,7 +43,7 @@ def create_feature_table():
         id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         dimension TEXT NOT NULL,
-        annotation_script_name TEXT NOT NULL,
+        annotation_method TEXT NOT NULL,
         CONSTRAINT unique_name_dimension UNIQUE (name, dimension)
     )
     '''
@@ -56,10 +56,10 @@ def create_feature_table():
 
     for item in data:
         insert_query = '''
-        INSERT INTO rhetorical_framing_features (name, dimension, annotation_script_name) VALUES (%s, %s, %s)
+        INSERT INTO rhetorical_framing_features (name, dimension, annotation_method) VALUES (%s, %s, %s)
         ON CONFLICT (name, dimension) DO NOTHING
         '''
-        cursor.execute(insert_query, (item['name'], item['dimension'], item['annotation_script_name']))
+        cursor.execute(insert_query, (item['name'], item['dimension'], item['annotation_method']))
 
     conn.commit()
 
@@ -115,7 +115,7 @@ def get_features():
         cursor.execute(select_query)
 
         # Fetch all data and store in a list of dictionaries
-        data = [{'id': row[0], 'name': row[1], 'dimension': row[2], 'annotation_script_name': row[3]} for row in cursor.fetchall()]
+        data = [{'id': row[0], 'name': row[1], 'dimension': row[2], 'annotation_method': row[3]} for row in cursor.fetchall()]
 
         cursor.close()
         conn.close()
@@ -295,8 +295,7 @@ def annotate():
         subprocess.run(['python', preprocessing_script, 'preprocessing'])
 
         for feature in selected_features:
-            annotation_script = os.path.join(ANNOTATION_BASE_PATH, feature['annotation_script_name'])
-            subprocess.run(['python', annotation_script, feature['annotation_script_name']])
+            subprocess.run(['python', ANNOTATION_SCRIPTS_PATH, feature['annotation_method']])
             
         return jsonify({'message': 'Script executed successfully'})
         

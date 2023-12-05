@@ -2,71 +2,71 @@
     {
         "name": "Boosters",
         "dimension": "Language Affectiveness",
-        "annotation_script_name": "boosters.py"
+        "annotation_method": "boosters"
     },
     {
         "name": "Hedges",
         "dimension": "Language Affectiveness",
-        "annotation_script_name": "hedges.py"
+        "annotation_method": "hedges"
     },
     {
         "name": "Adverbs for Iteration/Continuation",
         "dimension": "Non-Propositional Content",
-        "annotation_script_name": "presupposition_triggers.py"
+        "annotation_method": "adverbs_for_iteration_or_continuation"
     },
     {
         "name": "Scalar Particles",
         "dimension": "Non-Propositional Content",
-        "annotation_script_name": "presupposition_triggers.py"
+        "annotation_method": "scalar_particles"
     },
     {
         "name": "Factive Verbs",
         "dimension": "Non-Propositional Content",
-        "annotation_script_name": "factive_verbs.py"
+        "annotation_method": "factive_verbs"
     },
     {
         "name": "Modal Particles for Common Ground",
         "dimension": "Non-Propositional Content",
-        "annotation_script_name": "modal_particles.py"
+        "annotation_method": "modal_particles_for_common_ground"
     },
     {
         "name": "Modal Particles for Resigned Acceptance",
         "dimension": "Non-Propositional Content",
-        "annotation_script_name": "modal_particles.py"
+        "annotation_method": "modal_particles_for_resigned_acceptance"
     },
     {
         "name": "Modal Particles for Weakened Commitment",
         "dimension": "Non-Propositional Content",
-        "annotation_script_name": "modal_particles.py"
+        "annotation_method": "modal_particles_for_weakened_commitment"
     },
     {
         "name": "Questions",
         "dimension": "Sentence Type",
-        "annotation_script_name": "sentence_type.py"
+        "annotation_method": "questions"
     },
     {
         "name": "Exclamations",
         "dimension": "Sentence Type",
-        "annotation_script_name": "sentence_type.py"
+        "annotation_method": "exclamations"
     },
     {
         "name": "Causal Discourse Relation",
         "dimension": "Discourse Relation",
-        "annotation_script_name": "causal.py"
+        "annotation_method": "causal"
     },
     {
         "name": "Conditional Discourse Relation",
         "dimension": "Discourse Relation",
-        "annotation_script_name": "conditional.py"
+        "annotation_method": "conditional"
     },
     {
         "name": "Concessive Discourse Relation",
         "dimension": "Discourse Relation",
-        "annotation_script_name": "concessive.py"
+        "annotation_method": "concessive"
     },
     {
         "name": "Adversative Discourse Relation",
         "dimension": "Discourse Relation",
-        "annotation_script_name": "adversative.py"
+        "annotation_method": "adversative"
     }
 ]

@@ -47,7 +47,7 @@ export class AnnotationComponent {
     this.preprocessingProgressValue = Number(this.progressValues['preprocessing']);
 
     this.selectedFeatures.forEach((feature, index) => {
-      feature.progress = Number(this.progressValues[feature.annotation_script_name.split('.')[0]]);
+      feature.progress = Number(this.progressValues[feature.annotation_method]);
     });
   }
 
