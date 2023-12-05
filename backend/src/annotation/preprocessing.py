@@ -1,4 +1,4 @@
-import os, stanza, logging
+import os, spacy, logging, subprocess
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from src.config import Config
@@ -19,35 +19,37 @@ total_steps = len([filename for r, d, f in os.walk(inputRoot) for filename in f 
 step_count = update_progress(step_count, total_steps, progressOutputRoot)
 
 # -----Start processsing -----
-# Please uncomment this line to install the German model when running this programm for the first time.
-# stanza.download("de")
+package_name = "de_core_news_sm"
+if not spacy.util.is_package(package_name):
+    command = f"python -m spacy download {package_name}"
+    subprocess.run(command, shell=True)
 
-nlp = stanza.Pipeline(lang="de")
+nlp = spacy.load("de_core_news_sm")
 step_count = update_progress(step_count, total_steps, progressOutputRoot)
 
 logging.info("Making XML structures...")
 for r, d, f in os.walk(inputRoot):
     for filename in f:
-        if filename.endswith('.xml'):
+        if filename.endswith(".xml"):
             tree, root = parse_xml_tree(os.path.join(r, filename))
 
             for utr in root.iter('utterance'):
                 currentUtr = nlp(utr.text)
 
-                for s in currentUtr.sentences:
+                for s in currentUtr.sents:
                     sentenceLabel = ET.SubElement(utr, "sentence")
-                    for w in s.words:
+                    for w in s:
                         lexemeLabel = ET.SubElement(sentenceLabel, "lexeme")
                         lexemeLabel.text = w.text
-                        lexemeLabel.set("index", str(w.id))
-                        lexemeLabel.set("lemma", str(w.lemma))
-                        lexemeLabel.set("pos", str(w.xpos))
-                        lexemeLabel.set("feats", str(w.feats))
-                        lexemeLabel.set("governor", str(w.head))
-                        lexemeLabel.set("dependency_relation", str(w.deprel))
+                        lexemeLabel.set("index", str(w.i))
+                        lexemeLabel.set("lemma", w.lemma_)
+                        lexemeLabel.set("pos", w.tag_)
+                        lexemeLabel.set("feats", w.morph)
+                        lexemeLabel.set("governor", str(w.head.i))
+                        lexemeLabel.set("dependency_relation", w.dep_)
 
-                        if w.parent.ner != "O":
-                            lexemeLabel.set("ner", w.parent.ner)
+                        if w.ent_type_ != "":
+                            lexemeLabel.set("ner", w.ent_type_)
 
                 utr.text = None
 

@@ -1,6 +1,8 @@
-import re, os
+import re, os, logging
 from src.annotation.utils import get_wordlist_from_txt
 from src.config import Config
+
+logging.basicConfig(level=logging.INFO)
 
 class Annotation:
     wordlist_base_path = Config.WORD_LIST_BASE_PATH
@@ -34,12 +36,11 @@ class Annotation:
                 stemLexeme = lexemeList[stemListIndex]
                 stemLemma = stemLexeme.get("lemma")
 
-                stemOptionList = stemLemma.split("|")
-                for stem in stemOptionList:
-                    currentPV = particleLemma + stem
-                    if currentPV in cueList:
-                        stemLexeme.set(label, currentPV)
-                        particleLexeme.set(label + "_PTKVZ", currentPV)
+
+                currentPV = particleLemma + stemLemma
+                if currentPV in cueList:
+                    stemLexeme.set(label, currentPV)
+                    particleLexeme.set(label + "_PTKVZ", currentPV)
 
                     
     def questions(self, lexemeList):
@@ -76,7 +77,7 @@ class Annotation:
                 lexeme.set("causal", "weil")
 
             # ----- 2. da -----
-            if currentLemma == "da" and currentPos == "KOUS" and lexeme.get("dependency_relation") == "mark":
+            if currentLemma == "da" and currentPos == "KOUS":
                 lexeme.set("causal", "da")
 
                 # Exclude "da" that are not at the beginning of a sentence or a part-sentence:
@@ -247,16 +248,14 @@ class Annotation:
                     lexeme.set("adversative", "andererseits")
 
             ## 2.5 zum einen 
-            if re.fullmatch("[Zz]u", lexeme.text) and index < len(lexemeList)-2 and re.fullmatch("dem", lexemeList[index+1].text) and re.fullmatch("einen", lexemeList[index+2].text):
+            if re.fullmatch("[Zz]um", lexeme.text) and index < len(lexemeList)-1 and lexemeList[index+1].text == "einen":
                 lexeme.set("adversative", "zum_einen")
-                lexemeList[index+1].set("adversative_2", "dem")
-                lexemeList[index+2].set("adversative_3", "einen")
+                lexemeList[index+1].set("adversative_2", "einen")
 
             ## 2.6 zum anderen 
-            if re.fullmatch("[Zz]u", lexeme.text) and index < len(lexemeList)-2 and re.fullmatch("dem", lexemeList[index+1].text) and re.fullmatch("anderen", lexemeList[index+2].text):
-                lexeme.set("adversative_4", "zu")
-                lexemeList[index + 1].set("adversative_5", "dem")
-                lexemeList[index + 2].set("adversative_6", "anderen")
+            if re.fullmatch("[Zz]um", lexeme.text) and index < len(lexemeList)-1 and lexemeList[index+1].text == "anderen":
+                lexeme.set("adversative_3", "zum")
+                lexemeList[index + 1].set("adversative_4", "anderen")
 
             ## 2.7 statt 
             if currentLemma == "statt" and currentPos != "PTKVZ":
@@ -386,9 +385,11 @@ class Annotation:
                 lexeme.set("concessive", "zwar")
 
             ## 2.5 unbeschadet dessen 
-            if currentLemma == "unbeschadet" and index < len(lexemeList)-1 and lexemeList[index+1].text == "dessen":
-                lexeme.set("concessive", "unbeschadet_dessen")
-                lexemeList[index+1].set("concessive_2", "dessen")
+            if currentLemma == "unbeschadet" and lexemeList[index+1].get("feats").startswith("Case=Gen"):
+                lexeme.set("concessive", "unbeschadet")
+            
+                if lexemeList[index+1].text == "dessen":
+                    lexemeList[index+1].set("concessive_2", "dessen")
 
 
     def conditional(self, lexemeList):
@@ -444,58 +445,61 @@ class Annotation:
                 lexeme.set("hedge", currentLemma)
 
             # ----- 2. N-grams: -----
-            ## 2.1 im Prinzip, im Wesentlichen, in der Regel:
-            if idx < len(lexemeList) - 2 and lexeme.get("lemma") == "in" and lexemeList[idx + 1].get("lemma") == "der" and lexemeList[idx + 2].text in ["Prinzip", "Wesentlichen", "Regel"]:
-                lexeme.set("hedge", "in_der_" + lexemeList[idx + 2].text)
-                lexemeList[idx+1].set("hedge_2", "der")
-                lexemeList[idx+2].set("hedge_3", lexemeList[idx + 2].get("lemma"))
+            ## 2.1 im Prinzip, im Wesentlichen,
+            if idx < len(lexemeList) - 1 and lexeme.get("lemma") == "in" and lexemeList[idx + 1].text in ["Prinzip", "Wesentlichen"]:
+                lexeme.set("hedge", "im_" + lexemeList[idx + 1].text)
+                lexemeList[idx+1].set("hedge_2", lexemeList[idx + 1].text)
 
-            ## 2.2 in gewissem Maße:
+            ## 2.2 in der Regel:
+            if idx < len(lexemeList) - 2 and lexeme.get("lemma") == "in" and lexemeList[idx + 1].get("lemma") == "der" and lexemeList[idx + 2].get("lemma") == "Regel":
+                lexeme.set("hedge", "in_der_Regel")
+                lexemeList[idx + 1].set("hedge_2", "der")
+                lexemeList[idx + 2].set("hedge_3", "Regel")
+
+            ## 2.3 in gewissem Maße:
             if idx < len(lexemeList) - 2 and lexeme.get("lemma") == "in" and lexemeList[idx + 1].text == "gewissem" and lexemeList[idx + 2].text == "Maße":
-                lexeme.set("hedge", "in_gewissem_Maße" + lexemeList[idx + 2].text)
+                lexeme.set("hedge", "in_gewissem_Maße")
                 lexemeList[idx + 1].set("hedge_2", "gewissem")
                 lexemeList[idx + 2].set("hedge_3", "Maße")
 
-            ## 2.3 im Grunde genommen:
-            if idx < len(lexemeList) - 3 and lexeme.get("lemma") == "in" and lexemeList[idx + 1].get("lemma") == "der" and lexemeList[idx + 2].text == "Grunde" and lexemeList[idx + 3].text == "genommen":
-                lexeme.set("hedge", "im_Grunde_genommen" + lexemeList[idx + 2].text)
-                lexemeList[idx + 1].set("hedge_2", "der")
-                lexemeList[idx + 2].set("hedge_3", "Grunde")
-                lexemeList[idx + 3].set("hedge_4", "genommen")
+            ## 2.4 im Grunde genommen:
+            if idx < len(lexemeList) - 2 and lexeme.get("lemma") == "in" and lexemeList[idx + 1].text == "Grunde" and lexemeList[idx + 2].text == "genommen":
+                lexeme.set("hedge", "im_Grunde_genommen")
+                lexemeList[idx + 1].set("hedge_2", "Grunde")
+                lexemeList[idx + 2].set("hedge_3", "genommen")
 
-            # ## 2.4 in den meisten Fällen
+            # ## 2.5 in den meisten Fällen
             # if idx <= len(lexemeList)-4 and lexeme.text == "in" and lexemeList[idx+1].text == "den" and lexemeList[idx+2].text == "meisten" and lexemeList[idx+3].text == "Fällen":
             #     lexeme.set("hedge", "in_den_meisten_Faellen")
             #     lexemeList[idx+1].set("hedge_2", "den")
             #     lexemeList[idx+2].set("hedge_3", "meisten")
             #     lexemeList[idx+3].set("hedge_4", "Faellen")
 
-            ## 2.5 zu großen Teilen
+            ## 2.6 zu großen Teilen
             # if idx <= len(lexemeList)-3 and lexeme.text == "zu" and lexemeList[idx+1].text == "großen" and lexemeList[idx+2].text == "Teilen":
             #     lexeme.set("hedge", "zu_grossen_Teilen")
             #     lexemeList[idx + 1].set("hedge_2", "grossen")
             #     lexemeList[idx + 2].set("hedge_3", "Teilen")
 
-            # 2.6 Pi mal Daumen
+            ## 2.7 Pi mal Daumen
             if idx <= len(lexemeList)-3 and lexeme.text == "Pi" and lexemeList[idx+1].text == "mal" and lexemeList[idx+2].text == "Daumen":
                 lexeme.set("hedge", "Pi_mal_Daumen")
                 lexemeList[idx + 1].set("hedge_2", "mal")
                 lexemeList[idx + 2].set("hedge_3", "Daumen")
 
-            ## 2.7 im Großen und Ganzen
-            if idx < len(lexemeList) - 4 and lexeme.get("lemma") == "in" and lexemeList[idx + 1].get("lemma") == "der" and lexemeList[idx + 2].text == "Großen" and lexemeList[idx + 3].text == "und" and lexemeList[idx + 4].text == "Ganzen":
+            ## 2.8 im Großen und Ganzen
+            if idx < len(lexemeList) - 3 and lexeme.get("lemma") == "in" and lexemeList[idx + 1].text == "Großen" and lexemeList[idx + 2].text == "und" and lexemeList[idx + 3].text == "Ganzen":
                 lexeme.set("hedge", "im_Großen_und_Ganzen")
-                lexemeList[idx + 1].set("hedge_2", "der")
-                lexemeList[idx + 2].set("hedge_3", "Großen")
-                lexemeList[idx + 3].set("hedge_4", "und")
-                lexemeList[idx + 4].set("hedge_4", "Ganzen")
+                lexemeList[idx + 1].set("hedge_2", "Großen")
+                lexemeList[idx + 2].set("hedge_3", "und")
+                lexemeList[idx + 3].set("hedge_4", "Ganzen")
 
-            ## 2.8 streng genommen
+            ## 2.9 streng genommen
             if idx < len(lexemeList) - 1 and lexeme.get("lemma") == "streng" and lexemeList[idx + 1].text == "genommen":
                 lexeme.set("hedge", "streng_genommen")
                 lexemeList[idx+1].set("hedge_2", "genommen")
 
-            ## 2.9 unter bestimmten Umständen
+            ## 2.10 unter bestimmten Umständen
             # if idx <= len(lexemeList)-3 and lexeme.get("lemma") == "unter" and lexemeList[idx+1].text == "bestimmten" and lexemeList[idx+2].text == "Umständen":
             #     lexeme.set("hedge", "unter_bestimmten_Umstaenden")
             #     lexemeList[idx + 1].set("hedge_2", "bestimmten")
@@ -633,15 +637,10 @@ class Annotation:
                 lexeme.set("adv_iter_cont", lexeme.get("lemma"))
 
             # ----- 2. N-grams -----
-            # 2.1 immer mehr
-            if idx < len(lexemeList)-1 and lexeme.get("lemma") == "immer" and lexemeList[idx+1].get("lemma") == "mehr":
-                lexeme.set("adv_iter_cont", "immer_mehr")
-                lexemeList[idx+1].set("adv_iter_cont_2", "mehr")
-
-            # 2.2 immer noch
-            if idx < len(lexemeList)-1 and lexeme.get("lemma") == "immer" and lexemeList[idx+1].get("lemma") == "noch":
-                lexeme.set("adv_iter_cont", "immer_noch")
-                lexemeList[idx+1].set("adv_iter_cont_2", "noch")
+            # 2.1 immer mehr / immer noch
+            if idx < len(lexemeList)-1 and lexeme.get("lemma") == "immer" and lexemeList[idx+1].get("lemma") in ["mehr", "noch"]:
+                lexeme.set("adv_iter_cont", "immer_" + lexemeList[idx+1].get("lemma"))
+                lexemeList[idx+1].set("adv_iter_cont_2", lexemeList[idx+1].get("lemma"))
 
 
     def scalar_particles(self, lexemeList):
@@ -655,7 +654,7 @@ class Annotation:
             # ----- 2. N-grams -----
             ## 2.1 nicht einmal / nicht mal
             if idx < len(lexemeList)-1 and lexeme.get("lemma") == "nicht" and lexemeList[idx+1].get("lemma") in ["einmal", "mal"]:
-                lexeme.set("scalar_particle", "nicht_einmal")
+                lexeme.set("scalar_particle", "nicht_" + lexemeList[idx+1].get("lemma"))
                 lexemeList[idx+1].set("scalar_particle_2", lexemeList[idx+1].get("lemma"))
 
             ## 2.2 geschweige denn
