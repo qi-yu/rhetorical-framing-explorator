@@ -1,8 +1,18 @@
-import re
+import re, os
 from src.annotation.utils import get_wordlist_from_txt
+from src.config import Config
 
 class Annotation:
+    wordlist_base_path = Config.WORD_LIST_BASE_PATH
+    word_lists = {}
 
+    def __init__(self):
+        for filename in os.listdir(self.wordlist_base_path):
+            feature = filename.split(".")[0]
+            wordlist = get_wordlist_from_txt(os.path.join(self.wordlist_base_path, filename))
+            self.word_lists[feature] = wordlist
+    
+    
     def finite_particle_verbs(self, lexemeList, cueList, label):
         stemIndex = None
         stemListIndex = None
@@ -272,7 +282,7 @@ class Annotation:
 
 
     def boosters(self, lexemeList):
-        booster_list = get_wordlist_from_txt("./src/annotation/wordlists/boosters.txt")
+        booster_list = self.word_lists[self.boosters.__name__]
 
         for idx, lexeme in enumerate(lexemeList):
             currentLemma = lexeme.get("lemma")
@@ -411,7 +421,7 @@ class Annotation:
 
 
     def factive_verbs(self, lexemeList):
-        factive_list = get_wordlist_from_txt("./src/annotation/wordlists/factive_verbs.txt")
+        factive_list = self.word_lists[self.factive_verbs.__name__]
 
         # ----- 1. Items that do not need disambiguation -----
         for lexeme in lexemeList:
@@ -423,7 +433,7 @@ class Annotation:
 
 
     def hedges(self, lexemeList):
-        hedges_list = get_wordlist_from_txt("./src/annotation/wordlists/hedges.txt")
+        hedges_list = self.word_lists[self.hedges.__name__]
 
         for idx, lexeme in enumerate(lexemeList):
             currentLemma = lexeme.get("lemma")
@@ -615,7 +625,7 @@ class Annotation:
 
 
     def adverbs_for_iteration_or_continuation(self, lexemeList):
-        iter_cont_list = get_wordlist_from_txt("./src/annotation/wordlists/adverbs_for_iteration_or_continuation.txt")
+        iter_cont_list = self.word_lists[self.adverbs_for_iteration_or_continuation.__name__]
         
         for idx, lexeme in enumerate(lexemeList):
             # ----- 1. Items that do not need disambiguation -----
@@ -635,7 +645,7 @@ class Annotation:
 
 
     def scalar_particles(self, lexemeList):
-        scalar_particle_list = get_wordlist_from_txt("./src/annotation/wordlists/scalar_particles.txt")
+        scalar_particle_list = self.word_lists[self.scalar_particles.__name__]
 
         for idx, lexeme in enumerate(lexemeList):
             # ----- 1. Items that do not need disambiguation -----
