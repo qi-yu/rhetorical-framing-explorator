@@ -6,6 +6,7 @@ from src.annotation.utils import parse_xml_tree, get_sentence_as_lexeme_list, up
 
 logging.basicConfig(level=logging.INFO)
 inputRoot = Config.PREPROCESSED_FILE_PATH
+progressOutputRoot = Config.PROGRESS_PATH
 
 method_name = sys.argv[1].split(".")[0]
 anotation = Annotation()
@@ -29,6 +30,6 @@ for r, d, f in os.walk(inputRoot):
                     logging.info(f"Method '{method_name}' does not exist or is not callable.")
 
             tree.write(os.path.join(r, filename), encoding="utf-8")
-            step_count = update_progress(step_count, total_steps)
+            step_count = update_progress(step_count, total_steps, progressOutputRoot)
 
 logging.info("Done with annotating " + method_name + ".")

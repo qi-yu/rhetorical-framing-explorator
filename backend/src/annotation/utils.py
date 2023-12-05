@@ -2,7 +2,6 @@ import os, re, sys
 import pandas as pd
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
-from src.config import Config
 
 
 def df_to_xml(filepath, outputRoot):
@@ -194,19 +193,16 @@ def annotate_finite_particle_verbs(lexemeList, cueList, label):
                     particleLexeme.set(label + "_PTKVZ", currentPV)
 
 
-def update_progress(step_counter, total_step_amount):
+def update_progress(step_counter, total_step_amount, save_path):
     """
     Updating annotation progress.
     """
     step_counter += 1
     progress = step_counter / total_step_amount * 100
-
-    if not os.path.exists(Config.PROGRESS_PATH):
-        os.mkdir(Config.PROGRESS_PATH)
         
-    progress_file = os.path.join(Config.PROGRESS_PATH, sys.argv[1].split('.')[0] + '.txt') 
+    progress_file = os.path.join(save_path, sys.argv[1].split('.')[0] + '.txt') 
     with open(progress_file, 'w') as file:
-        file.write(str(round(progress, 1)))
+        file.write(str(round(progress)))
 
     return step_counter
 
