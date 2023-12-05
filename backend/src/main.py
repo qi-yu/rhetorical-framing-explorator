@@ -17,8 +17,8 @@ db_params = {
 UPLOAD_FOLDER = Config.RAW_FILE_PATH
 OUTPUT_FOLDER = Config.PREPROCESSED_FILE_PATH
 PROGRESS_FOLDER = Config.PROGRESS_PATH
-PREPROCESSING_BASE_PATH = Config.PREPROCESSING_SCRIPTS_BASE_PATH
-ANNOTATION_SCRIPTS_PATH = Config.ANNOTATION_SCRIPTS_PATH
+PREPROCESSING_SCRIPT_PATH = Config.PREPROCESSING_SCRIPT_PATH
+ANNOTATION_SCRIPT_PATH = Config.ANNOTATION_SCRIPT_PATH
 
 logging.basicConfig(level=logging.INFO)
 
@@ -291,11 +291,10 @@ def annotate():
     logging.info('Start annotation...')
 
     try:
-        preprocessing_script = os.path.join(PREPROCESSING_BASE_PATH, 'preprocessing_stanza.py')
-        subprocess.run(['python', preprocessing_script, 'preprocessing'])
+        subprocess.run(['python', PREPROCESSING_SCRIPT_PATH, 'preprocessing'])
 
         for feature in selected_features:
-            subprocess.run(['python', ANNOTATION_SCRIPTS_PATH, feature['annotation_method']])
+            subprocess.run(['python', ANNOTATION_SCRIPT_PATH, feature['annotation_method']])
             
         return jsonify({'message': 'Script executed successfully'})
         
