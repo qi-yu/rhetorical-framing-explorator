@@ -4,26 +4,16 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
 
-def unzip(filepath, outputpath): 
-    zip_file_paths = []
-
+def convert_to_xml(filepath, outputpath):
+    """
+    Convert .zip, .csv and .tsv files to XML.
+    """
     for r, d, f in os.walk(filepath):
         for filename in f:
             if filename.endswith(".zip"):
-                zip_file_paths.append(os.path.join(r, filename))
+                 with zipfile.ZipFile(os.path.join(r, filename), 'r') as zip_ref:
+                     zip_ref.extractall(outputpath)
 
-    for path in zip_file_paths:
-        with zipfile.ZipFile(path, 'r') as zip_ref:
-            zip_ref.extractall(outputpath)
-            os.remove(path)
-
-
-def df_to_xml(filepath, outputpath):
-    """
-    Convert raw pandas dataframes to XML.
-    """
-    for r, d, f in os.walk(filepath):
-        for filename in f:
             if (filename.endswith(".csv") or filename.endswith(".tsv")) and filename.startswith(".") is False:
                 separator = ""
                 if filename.endswith('.tsv'):

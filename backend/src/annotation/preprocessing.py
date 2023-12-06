@@ -1,7 +1,7 @@
 import os, spacy, logging, subprocess
 import xml.etree.ElementTree as ET
 from src.config import Config
-from src.annotation.utils import parse_xml_tree, update_progress, df_to_xml, prettify, unzip
+from src.annotation.utils import parse_xml_tree, update_progress, convert_to_xml, prettify
 
 
 logging.basicConfig(level=logging.INFO)
@@ -13,8 +13,7 @@ progressOutputRoot = Config.PROGRESS_PATH
 step_count = 0
 
 # ----- File format conversion -----
-unzip(inputRoot, inputRoot)
-df_to_xml(inputRoot, inputRoot)
+convert_to_xml(inputRoot, inputRoot)
 total_steps = len([filename for r, d, f in os.walk(inputRoot) for filename in f if filename.endswith(".xml") and filename.startswith(".") is False]) + 2 # +2: count the step for converting file format and loading stanza
 step_count = update_progress(step_count, total_steps, progressOutputRoot)
 
