@@ -1,8 +1,7 @@
 import os, spacy, logging, subprocess
 import xml.etree.ElementTree as ET
-from xml.dom import minidom
 from src.config import Config
-from src.annotation.utils import parse_xml_tree, update_progress, df_to_xml, prettify
+from src.annotation.utils import parse_xml_tree, update_progress, df_to_xml, prettify, unzip
 
 
 logging.basicConfig(level=logging.INFO)
@@ -14,8 +13,9 @@ progressOutputRoot = Config.PROGRESS_PATH
 step_count = 0
 
 # ----- File format conversion -----
+unzip(inputRoot, inputRoot)
 df_to_xml(inputRoot, inputRoot)
-total_steps = len([filename for r, d, f in os.walk(inputRoot) for filename in f if filename.endswith(".xml")]) + 2 # +2: count the step for converting file format and loading stanza
+total_steps = len([filename for r, d, f in os.walk(inputRoot) for filename in f if filename.endswith(".xml") and filename.startswith(".") is False]) + 2 # +2: count the step for converting file format and loading stanza
 step_count = update_progress(step_count, total_steps, progressOutputRoot)
 
 # -----Start processsing -----
@@ -30,7 +30,7 @@ step_count = update_progress(step_count, total_steps, progressOutputRoot)
 logging.info("Making XML structures...")
 for r, d, f in os.walk(inputRoot):
     for filename in f:
-        if filename.endswith(".xml"):
+        if filename.endswith(".xml") and filename.startswith(".") is False:
             tree, root = parse_xml_tree(os.path.join(r, filename))
 
             for utr in root.iter('utterance'):

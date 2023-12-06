@@ -5,8 +5,7 @@
             name="myfile" 
             [url]="url+'/upload'" 
             [multiple]="true" 
-            accept=".xml, .csv, .tsv" 
-            [maxFileSize]="1000000"
+            accept=".xml, .csv, .tsv, .zip" 
             [auto]="true"
             (onUpload)="onUploadFiles($event)"
         >

@@ -1,17 +1,30 @@
-import os, re, sys
+import os, sys, zipfile
 import pandas as pd
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
 
-def df_to_xml(filepath, outputRoot):
-    """
-    Convert raw pandas dataframes to XML.
-    """
+def unzip(filepath, outputpath): 
+    zip_file_paths = []
 
     for r, d, f in os.walk(filepath):
         for filename in f:
-            if filename.endswith(".csv") or filename.endswith(".tsv"):
+            if filename.endswith(".zip"):
+                zip_file_paths.append(os.path.join(r, filename))
+
+    for path in zip_file_paths:
+        with zipfile.ZipFile(path, 'r') as zip_ref:
+            zip_ref.extractall(outputpath)
+            os.remove(path)
+
+
+def df_to_xml(filepath, outputpath):
+    """
+    Convert raw pandas dataframes to XML.
+    """
+    for r, d, f in os.walk(filepath):
+        for filename in f:
+            if (filename.endswith(".csv") or filename.endswith(".tsv")) and filename.startswith(".") is False:
                 separator = ""
                 if filename.endswith('.tsv'):
                     separator = "\t"
@@ -28,7 +41,7 @@ def df_to_xml(filepath, outputRoot):
 
                     currentFileName = row["id"]
 
-                    ET.ElementTree(section).write(os.path.join(outputRoot, currentFileName), encoding="utf-8", xml_declaration=True)
+                    ET.ElementTree(section).write(os.path.join(outputpath, currentFileName), encoding="utf-8", xml_declaration=True)
 
 
 def parse_xml_tree(filepath):
