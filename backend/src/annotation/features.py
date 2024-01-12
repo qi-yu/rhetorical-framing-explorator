@@ -44,18 +44,24 @@ class Annotation:
 
                     
     def questions(self, lexemeList):
+        attr_name = self.questions.__name__
+
         for lexeme in lexemeList:
             if lexeme.text == "?":
-                lexeme.set("question", "y")
+                lexeme.set(attr_name, "y")
 
 
     def exclamations(self, lexemeList):
+        attr_name = self.exclamations.__name__
+
         for lexeme in lexemeList:
             if lexeme.text == "!":
-                lexeme.set("exclamation", "y")
+                lexeme.set(attr_name, "y")
 
 
     def causal(self, lexemeList):
+        attr_name = self.causal.__name__
+
         # ----- variables used for disambiguing "Grund" -----
         negGovList = []
          
@@ -74,31 +80,31 @@ class Annotation:
             ### ----- Part 1: Causal connectors ----- ###
             # ----- 1. weil -----
             if currentLemma == "weil":
-                lexeme.set("causal", "weil")
+                lexeme.set(attr_name, "weil")
 
             # ----- 2. da -----
             if currentLemma == "da" and currentPos == "KOUS":
-                lexeme.set("causal", "da")
+                lexeme.set(attr_name, "da")
 
                 # Exclude "da" that are not at the beginning of a sentence or a part-sentence:
                 if index > 0 and re.fullmatch("(KON|\$[,.(])", lexemeList[index-1].get("pos")) is None:
-                    lexeme.attrib.pop("causal", None)
+                    lexeme.attrib.pop(attr_name, None)
 
                 # Exclude "da" directly followed by comma, e.g. "Da , wo die Häuser stehen, ...":
                 if index < len(lexemeList)-1 and lexemeList[index+1].text == ",":
-                    lexeme.attrib.pop("causal", None)
+                    lexeme.attrib.pop(attr_name, None)
 
                 # Exclude "da" in cases like "Da wo wir große Gefährdungen haben":
                 if index < len(lexemeList)-1 and lexemeList[index+1].get("lemma") == "wo":
-                    lexeme.attrib.pop("causal", None)
+                    lexeme.attrib.pop(attr_name, None)
 
                 # Exclude "da" directly followed by a finite verb:
                 if index < len(lexemeList)-1 and re.fullmatch("V[AMV]FIN", lexemeList[index+1].get("pos")):
-                    lexeme.attrib.pop("causal", None)
+                    lexeme.attrib.pop(attr_name, None)
 
                 # Exclude "da" in "hier und da":
                 if index > 1 and lexemeList[index-2].get("lemma") == "hier" and lexemeList[index-1].get("lemma") == "und":
-                    lexeme.attrib.pop("causal", None)
+                    lexeme.attrib.pop(attr_name, None)
 
 
             # ----- 3. denn -----
@@ -106,14 +112,14 @@ class Annotation:
 
                 # Exclude cases like "mehr denn je"
                 if currentPos == "KON" and index+1 < len(lexemeList) and lexemeList[index+1].get("lemma") != "je":
-                    lexeme.set("causal", "denn")
+                    lexeme.set(attr_name, "denn")
 
                 if index+1 < len(lexemeList) and lexemeList[index+1].get("lemma") == ":":
-                    lexeme.set("causal", "denn")
+                    lexeme.set(attr_name, "denn")
 
                 # Exclude "denn" in "Es sei denn, ..."
                 if index-1 >= 0 and lexemeList[index-1].text == "sei":
-                    lexeme.attrib.pop("causal", None)
+                    lexeme.attrib.pop(attr_name, None)
 
 
             # ----- 4. Grund -----
@@ -122,11 +128,11 @@ class Annotation:
             #
             # if currentLemma == "Grund":
             #     grundIndex = lexeme.get("index")
-            #     lexeme.set("causal", "Grund")
+            #     lexeme.set(attr_name, "Grund")
             #
             #     # Exclude "Grund" with negation, such as "Es gibt keinen Grund, ...": They are not reasoning.
             #     if grundIndex in negGovList:
-            #         lexeme.attrib.pop("causal", None)
+            #         lexeme.attrib.pop(attr_name, None)
 
 
 
@@ -134,14 +140,14 @@ class Annotation:
             # ----- 5. also -----
             ### TODO: Check if these rules are accurate enough!
             if currentLemma == "also" and currentPos == "ADV" and lexemeList[-1].text != "?" and lexemeList[-2].text != "?":
-                lexeme.set("causal", "also")
+                lexeme.set(attr_name, "also")
 
                 # Exclude "also" at the beginning of a sentence or a part-sentence which is not followed by a finite verb:
                 if index == 0 and len(lexemeList) > 1 and re.fullmatch("V[AMV]FIN", lexemeList[1].get("pos")) is None:
-                    lexeme.attrib.pop("causal", None)
+                    lexeme.attrib.pop(attr_name, None)
 
                 if index > 0 and index < len(lexemeList)-1 and re.match("\$[,.(]", lexemeList[index-1].get("pos")) and re.fullmatch("V[AMV]FIN", lexemeList[index+1].get("pos")) is None:
-                    lexeme.attrib.pop("causal", None)
+                    lexeme.attrib.pop(attr_name, None)
 
 
             # ----- 6. daher -----
@@ -156,49 +162,49 @@ class Annotation:
 
             if currentLemma == "daher":
                 if lexeme.get("governor") != finVerbStemIndex:
-                    lexeme.set("causal", "daher")
+                    lexeme.set(attr_name, "daher")
 
                     if lexeme.get("governor") == finVerbStemIndex and finVerbStemLemma and re.fullmatch("(kommen|rühren)", finVerbStemLemma) :
                         # Annotate "daher" in cases like "Das kommt/rührt (aber auch) daher, ..." as "causal":
                         if finVerbStemListIndex < index:
-                            lexeme.set("causal", "daher")
+                            lexeme.set(attr_name, "daher")
                             for w in lexemeList[finVerbStemListIndex+1:index]:
                                 if re.fullmatch("(ADV|APPR|PIS)", w.get("pos")) is None:
-                                    lexeme.attrib.pop("causal", None)
+                                    lexeme.attrib.pop(attr_name, None)
                                     break
 
                         # Annotate "daher" in cases like "Das kann auch daher kommen, ..." as "causal":
                         if koennenIndex and koennenListIndex < index and finVerbStemListIndex == index+1:
-                            lexeme.set("causal", "daher")
+                            lexeme.set(attr_name, "daher")
                             for w in lexemeList[koennenIndex+1:index]:
                                 if re.fullmatch("(ADV|APPR|PIS)", w.get("pos")) is None:
-                                    lexeme.attrib.pop("causal", None)
+                                    lexeme.attrib.pop(attr_name, None)
                                     break
 
 
             # ----- 7. von daher -----
             if currentLemma == "daher" and index > 0 and lexemeList[index-1].get("lemma") == "von":
-                lexemeList[index].set("causal_2", "daher")
-                lexemeList[index-1].set("causal", "von_daher")
+                lexemeList[index].set(attr_name + "_2", "daher")
+                lexemeList[index-1].set(attr_name, "von_daher")
 
 
             # ----- 8. deswegen / deshalb -----
             if currentLemma in ["deswegen", "deshalb"]:
-                lexeme.set("causal", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
             # ----- 9. darum -----
             ### TODO: Check if these rules are correct! (Is "darum" consecutive only when it is at the beginning of a sentence and followed by a finit verb?)
             if currentLemma == "darum" and index == 0:
                 if len(lexemeList) > 1 and re.fullmatch("V[AMV]FIN", lexemeList[index+1].get("pos")):
-                    lexeme.set("causal", "darum")
+                    lexeme.set(attr_name, "darum")
 
                     # Exclude "Darum geht's":
                     if re.fullmatch("geht's", lexemeList[index+1].text):
-                        lexeme.attrib.pop("causal", None)
+                        lexeme.attrib.pop(attr_name, None)
 
                 # Exclude "Darum geht es":
                 if len(lexemeList) > 2 and lexemeList[index+1].get("lemma") == "gehen" and lexemeList[index+2].text == "es":
-                    lexeme.attrib.pop("causal", None)
+                    lexeme.attrib.pop(attr_name, None)
 
 
             # ----- 10. dadurch -----
@@ -206,6 +212,8 @@ class Annotation:
 
 
     def adversative(self, lexemeList):
+        attr_name = self.adversative.__name__
+
         findNichtNur = False # variable used for disambiguing "sondern" 
         findEinerseits = False # variable used for choosing label for "andererseits"
 
@@ -215,18 +223,18 @@ class Annotation:
 
             # ----- 1. Items that do not need disambiguation: -----
             if currentLemma in ["jedoch", "einerseits", "vielmehr", "andernfalls", "anderenfalls"]:
-                lexeme.set("adversative", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
             # ----- 2. Items that need disambiguation: -----
             ## 2.1 wiederum
             # ### TODO: How to disambiguate "wiederum" as adversative connector for opposition and "wiederum" with the meaning "again"?
             # if currentLemma == "wiederum":
-            #     lexeme.set("adversative", "wiederum")
+            #     lexeme.set(attr_name, "wiederum")
 
             ## 2.2 allerdings 
             ### TODO: How to disambiguate "allerdings" as adversative connector for opposition and "allerdings" as adverb for affirmation?
             if currentLemma == "allerdings":
-                lexeme.set("adversative", "allerdings")
+                lexeme.set(attr_name, "allerdings")
 
             ## 2.3 sondern
             # Exclude "sondern" in "nicht nur..., sondern (auch)...":
@@ -235,52 +243,53 @@ class Annotation:
 
             if currentLemma == "sondern":
                 if findNichtNur != True:
-                    lexeme.set("adversative", "sondern")
+                    lexeme.set(attr_name, "sondern")
 
                 if index < len(lexemeList)-1 and lexemeList[index+1].get("lemma") == "auch":
-                    lexeme.attrib.pop("adversative", None)
+                    lexeme.attrib.pop(attr_name, None)
 
             ## 2.4 andererseits 
             if currentLemma == "andererseits":
                 if findEinerseits:
-                    lexeme.set("adversative_2", "andererseits")
+                    lexeme.set(attr_name + "_2", "andererseits")
                 else: 
-                    lexeme.set("adversative", "andererseits")
+                    lexeme.set(attr_name, "andererseits")
 
             ## 2.5 zum einen 
             if re.fullmatch("[Zz]um", lexeme.text) and index < len(lexemeList)-1 and lexemeList[index+1].text == "einen":
-                lexeme.set("adversative", "zum_einen")
-                lexemeList[index+1].set("adversative_2", "einen")
+                lexeme.set(attr_name, "zum_einen")
+                lexemeList[index+1].set(attr_name + "_2", "einen")
 
             ## 2.6 zum anderen 
             if re.fullmatch("[Zz]um", lexeme.text) and index < len(lexemeList)-1 and lexemeList[index+1].text == "anderen":
-                lexeme.set("adversative_3", "zum")
-                lexemeList[index + 1].set("adversative_4", "anderen")
+                lexeme.set(attr_name + "_3", "zum")
+                lexemeList[index + 1].set(attr_name + "_4", "anderen")
 
             ## 2.7 statt 
             if currentLemma == "statt" and currentPos != "PTKVZ":
-                lexeme.set("adversative", "statt")
+                lexeme.set(attr_name, "statt")
 
                 # # Exclude cases like "Einen Tag zuvor gab es einen Kompromiss statt Krawall", because they don't express opposition relation on discourse level:
                 # if index == 0:
-                #     lexeme.set("adversative", "statt")
+                #     lexeme.set(attr_name, "statt")
                 #
                 # if index > 0 and re.fullmatch("(\$,|KON)", lexemeList[index-1].get("pos")):
-                #     lexeme.set("adversative", "statt")
+                #     lexeme.set(attr_name, "statt")
 
             ## 2.8 anstatt 
             if currentLemma == "anstatt":
-                lexeme.set("adversative", "anstatt")
+                lexeme.set(attr_name, "anstatt")
 
                 # # Exclude cases like "Zudem beginnen immer mehr junge Menschen ein Studium anstatt einer Ausbildung", because they don't express opposition relation on discourse level:
                 # if index == 0:
-                #     lexeme.set("adversative", "anstatt")
+                #     lexeme.set(attr_name, "anstatt")
                 #
                 # if index > 0 and re.fullmatch("(\$,|KON)", lexemeList[index-1].get("pos")):
-                #     lexeme.set("adversative", "anstatt")
+                #     lexeme.set(attr_name, "anstatt")
 
 
     def boosters(self, lexemeList):
+        attr_name = self.boosters.__name__
         booster_list = self.word_lists[self.boosters.__name__]
 
         for idx, lexeme in enumerate(lexemeList):
@@ -290,114 +299,121 @@ class Annotation:
 
             # ----- 1. Monograms that do not need disambiguation: -----
             if currentLemma in booster_list:
-                lexeme.set("booster", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
             # ----- 2. N-grams -----
             ## 2.1 erst recht:
             if idx < len(lexemeList) - 1 and lexeme.get("lemma") == "erst" and lexemeList[idx + 1].get("lemma") == "recht":
-                lexeme.set("booster", "erst_recht")
-                lexemeList[idx+1].set("booster_2", "recht")
+                lexeme.set(attr_name, "erst_recht")
+                lexemeList[idx+1].set(attr_name + "_2", "recht")
 
             ## 2.2 bei weitem:
             if idx < len(lexemeList) - 1 and lexeme.get("lemma") == "bei" and lexemeList[idx + 1].text == "weitem":
-                lexeme.set("booster", "bei_weitem")
-                lexemeList[idx+1].set("booster_2", "weitem")
+                lexeme.set(attr_name, "bei_weitem")
+                lexemeList[idx+1].set(attr_name + "_2", "weitem")
 
             ## 2.3 ganz und gar:
             if idx < len(lexemeList) - 2 and lexeme.get("lemma") == "ganz" and lexemeList[idx + 1].text == "und" and lexemeList[idx + 2].text == "gar":
-                lexeme.set("booster", "ganz_und_gar")
-                lexemeList[idx + 1].set("booster_2", "und")
-                lexemeList[idx + 1].set("booster_3", "gar")
+                lexeme.set(attr_name, "ganz_und_gar")
+                lexemeList[idx + 1].set(attr_name + "_2", "und")
+                lexemeList[idx + 1].set(attr_name + "_3", "gar")
 
             # ----- 3. Items that need disambiguation:
             # 3.1 Items that should only be annotated as booster when bearing the POS "ADJD":
             if currentLemma in ["ausgesprochen", "entschieden", "komplett", "wesentlich"] and currentPos == "ADJD":
-                lexeme.set("booster", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
             ## 3.2 Items that should only be annotated as booster when bearing the POS "ADV":
             if currentLemma in ["tatsächlich", "viel", "weit"] and currentPos == "ADV":
-                lexeme.set("booster", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
             ## 3.3 Items that should only be annotated as booster only when modifying adjectives/adverbs:
             if currentLemma in ["denkbar", "echt", "richtig", "wirklich"]:
                 for l in lexemeList:
                     if l.get("index") == currentGovenor and l.get("pos").startswith("AD"):
-                        lexeme.set("booster", currentLemma)
+                        lexeme.set(attr_name, currentLemma)
 
             ## 3.4 absolut: exclude usages in "absolute [Zz]ahl$"
             if currentLemma == "absolut" and re.search("[Zz]ahl$", lexemeList[idx+1].get("lemma")) is None:
-                lexeme.set("booster", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
             ## 3.5. total:
             if currentLemma == "total" and currentPos in ["ADJD", "ADJA"]:
-                lexeme.set("booster", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
             ## 3.6. ganz:
             if currentLemma == "ganz" and currentPos in ["ADJD", "ADV"] and lexeme.get("booster") != "ganz_und_gar": # not already annotated as "ganz und gar"
-                lexeme.set("booster", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
             ## 3.7 höchst:
             if lexeme.text == "höchst":
-                lexeme.set("booster", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
             ## 3.8 recht:
             if currentLemma == "recht" and currentPos == "ADV" and lexeme.get("booster") != "erst_recht": # not already annotated as "erst_recht"
                 for l in lexemeList:
                     if  l.get("index") == currentGovenor and l.get("lemma") not in ["haben", "behalten", "geben", "kommen", "bekommen"]:
-                        lexeme.set("booster", currentLemma)
+                        lexeme.set(attr_name, currentLemma)
 
     
     def concessive(self, lexemeList):
+        attr_name = self.concessive.__name__
+
         for index, lexeme in enumerate(lexemeList):
             currentLemma = lexeme.get("lemma")
 
             # ----- 1. Items that do not need disambiguation: -----
             if currentLemma in ["dennoch", "trotzdem", "trotz", "gleichwohl", "wenngleich", "obschon", "nichtsdestotrotz", "nichtsdestoweniger"]:
-                lexeme.set("concessive", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
             # ----- 2. Items that need disambiguation: -----
             ## 2.1 obwohl
             if currentLemma == "obwohl":
-                lexeme.set("concessive", "obwohl")
+                lexeme.set(attr_name, "obwohl")
 
                 # Exclude "obwohl" used for correcting the preceding proposition (i.e. followed by ,/./- + V2 sentences):
                 # if index < len(lexemeList) - 1 and re.fullmatch("[,.-]", lexemeList[index+1].text):
-                #     lexeme.attrib.pop("concessive", None)
+                #     lexeme.attrib.pop(attr_name, None)
 
             ## 2.2 wobei
             if currentLemma == "wobei" and index < len(lexemeList)-1 and re.fullmatch("[,.-]", lexemeList[index+1].text):
-                lexeme.set("concessive", "wobei")
+                lexeme.set(attr_name, "wobei")
 
             ## 2.3 ungeachtet / ungeachtet dessen / dessen ungeachtet
             if currentLemma == "ungeachtet":
-                lexeme.set("concessive", "ungeachtet")
+                lexeme.set(attr_name, "ungeachtet")
 
                 if index < len(lexemeList)-1 and lexemeList[index+1].text == "dessen":
-                    lexemeList[index+1].set("concessive_2", "ungeachtet")
+                    lexemeList[index+1].set(attr_name + "_2", "ungeachtet")
                 
                 if index > 0 and re.fullmatch("[Dd]essen", lexemeList[index-1].text):
-                    lexemeList[index-1].set("concessive_2", "ungeachtet")
+                    lexemeList[index-1].set(attr_name + "_2", "ungeachtet")
 
 
             ## 2.4 zwar
             # Exclude "zwar" in "und zwar":
             if currentLemma == "zwar" and index > 0 and lexemeList[index-1].get("lemma") != "und":
-                lexeme.set("concessive", "zwar")
+                lexeme.set(attr_name, "zwar")
 
             ## 2.5 unbeschadet dessen 
             if currentLemma == "unbeschadet" and lexemeList[index+1].get("feats").startswith("Case=Gen"):
-                lexeme.set("concessive", "unbeschadet")
+                lexeme.set(attr_name, "unbeschadet")
             
                 if lexemeList[index+1].text == "dessen":
-                    lexemeList[index+1].set("concessive_2", "dessen")
+                    lexemeList[index+1].set(attr_name + "_2", "dessen")
 
 
     def conditional(self, lexemeList):
         """
         Declaration of authorship:
         The annotation rules of this method was originally implemented by Marina Janka-Ramm.
-        Qi Yu made some minor adaption and integrated them into the current app.
+        Qi Yu made the following changes:
+            1) some minor adaption to the rule; 
+            2) the integration of the rules into the architecture of the current app.
         """
+
+        attr_name = self.conditional.__name__
+
         for index, lexeme in enumerate(lexemeList):
             currentLemma = lexeme.get("lemma")
             currentWord = lexeme.text
@@ -405,35 +421,37 @@ class Annotation:
 
             # ----- 1. Items that do not need disambiguation  -----
             if currentLemma in ["wenn", "falls", "sofern", ]: # Qi: "ob" is excluded from this list. It is not always a conditional connector.
-                lexeme.set("conditional", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
             # ----- 2. gesetzt  -----
             if currentWord == "Gesetzt" or currentWord == "gesetzt" and index == 0:
                 
                 ## 2.1 gesetzt den Fall
                 if len(lexemeList) > 2 and lexemeList[index+1].get("lemma") == "der" and lexemeList[index+2].get("lemma") == "Fall":
-                    lexemeList[index].set("conditional", "gesetzt_den_Fall")
-                    lexemeList[index+1].set("conditional_2", "den")
-                    lexemeList[index+2].set("conditional_3", "Fall")
+                    lexemeList[index].set(attr_name, "gesetzt_den_Fall")
+                    lexemeList[index+1].set(attr_name + "_2", "den")
+                    lexemeList[index+2].set(attr_name + "_3", "Fall")
                 
                 ## 2.2  gesetzt
                 if depRelation == "conj":
-                    lexeme.set("conditional", "gesetzt")
+                    lexeme.set(attr_name, "gesetzt")
 
 
     def factive_verbs(self, lexemeList):
+        attr_name = self.factive_verbs.__name__
         factive_list = self.word_lists[self.factive_verbs.__name__]
 
         # ----- 1. Items that do not need disambiguation -----
         for lexeme in lexemeList:
             if lexeme.get("lemma") in factive_list and re.fullmatch("(VVFIN|VVPP)", lexeme.get("pos")):
-                lexeme.set("factive_verb", lexeme.get("lemma"))
+                lexeme.set(attr_name, lexeme.get("lemma"))
 
         # ----- 2. Deal with particle verbs -----
         self.finite_particle_verbs(lexemeList, factive_list, "factive_verb")
 
 
     def hedges(self, lexemeList):
+        attr_name = self.hedges.__name__
         hedges_list = self.word_lists[self.hedges.__name__]
 
         for idx, lexeme in enumerate(lexemeList):
@@ -442,161 +460,169 @@ class Annotation:
 
             # ----- 1. Monograms that do not need disambiguation -----
             if currentLemma in hedges_list:
-                lexeme.set("hedge", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
             # ----- 2. N-grams: -----
             ## 2.1 im Prinzip, im Wesentlichen,
             if idx < len(lexemeList) - 1 and lexeme.get("lemma") == "in" and lexemeList[idx + 1].text in ["Prinzip", "Wesentlichen"]:
-                lexeme.set("hedge", "im_" + lexemeList[idx + 1].text)
-                lexemeList[idx+1].set("hedge_2", lexemeList[idx + 1].text)
+                lexeme.set(attr_name, "im_" + lexemeList[idx + 1].text)
+                lexemeList[idx+1].set(attr_name + "_2", lexemeList[idx + 1].text)
 
             ## 2.2 in der Regel:
             if idx < len(lexemeList) - 2 and lexeme.get("lemma") == "in" and lexemeList[idx + 1].get("lemma") == "der" and lexemeList[idx + 2].get("lemma") == "Regel":
-                lexeme.set("hedge", "in_der_Regel")
-                lexemeList[idx + 1].set("hedge_2", "der")
-                lexemeList[idx + 2].set("hedge_3", "Regel")
+                lexeme.set(attr_name, "in_der_Regel")
+                lexemeList[idx + 1].set(attr_name + "_2", "der")
+                lexemeList[idx + 2].set(attr_name + "_3", "Regel")
 
             ## 2.3 in gewissem Maße:
             if idx < len(lexemeList) - 2 and lexeme.get("lemma") == "in" and lexemeList[idx + 1].text == "gewissem" and lexemeList[idx + 2].text == "Maße":
-                lexeme.set("hedge", "in_gewissem_Maße")
-                lexemeList[idx + 1].set("hedge_2", "gewissem")
-                lexemeList[idx + 2].set("hedge_3", "Maße")
+                lexeme.set(attr_name, "in_gewissem_Maße")
+                lexemeList[idx + 1].set(attr_name + "_2", "gewissem")
+                lexemeList[idx + 2].set(attr_name + "_3", "Maße")
 
             ## 2.4 im Grunde genommen:
             if idx < len(lexemeList) - 2 and lexeme.get("lemma") == "in" and lexemeList[idx + 1].text == "Grunde" and lexemeList[idx + 2].text == "genommen":
-                lexeme.set("hedge", "im_Grunde_genommen")
-                lexemeList[idx + 1].set("hedge_2", "Grunde")
-                lexemeList[idx + 2].set("hedge_3", "genommen")
+                lexeme.set(attr_name, "im_Grunde_genommen")
+                lexemeList[idx + 1].set(attr_name + "_2", "Grunde")
+                lexemeList[idx + 2].set(attr_name + "_3", "genommen")
 
             # ## 2.5 in den meisten Fällen
             # if idx <= len(lexemeList)-4 and lexeme.text == "in" and lexemeList[idx+1].text == "den" and lexemeList[idx+2].text == "meisten" and lexemeList[idx+3].text == "Fällen":
-            #     lexeme.set("hedge", "in_den_meisten_Faellen")
-            #     lexemeList[idx+1].set("hedge_2", "den")
-            #     lexemeList[idx+2].set("hedge_3", "meisten")
-            #     lexemeList[idx+3].set("hedge_4", "Faellen")
+            #     lexeme.set(attr_name, "in_den_meisten_Faellen")
+            #     lexemeList[idx+1].set(attr_name + "_2", "den")
+            #     lexemeList[idx+2].set(attr_name + "_3", "meisten")
+            #     lexemeList[idx+3].set(attr_name + "_4", "Faellen")
 
             ## 2.6 zu großen Teilen
             # if idx <= len(lexemeList)-3 and lexeme.text == "zu" and lexemeList[idx+1].text == "großen" and lexemeList[idx+2].text == "Teilen":
-            #     lexeme.set("hedge", "zu_grossen_Teilen")
-            #     lexemeList[idx + 1].set("hedge_2", "grossen")
-            #     lexemeList[idx + 2].set("hedge_3", "Teilen")
+            #     lexeme.set(attr_name, "zu_grossen_Teilen")
+            #     lexemeList[idx + 1].set(attr_name + "_2", "grossen")
+            #     lexemeList[idx + 2].set(attr_name + "_3", "Teilen")
 
             ## 2.7 Pi mal Daumen
             if idx <= len(lexemeList)-3 and lexeme.text == "Pi" and lexemeList[idx+1].text == "mal" and lexemeList[idx+2].text == "Daumen":
-                lexeme.set("hedge", "Pi_mal_Daumen")
-                lexemeList[idx + 1].set("hedge_2", "mal")
-                lexemeList[idx + 2].set("hedge_3", "Daumen")
+                lexeme.set(attr_name, "Pi_mal_Daumen")
+                lexemeList[idx + 1].set(attr_name + "_2", "mal")
+                lexemeList[idx + 2].set(attr_name + "_3", "Daumen")
 
             ## 2.8 im Großen und Ganzen
             if idx < len(lexemeList) - 3 and lexeme.get("lemma") == "in" and lexemeList[idx + 1].text == "Großen" and lexemeList[idx + 2].text == "und" and lexemeList[idx + 3].text == "Ganzen":
-                lexeme.set("hedge", "im_Großen_und_Ganzen")
-                lexemeList[idx + 1].set("hedge_2", "Großen")
-                lexemeList[idx + 2].set("hedge_3", "und")
-                lexemeList[idx + 3].set("hedge_4", "Ganzen")
+                lexeme.set(attr_name, "im_Großen_und_Ganzen")
+                lexemeList[idx + 1].set(attr_name + "_2", "Großen")
+                lexemeList[idx + 2].set(attr_name + "_3", "und")
+                lexemeList[idx + 3].set(attr_name + "_4", "Ganzen")
 
             ## 2.9 streng genommen
             if idx < len(lexemeList) - 1 and lexeme.get("lemma") == "streng" and lexemeList[idx + 1].text == "genommen":
-                lexeme.set("hedge", "streng_genommen")
-                lexemeList[idx+1].set("hedge_2", "genommen")
+                lexeme.set(attr_name, "streng_genommen")
+                lexemeList[idx+1].set(attr_name + "_2", "genommen")
 
             ## 2.10 unter bestimmten Umständen
             # if idx <= len(lexemeList)-3 and lexeme.get("lemma") == "unter" and lexemeList[idx+1].text == "bestimmten" and lexemeList[idx+2].text == "Umständen":
-            #     lexeme.set("hedge", "unter_bestimmten_Umstaenden")
-            #     lexemeList[idx + 1].set("hedge_2", "bestimmten")
-            #     lexemeList[idx + 2].set("hedge_3", "Umstaenden")
+            #     lexeme.set(attr_name, "unter_bestimmten_Umstaenden")
+            #     lexemeList[idx + 1].set(attr_name + "_2", "bestimmten")
+            #     lexemeList[idx + 2].set(attr_name + "_3", "Umstaenden")
         
             # ----- 3. Items that need disambiguation: -----
             ## 3.1 Verbs:
             if currentLemma in  ["scheinen", "vermuten", "spekulieren"] and re.fullmatch("(VVFIN|VVPP)", currentPos):
-                lexeme.set("hedge", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
             ## 3.2 Modal verbs:
             # TODO: CHECK IF THE RULES ARE CORRECT!
             if currentLemma in ["können", "müssen", "sollen", "werden"] and re.match("(könnt|müsst|sollt|würd)", lexeme.text):
-                lexeme.set("hedge", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
             ## 3.3 Items that should only be annotated as hedge when bearing the POS "ADV":
             if currentLemma in ["etwas", "grob"] and currentPos == "ADV":
-                lexeme.set("hedge", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
             ## 3.4 annähernd:
             if lexeme.get("lemma") == "annähernd":
-                lexeme.set("hedge", currentLemma)
+                lexeme.set(attr_name, currentLemma)
 
-            ## 3.5 wohl: annotated by the script "modal_particles.py"
+            ## 3.5 wohl: annotated by the method "modal_particles.py"
 
 
     def modal_particles_for_common_ground(self, lexemeList):
+        attr_name = self.modal_particles_for_common_ground.__name__
+
         for idx, lexeme in enumerate(lexemeList):
             currentLemma = lexeme.get("lemma")
 
             # ----- 1. ja -----
             if currentLemma == "ja":
-                lexeme.set("common_ground", "ja")
+                lexeme.set(attr_name, "ja")
 
                 # Exclude cases like "Oh ja", "Ach ja", "Und ja" etc.:
                 if idx == 1 and re.fullmatch("(ADV|KON)", lexemeList[0].get("pos")):
-                    lexeme.attrib.pop("common_ground", None)
+                    lexeme.attrib.pop(attr_name, None)
 
                 # Exclude "Na ja"
                 if idx > 0 and lexemeList[idx-1].get("lemma") == "na":
-                    lexeme.attrib.pop("common_ground", None)
+                    lexeme.attrib.pop(attr_name, None)
 
                 # Exclude "wenn ja (,|:) ....."
                 if idx > 0 and idx < len(lexemeList)-1 and lexemeList[idx - 1].get("lemma") == "wenn" and re.fullmatch("[,:]", lexemeList[idx+1].text):
-                    lexeme.attrib.pop("common_ground", None)
+                    lexeme.attrib.pop(attr_name, None)
 
                 # Exclude "ja" surrounded by punctuations
                 if idx > 0 and idx < len(lexemeList)-1 and (re.fullmatch("\$[,.(]",lexemeList[idx-1].get("pos")) or re.fullmatch("\$[,.(]", lexemeList[idx+1].get("pos"))):
-                    lexeme.attrib.pop("common_ground", None)
+                    lexeme.attrib.pop(attr_name, None)
 
                 # Exclude "ja" at the beginning of a sentence or a part-sentence
                 # if idx > 0 and re.fullmatch("\$[,.(]", lexemeList[idx-1].get("pos")):
-                #     lexeme.attrib.pop("common_ground", None)
+                #     lexeme.attrib.pop(attr_name, None)
 
                 # Exclude "ja" in "..., ja genau, ..."
                 if idx < len(lexemeList) - 2 and lexemeList[idx+1].get("lemma") == "genau" and re.fullmatch("[,.!-]", lexemeList[idx+2].text):
-                    lexeme.attrib.pop("common_ground", None)
+                    lexeme.attrib.pop(attr_name, None)
 
             # ----- 2. doch -----
             # if currentLemma == "doch" and currentPos == "ADV":
-            #     lexeme.set("common_ground", "doch")
+            #     lexeme.set(attr_name, "doch")
             #
             #     # Exclude "doch" at the beginning of a sentence or a part-sentence:
             #     if idx == 0 or (idx > 0 and lexemeList[idx-1].get("pos") == "KON"):
-            #         lexeme.attrib.pop("common_ground", None)
+            #         lexeme.attrib.pop(attr_name, None)
             #
             #     # Exclude "doch" in "doch noch...", e.g. "dann kam Seehofer doch noch einmal auf das Streitthema Obergrenze zu sprechen"
             #     if idx < len(lexemeList)-1 and lexemeList[idx+1].get("lemma") == "noch":
-            #         lexeme.attrib.pop("common_ground", None)
+            #         lexeme.attrib.pop(attr_name, None)
             #
             #     # Exclude "doch" in "Doch doch":
             #     if idx < len(lexemeList) - 1 and lexemeList[idx+1].get("lemma") == "doch":
-            #         lexeme.attrib.pop("common_ground", None)
+            #         lexeme.attrib.pop(attr_name, None)
 
 
     def modal_particles_for_resigned_acceptance(self, lexemeList):
+        attr_name = self.modal_particles_for_resigned_acceptance.__name__
+
         for idx, lexeme in enumerate(lexemeList):
             currentLemma = lexeme.get("lemma")
             currentPos = lexeme.get("pos")
             
             # ----- 1. eben -----
             if currentLemma == "eben":
-                lexeme.set("resigned_accept", "eben")
+                lexeme.set(attr_name, "eben")
 
                 # Exclude "eben" in "gerade eben":
                 if idx > 0 and lexemeList[idx-1].get("lemma") == "gerade":
-                    lexeme.attrib.pop("resigned_accept", None)
+                    lexeme.attrib.pop(attr_name, None)
 
                 # Exclude "eben" in "Ja eben, ..."
                 if idx > 0 and lexemeList[idx-1].text == "Ja":
-                    lexeme.attrib.pop("resigned_accept", None)
+                    lexeme.attrib.pop(attr_name, None)
 
             # ----- 2. halt -----
             if currentLemma == "halt" and re.match("(ADV|ADJD)", currentPos):
-                lexeme.set("resigned_accept", "halt")
+                lexeme.set(attr_name, "halt")
+
 
     def modal_particles_for_weakened_commitment(self, lexemeList):
+        attr_name = self.modal_particles_for_weakened_commitment.__name__
+        attr_name_2 = self.hedges.__name__
+
         # ----- variables used for disambiguing "wohl" -----
         wohlGov = None
         wohlIndex = None
@@ -610,11 +636,13 @@ class Annotation:
             if currentLemma == "wohl" and currentPos == "ADV":
                 wohlGov = lexeme.get("governor")
                 wohlIndex = idx
-                lexeme.set("weak_commit", "wohl")
+                lexeme.set(attr_name, "wohl")
+                lexeme.set(attr_name_2, "wohl")
 
                 # Exclude "wohl" in "sehr wohl":
                 if idx > 0 and lexemeList[idx-1].get("lemma") == "sehr":
-                    lexeme.attrib.pop("weak_commit", None)
+                    lexeme.attrib.pop(attr_name, None)
+                    lexeme.attrib.pop(attr_name_2, None)
 
             # Exclude "wohl" in "sich wohl fühlen":
             if currentLemma == "fühlen":
@@ -625,42 +653,45 @@ class Annotation:
 
             if wohlGov is not None and fuehlenIndex is not None and reflexGov is not None:
                 if wohlGov == fuehlenIndex and reflexGov == fuehlenIndex:
-                    lexemeList[wohlIndex].attrib.pop("weak_commit", None)
+                    lexemeList[wohlIndex].attrib.pop(attr_name, None)
+                    lexemeList[wohlIndex].attrib.pop(attr_name_2, None)
 
 
     def adverbs_for_iteration_or_continuation(self, lexemeList):
+        attr_name = self.adverbs_for_iteration_or_continuation.__name__
         iter_cont_list = self.word_lists[self.adverbs_for_iteration_or_continuation.__name__]
         
         for idx, lexeme in enumerate(lexemeList):
             # ----- 1. Items that do not need disambiguation -----
             if lexeme.get("lemma") in iter_cont_list:
-                lexeme.set("adv_iter_cont", lexeme.get("lemma"))
+                lexeme.set(attr_name, lexeme.get("lemma"))
 
             # ----- 2. N-grams -----
             # 2.1 immer mehr / immer noch
             if idx < len(lexemeList)-1 and lexeme.get("lemma") == "immer" and lexemeList[idx+1].get("lemma") in ["mehr", "noch"]:
-                lexeme.set("adv_iter_cont", "immer_" + lexemeList[idx+1].get("lemma"))
-                lexemeList[idx+1].set("adv_iter_cont_2", lexemeList[idx+1].get("lemma"))
+                lexeme.set(attr_name, "immer_" + lexemeList[idx+1].get("lemma"))
+                lexemeList[idx+1].set(attr_name + "_2", lexemeList[idx+1].get("lemma"))
 
 
     def scalar_particles(self, lexemeList):
+        attr_name = self.scalar_particles.__name__
         scalar_particle_list = self.word_lists[self.scalar_particles.__name__]
 
         for idx, lexeme in enumerate(lexemeList):
             # ----- 1. Items that do not need disambiguation -----
             if lexeme.get("lemma") in scalar_particle_list:
-                lexeme.set("scalar_particle", lexeme.get("lemma"))
+                lexeme.set(attr_name, lexeme.get("lemma"))
 
             # ----- 2. N-grams -----
             ## 2.1 nicht einmal / nicht mal
             if idx < len(lexemeList)-1 and lexeme.get("lemma") == "nicht" and lexemeList[idx+1].get("lemma") in ["einmal", "mal"]:
-                lexeme.set("scalar_particle", "nicht_" + lexemeList[idx+1].get("lemma"))
-                lexemeList[idx+1].set("scalar_particle_2", lexemeList[idx+1].get("lemma"))
+                lexeme.set(attr_name, "nicht_" + lexemeList[idx+1].get("lemma"))
+                lexemeList[idx+1].set(attr_name + "_2", lexemeList[idx+1].get("lemma"))
 
             ## 2.2 geschweige denn
             if idx < len(lexemeList)-1 and re.fullmatch("geschweigen?", lexeme.get("lemma")) and lexemeList[idx+1].get("lemma") == "denn":
-                lexeme.set("scalar_particle", "geschweige_denn")
-                lexemeList[idx+1].set("scalar_particle_2", "denn")
+                lexeme.set(attr_name, "geschweige_denn")
+                lexemeList[idx+1].set(attr_name + "_2", "denn")
 
             #TODO: Items that are difficult to disambiguate: wiederum, selbst, allein, auch nur
 

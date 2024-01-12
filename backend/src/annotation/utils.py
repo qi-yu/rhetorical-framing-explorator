@@ -175,21 +175,3 @@ def update_progress(step_counter, total_step_amount, save_path):
 
     return step_counter
 
-
-def get_feature_list():
-    feature_list = [#"negation",
-                    #"within_indirect_speech", "within_direct_speech",
-                    "exclamation", #"question",
-                    "causal", #"consecutive", "adversative", "concessive", "conditional",
-                    "common_ground", "resigned_accept", "weak_commit",
-                    #"factive_verb", #"implicative_verb", "assertive_verb",
-                    "booster", "hedge",
-                    "adv_iter_cont", "scalar_particle",
-                    #"representative", "declarative", "directive", "expressive", "commisive",
-                    #"arousal", "valence", "concreteness", "imageability",
-                    "natural_disaster_topoi", "social_disaster_topoi", "every_xth",
-                    "economy", "identity", "legal", "morality", "policy", "politics", "public_opinion", "security", "welfare"
-    ]
-
-    return feature_list
-
