@@ -8,8 +8,8 @@ logging.basicConfig(level=logging.INFO)
 inputRoot = Config.PREPROCESSED_FILE_PATH
 progressOutputRoot = Config.PROGRESS_PATH
 
-method_name = sys.argv[1].split(".")[0]
-anotation = Annotation()
+method_name = sys.argv[1]
+annotation = Annotation()
 
 logging.info("Annotating " + method_name + "...")
 for r, d, f in os.walk(inputRoot):
@@ -23,8 +23,8 @@ for r, d, f in os.walk(inputRoot):
             for s in root.iter("sentence"):
                 lexeme_list = get_sentence_as_lexeme_list(s)
 
-                if hasattr(Annotation, method_name) and callable(getattr(anotation, method_name)):
-                    method_to_call = getattr(anotation, method_name)
+                if hasattr(Annotation, method_name) and callable(getattr(annotation, method_name)):
+                    method_to_call = getattr(annotation, method_name)
                     method_to_call(lexeme_list)  
                 else:
                     logging.info(f"Method '{method_name}' does not exist or is not callable.")
