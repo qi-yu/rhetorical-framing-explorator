@@ -447,7 +447,7 @@ class Annotation:
                 lexeme.set(attr_name, lexeme.get("lemma"))
 
         # ----- 2. Deal with particle verbs -----
-        self.finite_particle_verbs(lexemeList, factive_list, "factive_verb")
+        self.finite_particle_verbs(lexemeList, factive_list, attr_name)
 
 
     def hedges(self, lexemeList):
