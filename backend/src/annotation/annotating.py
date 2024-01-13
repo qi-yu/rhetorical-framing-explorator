@@ -1,14 +1,14 @@
 import sys, logging, os
 from src.config import Config
-from src.annotation.features import Annotation
+from src.annotation.features import Disambiguation
 from src.annotation.utils import parse_xml_tree, get_sentence_as_lexeme_list, update_progress
 
 logging.basicConfig(level=logging.INFO)
 
-class RunAnnotation:
+class Annotation:
     inputRoot = Config.PREPROCESSED_FILE_PATH
     progressOutputRoot = Config.PROGRESS_PATH
-    annotation = Annotation()
+    disambiguation = Disambiguation()
 
 
     def annotate_feature(self, feature):
@@ -25,8 +25,8 @@ class RunAnnotation:
                     for s in root.iter("sentence"):
                         lexeme_list = get_sentence_as_lexeme_list(s)
 
-                        if hasattr(Annotation, feature) and callable(getattr(self.annotation, feature)):
-                            method_to_call = getattr(self.annotation, feature)
+                        if hasattr(Disambiguation, feature) and callable(getattr(self.disambiguation, feature)):
+                            method_to_call = getattr(self.disambiguation, feature)
                             method_to_call(lexeme_list)  
                         else:
                             logging.info(f"Method '{feature}' does not exist or is not callable.")

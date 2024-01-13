@@ -4,7 +4,7 @@ from src.config import Config
 
 logging.basicConfig(level=logging.INFO)
 
-class Annotation:
+class Disambiguation:
     wordlist_base_path = Config.WORD_LIST_BASE_PATH
     word_lists = {}
 

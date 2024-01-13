@@ -4,7 +4,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from src.config import Config
-from src.annotation.annotating import RunAnnotation
+from src.annotation.annotating import Annotation
 
 # PostgreSQL connection parameters
 db_params = {
@@ -286,13 +286,13 @@ def annotate():
     selected_features = request.json.get('selected_features')
     logging.info('Start annotation...')
 
-    run_annotation = RunAnnotation()
+    annotation = Annotation()
 
     try:
         subprocess.run(['python', Config.PREPROCESSING_SCRIPT_PATH, 'preprocessing'])
 
         for feature in selected_features:
-            run_annotation.annotate_feature(feature['annotation_method'])
+            annotation.annotate_feature(feature['annotation_method'])
             
         return jsonify({'message': 'Script executed successfully'})
         
