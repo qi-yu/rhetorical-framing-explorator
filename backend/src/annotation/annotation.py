@@ -69,7 +69,7 @@ class Annotation:
                                     
                         feature_stats[feature].append(current_feature_count / total_token_count)
 
-                    step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, "generate_statistics.txt"))
+                    step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, "statistics.txt"))
 
         df = pd.DataFrame(feature_stats)
         df.insert(0, "filename", all_filenames)
