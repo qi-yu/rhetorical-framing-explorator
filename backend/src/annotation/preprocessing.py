@@ -6,56 +6,59 @@ from src.annotation.utils import parse_xml_tree, update_progress, convert_to_xml
 
 logging.basicConfig(level=logging.INFO)
 
-inputRoot = Config.RAW_FILE_PATH
-outputRoot = Config.PREPROCESSED_FILE_PATH
-progressOutputRoot = Config.PROGRESS_PATH
+class Preprocessing:
+    inputRoot = Config.RAW_FILE_PATH
+    outputRoot = Config.PREPROCESSED_FILE_PATH
+    progressOutputRoot = Config.PROGRESS_PATH
 
-step_count = 0
 
-# ----- File format conversion -----
-convert_to_xml(inputRoot, inputRoot)
-total_steps = len([filename for r, d, f in os.walk(inputRoot) for filename in f if filename.endswith(".xml") and filename.startswith(".") is False]) + 2 # +2: count the step for converting file format and loading stanza
-step_count = update_progress(step_count, total_steps, os.path.join(progressOutputRoot, "preprocessing.txt"))
+    def preprocess(self):
+        step_count = 0
 
-# -----Start processsing -----
-package_name = "de_core_news_sm"
-if not spacy.util.is_package(package_name):
-    command = f"python -m spacy download {package_name}"
-    subprocess.run(command, shell=True)
+        # ----- File format conversion -----
+        convert_to_xml(self.inputRoot, self.inputRoot)
+        total_steps = len([filename for r, d, f in os.walk(self.inputRoot) for filename in f if filename.endswith(".xml") and filename.startswith(".") is False]) + 2 # +2: count the step for converting file format and loading stanza
+        step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, "preprocessing.txt"))
 
-nlp = spacy.load("de_core_news_sm")
-step_count = update_progress(step_count, total_steps, os.path.join(progressOutputRoot, "preprocessing.txt"))
+        # -----Start processsing -----
+        package_name = "de_core_news_sm"
+        if not spacy.util.is_package(package_name):
+            command = f"python -m spacy download {package_name}"
+            subprocess.run(command, shell=True)
 
-logging.info("Making XML structures...")
-for r, d, f in os.walk(inputRoot):
-    for filename in f:
-        if filename.endswith(".xml") and filename.startswith(".") is False:
-            tree, root = parse_xml_tree(os.path.join(r, filename))
+        nlp = spacy.load("de_core_news_sm")
+        step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, "preprocessing.txt"))
 
-            for utr in root.iter('utterance'):
-                currentUtr = nlp(utr.text)
+        logging.info("Making XML structures...")
+        for r, d, f in os.walk(self.inputRoot):
+            for filename in f:
+                if filename.endswith(".xml") and filename.startswith(".") is False:
+                    tree, root = parse_xml_tree(os.path.join(r, filename))
 
-                for s in currentUtr.sents:
-                    sentenceLabel = ET.SubElement(utr, "sentence")
-                    for w in s:
-                        lexemeLabel = ET.SubElement(sentenceLabel, "lexeme")
-                        lexemeLabel.text = w.text
-                        lexemeLabel.set("index", str(w.i))
-                        lexemeLabel.set("lemma", w.lemma_)
-                        lexemeLabel.set("pos", w.tag_)
-                        lexemeLabel.set("feats", w.morph)
-                        lexemeLabel.set("governor", str(w.head.i))
-                        lexemeLabel.set("dependency_relation", w.dep_)
+                    for utr in root.iter('utterance'):
+                        currentUtr = nlp(utr.text)
 
-                        if w.ent_type_ != "":
-                            lexemeLabel.set("ner", w.ent_type_)
+                        for s in currentUtr.sents:
+                            sentenceLabel = ET.SubElement(utr, "sentence")
+                            for w in s:
+                                lexemeLabel = ET.SubElement(sentenceLabel, "lexeme")
+                                lexemeLabel.text = w.text
+                                lexemeLabel.set("index", str(w.i))
+                                lexemeLabel.set("lemma", w.lemma_)
+                                lexemeLabel.set("pos", w.tag_)
+                                lexemeLabel.set("feats", w.morph)
+                                lexemeLabel.set("governor", str(w.head.i))
+                                lexemeLabel.set("dependency_relation", w.dep_)
 
-                utr.text = None
+                                if w.ent_type_ != "":
+                                    lexemeLabel.set("ner", w.ent_type_)
 
-            output = prettify(root)
-            with open(os.path.join(outputRoot, filename.split('.')[0] + "_DUS.xml"), mode="w", encoding="utf-8") as outputfile:
-                outputfile.write(output)
+                        utr.text = None
 
-            step_count = update_progress(step_count, total_steps, os.path.join(progressOutputRoot, "preprocessing.txt"))
+                    output = prettify(root)
+                    with open(os.path.join(self.outputRoot, filename.split('.')[0] + "_DUS.xml"), mode="w", encoding="utf-8") as outputfile:
+                        outputfile.write(output)
 
-logging.info("Done with preprocessing.")
+                    step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, "preprocessing.txt"))
+
+        logging.info("Done with preprocessing.")
