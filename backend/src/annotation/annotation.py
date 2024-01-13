@@ -1,6 +1,6 @@
 import sys, logging, os
 from src.config import Config
-from src.annotation.features import Disambiguation
+from src.annotation.disambiguation import Disambiguation
 from src.annotation.utils import parse_xml_tree, get_sentence_as_lexeme_list, update_progress
 
 logging.basicConfig(level=logging.INFO)

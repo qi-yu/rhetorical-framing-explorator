@@ -5,7 +5,7 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from src.config import Config
 from src.annotation.preprocessing import Preprocessing
-from src.annotation.annotating import Annotation
+from src.annotation.annotation import Annotation
 
 # PostgreSQL connection parameters
 db_params = {
