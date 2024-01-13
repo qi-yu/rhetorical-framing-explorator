@@ -168,9 +168,8 @@ def update_progress(step_counter, total_step_amount, save_path):
     """
     step_counter += 1
     progress = step_counter / total_step_amount * 100
-        
-    progress_file = os.path.join(save_path, sys.argv[1] + '.txt') 
-    with open(progress_file, 'w') as file:
+    
+    with open(save_path, 'w') as file:
         file.write(str(round(progress)))
 
     return step_counter

@@ -15,7 +15,7 @@ step_count = 0
 # ----- File format conversion -----
 convert_to_xml(inputRoot, inputRoot)
 total_steps = len([filename for r, d, f in os.walk(inputRoot) for filename in f if filename.endswith(".xml") and filename.startswith(".") is False]) + 2 # +2: count the step for converting file format and loading stanza
-step_count = update_progress(step_count, total_steps, progressOutputRoot)
+step_count = update_progress(step_count, total_steps, os.path.join(progressOutputRoot, "preprocessing.txt"))
 
 # -----Start processsing -----
 package_name = "de_core_news_sm"
@@ -24,7 +24,7 @@ if not spacy.util.is_package(package_name):
     subprocess.run(command, shell=True)
 
 nlp = spacy.load("de_core_news_sm")
-step_count = update_progress(step_count, total_steps, progressOutputRoot)
+step_count = update_progress(step_count, total_steps, os.path.join(progressOutputRoot, "preprocessing.txt"))
 
 logging.info("Making XML structures...")
 for r, d, f in os.walk(inputRoot):
@@ -56,6 +56,6 @@ for r, d, f in os.walk(inputRoot):
             with open(os.path.join(outputRoot, filename.split('.')[0] + "_DUS.xml"), mode="w", encoding="utf-8") as outputfile:
                 outputfile.write(output)
 
-            step_count = update_progress(step_count, total_steps, progressOutputRoot)
+            step_count = update_progress(step_count, total_steps, os.path.join(progressOutputRoot, "preprocessing.txt"))
 
 logging.info("Done with preprocessing.")
