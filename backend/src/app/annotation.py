@@ -44,6 +44,7 @@ class Annotation:
     
     def generate_statistics(self):
         all_filenames = []
+        all_total_token_counts = []
         feature_stats = {feature: [] for feature in self.selected_features}
 
         for r, d, f in os.walk(self.inputRoot):
@@ -54,25 +55,30 @@ class Annotation:
                 if filename.endswith(".xml"):
                     tree, root = parse_xml_tree(os.path.join(r, filename))
                     all_filenames.append(filename)
+                    current_total_token_count = 0
+
+                    for lexeme in root.iter("lexeme"):
+                        current_total_token_count += 1
+                    
+                    all_total_token_counts.append(current_total_token_count)
 
                     for feature in feature_stats.keys():
-                        total_token_count = 0
                         current_feature_count = 0
 
                         for s in root.iter("sentence"):
                             lexeme_list = get_sentence_as_lexeme_list(s)
-                            total_token_count += len(lexeme_list)
                         
                             for lexeme in lexeme_list:
                                 if lexeme.get(feature):
                                     current_feature_count += 1
                                     
-                        feature_stats[feature].append(current_feature_count / total_token_count)
+                        feature_stats[feature].append(current_feature_count)
 
                     step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, "statistics.txt"))
 
         df = pd.DataFrame(feature_stats)
         df.insert(0, "filename", all_filenames)
+        df.insert(1, "total_token_count", all_total_token_counts)
         csv_data = df.to_csv(sep="\t", encoding="utf-8", index=False)
         
         return csv_data

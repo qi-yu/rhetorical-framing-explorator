@@ -25,6 +25,7 @@ import { DividerModule } from 'primeng/divider';
 import { AnnotationComponent } from './annotation/annotation.component';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { StatisticsComponent } from './statistics/statistics.component';
+import { ChartModule } from 'primeng/chart';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { StatisticsComponent } from './statistics/statistics.component';
     ToastModule,
     TableModule,
     DividerModule,
-    ProgressBarModule
+    ProgressBarModule,
+    ChartModule
   ],
   providers: [],
   bootstrap: [AppComponent]
