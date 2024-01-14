@@ -14,7 +14,6 @@ export class AnnotationComponent {
 
   selectedFeatures: IFeature[] = [];
   preprocessingProgressValue: number = 0;
-  statisticProgressValue: number = 0;
   progressValues: { [key: string]: number } = {}; 
   progressSubscription: Subscription | undefined;
 
@@ -50,8 +49,6 @@ export class AnnotationComponent {
     this.selectedFeatures.forEach((feature, index) => {
       feature.progress = Number(this.progressValues[feature.annotation_method]);
     });
-
-    this.statisticProgressValue = Number(this.progressValues['statistics']);
   }
 
   ngOnDestroy() {
