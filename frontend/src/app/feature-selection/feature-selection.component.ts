@@ -62,11 +62,21 @@ export class FeatureSelectionComponent implements OnInit {
 
     this.selectedDimensions = allDimensionsSelected;
     this.featureService.setSelectedFeatures(this.selectedFeatures);
+    console.log(this.selectedFeatures)
   }
 
-  onSelectDimension(event: any) {
-    this.selectedFeatures = this.allFeatures.filter((feature) => event.checked.includes(feature.dimension));
-    this.selectedFeatures.length === 0 ? this.checked  = true : this.checked = false;
+  onSelectDimension(dimension: string) {
+    const dimensionIndex = this.selectedDimensions.indexOf(dimension);
+  
+    if (dimensionIndex !== -1) {
+      const featuresOfDimension = this.allFeatures.filter((feature) => feature.dimension === dimension);
+      this.selectedFeatures = [...this.selectedFeatures, ...featuresOfDimension];
+      this.selectedDimensions.push(dimension);
+    } else {
+      this.selectedDimensions.splice(dimensionIndex, 1);
+      this.selectedFeatures = this.selectedFeatures.filter((feature) => feature.dimension !== dimension);
+    }
+  
     this.featureService.setSelectedFeatures(this.selectedFeatures);
   }
 

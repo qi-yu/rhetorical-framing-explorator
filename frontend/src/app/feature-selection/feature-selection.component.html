@@ -17,7 +17,7 @@
                 <p-fieldset>
                     <ng-template pTemplate="header">
                         <div class="flex align-items-center text-primary">
-                            <p-checkbox name="dimension" [value]="dimension" [label]="dimension" [(ngModel)]="selectedDimensions" (onChange)="onSelectDimension($event)"></p-checkbox>
+                            <p-checkbox name="dimension" [value]="dimension" [label]="dimension" [(ngModel)]="selectedDimensions" (onChange)="onSelectDimension(dimension)"></p-checkbox>
                         </div>
                     </ng-template>
                     <div *ngFor="let feature of allFeatures">
