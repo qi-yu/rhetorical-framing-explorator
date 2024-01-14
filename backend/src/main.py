@@ -1,6 +1,6 @@
 import json, os, logging, shutil, subprocess
 import psycopg2
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from src.config import Config
@@ -303,6 +303,18 @@ def annotate():
     except Exception as e:
         return jsonify({'error': str(e)})
     
+
+@app.route('/download', methods=['GET'])
+def download_feature_statistics():
+    annotation = Annotation()
+    csv_data = annotation.generate_statistics()
+
+    response = make_response(csv_data)
+    response.headers["Content-Disposition"] = "attachment; filename=feature_statistics.csv"
+    response.headers["Content-Type"] = "text/csv"
+
+    return response
+
 
 @app.route('/progress', methods=['GET'])
 def get_progress():

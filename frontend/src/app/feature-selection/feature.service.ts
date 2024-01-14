@@ -36,6 +36,11 @@ export class FeatureService {
             .pipe(catchError(this.errorHandler));
   }
 
+  getFeatureStatistics(): Observable<any> {
+    return this.http.get(`${API_URL}/download`, { responseType: 'text' })
+            .pipe(catchError(this.errorHandler));
+  }
+
   errorHandler(error: HttpErrorResponse) {
     return throwError(() => (error.message || 'Server Error'));
   }

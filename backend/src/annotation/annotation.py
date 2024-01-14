@@ -73,8 +73,10 @@ class Annotation:
 
         df = pd.DataFrame(feature_stats)
         df.insert(0, "filename", all_filenames)
-        df.to_csv(os.path.join(self.statisticsOutputRoot, "feature_statistics" + datetime.datetime.today().strftime('%Y-%m-%d') + ".tsv" ),
-                  sep="\t", encoding="utf-8", index=False)
+        csv_data = df.to_csv(sep="\t", encoding="utf-8", index=False)
+        
+        return csv_data
+
                             
 
                         

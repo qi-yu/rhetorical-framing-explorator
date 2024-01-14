@@ -24,6 +24,7 @@ import { TableModule } from 'primeng/table';
 import { DividerModule } from 'primeng/divider';
 import { AnnotationComponent } from './annotation/annotation.component';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { StatisticsComponent } from './statistics/statistics.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { ProgressBarModule } from 'primeng/progressbar';
     StepsComponent,
     FeatureSelectionComponent,
     FileSizePipe,
-    AnnotationComponent
+    AnnotationComponent,
+    StatisticsComponent
   ],
   imports: [
     BrowserModule,
