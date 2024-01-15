@@ -39,16 +39,18 @@ export class AnnotationComponent {
 
   startProgressPolling() {
     // Poll for progress updates
-    this.progressSubscription = interval(1000).subscribe(() => {
+    this.progressSubscription = interval(500).subscribe(() => {
       this.featureService.getProgress().subscribe({
         next: (data) => {
           this.progressValues = data; // Update progress values
           this.updateProgressBars();
 
-          if(Object.keys(data).length === (this.selectedFeatures.length) + 1  // + 1: progress of preprocessing 
+          setTimeout(() => {
+            if(Object.keys(data).length === (this.selectedFeatures.length) + 1  // + 1: progress of preprocessing 
               && Object.values(data).every(value => value === 100)) {
-            this.annotationFinished = true;
-          }
+              this.annotationFinished = true;
+            }
+          }, 1000);
         },
         error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: err })
       });
