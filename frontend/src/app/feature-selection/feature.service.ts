@@ -36,6 +36,11 @@ export class FeatureService {
             .pipe(catchError(this.errorHandler));
   }
 
+  clearProgress(): Observable<any> {
+    return this.http.post(`${API_URL}/clear_progress`, {})
+            .pipe(catchError(this.errorHandler));
+  }
+
   getFeatureStatistics(): Observable<any> {
     return this.http.get(`${API_URL}/download`, { responseType: 'text' })
             .pipe(catchError(this.errorHandler));

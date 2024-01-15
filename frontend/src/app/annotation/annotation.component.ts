@@ -75,6 +75,8 @@ export class AnnotationComponent {
   ngOnInit() {
     this.featureService.selectedFeatures$.subscribe((features) => {
       this.selectedFeatures = features;
+      this.featureService.clearProgress().subscribe();
+      this.updateProgressBars();
     });
   }
 

@@ -288,6 +288,7 @@ def annotate():
     logging.info('Start annotation...')
 
     preprocessing = Preprocessing()
+    Annotation.selected_features = [feature["annotation_method"] for feature in selected_features]
     annotation = Annotation()
 
     try:
@@ -331,6 +332,21 @@ def get_progress():
         
         return jsonify(progress)
     
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    
+
+@app.route('/clear_progress', methods=['POST'])
+def clear_progress():
+    try:
+        progress_folder = Config.PROGRESS_PATH
+        for file_name in os.listdir(progress_folder):
+            file_path = os.path.join(progress_folder, file_name)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+
+        return jsonify({'message': 'Progress cleared successfully'})
+
     except Exception as e:
         return jsonify({'error': str(e)})
     

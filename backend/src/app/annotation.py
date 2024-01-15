@@ -16,7 +16,6 @@ class Annotation:
 
     def annotate_feature(self, feature):
         logging.info("Annotating " + feature + "...")
-        self.selected_features.append(feature)
 
         for r, d, f in os.walk(self.inputRoot):
             total_steps = len([filename for filename in f if filename.endswith(".xml")])
@@ -77,7 +76,7 @@ class Annotation:
                     step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, "statistics.txt"))
 
         df = pd.DataFrame(feature_stats)
-        df.insert(0, "filename", all_filenames)
+        df.insert(0, "id", all_filenames)
         df.insert(1, "total_token_count", all_total_token_counts)
         csv_data = df.to_csv(sep="\t", encoding="utf-8", index=False)
         
