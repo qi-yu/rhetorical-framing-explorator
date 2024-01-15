@@ -62,7 +62,6 @@ export class FeatureSelectionComponent implements OnInit {
 
     this.selectedDimensions = allDimensionsSelected;
     this.featureService.setSelectedFeatures(this.selectedFeatures);
-    console.log(this.selectedFeatures)
   }
 
   onSelectDimension(dimension: string) {
