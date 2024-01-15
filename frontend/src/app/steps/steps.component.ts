@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
+import { FileService } from '../file-upload/file.service';
 
 @Component({
   selector: 'app-steps',
@@ -12,7 +13,7 @@ export class StepsComponent {
   activeIndex = 0;
   nextStepAllowed = false;
 
-  constructor(private messageService: MessageService) {}
+  constructor(private messageService: MessageService, private fileService: FileService) {}
 
   onActiveIndexChange(event: number) {
     this.activeIndex = event;
@@ -23,6 +24,10 @@ export class StepsComponent {
 
     if(this.activeIndex < 0) {
       this.activeIndex = 0;
+    }
+
+    if (this.activeIndex === 0) {
+      this.fileService.clearProcessedFiles().subscribe();
     }
   }
 

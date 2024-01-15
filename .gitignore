@@ -45,5 +45,6 @@ Thumbs.db
 
 # Temporary files from frontend
 /backend/upload
+/backend/temp
 /backend/output
 /backend/progress

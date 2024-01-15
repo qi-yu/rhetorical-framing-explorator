@@ -9,7 +9,6 @@ logging.basicConfig(level=logging.INFO)
 class Annotation:
     inputRoot = Config.PREPROCESSED_FILE_PATH
     progressOutputRoot = Config.PROGRESS_PATH
-    statisticsOutputRoot = Config.PREPROCESSED_FILE_PATH
     disambiguation = Disambiguation()
     selected_features = []
 
@@ -47,9 +46,6 @@ class Annotation:
         feature_stats = {feature: [] for feature in self.selected_features}
 
         for r, d, f in os.walk(self.inputRoot):
-            total_steps = len([filename for filename in f if filename.endswith(".xml")])
-            step_count = 0
-
             for filename in f:
                 if filename.endswith(".xml"):
                     tree, root = parse_xml_tree(os.path.join(r, filename))
@@ -73,7 +69,6 @@ class Annotation:
                                     
                         feature_stats[feature].append(current_feature_count)
 
-                    step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, "statistics.txt"))
 
         df = pd.DataFrame(feature_stats)
         df.insert(0, "id", all_filenames)

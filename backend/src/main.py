@@ -1,4 +1,4 @@
-import json, os, logging, shutil, subprocess
+import json, os, logging, shutil
 import psycopg2
 from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
@@ -96,6 +96,12 @@ def create_uploaded_files_table():
        
     cursor.close()
     conn.close()
+
+
+def clear_folder(folder_path):
+    for filename in os.listdir(folder_path):
+        file_path  = os.path.join(folder_path, filename)
+        os.remove(file_path)
 
 
 @app.route('/')
@@ -351,8 +357,20 @@ def clear_progress():
         return jsonify({'error': str(e)})
     
 
+@app.route('/clear_files', methods=['POST'])
+def clear_processed_files():
+    try:
+        for folder_path in [Config.TEMP_FILE_PATH, Config.PREPROCESSED_FILE_PATH]:
+            clear_folder(folder_path)
+
+        return jsonify({'message': 'Cleared processed files successfully'})
+
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    
+
 if __name__ == '__main__':
-    for folder in [Config.RAW_FILE_PATH, Config.PREPROCESSED_FILE_PATH, Config.PROGRESS_PATH]:
+    for folder in [Config.RAW_FILE_PATH, Config.TEMP_FILE_PATH, Config.PREPROCESSED_FILE_PATH, Config.PROGRESS_PATH]:
         if os.path.exists(folder):
             shutil.rmtree(folder)
         os.mkdir(folder)

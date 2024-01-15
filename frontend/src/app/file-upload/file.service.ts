@@ -27,6 +27,10 @@ export class FileService {
     return this.http.put(renameUrl, body);
   }
 
+  clearProcessedFiles(): Observable<any> {
+    return this.http.post(`${API_URL}/clear_files`, {});
+  }
+
   errorHandler(error: HttpErrorResponse) {
     return throwError(() => (error.message || 'Server Error'));
   }

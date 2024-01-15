@@ -1,5 +1,6 @@
 class Config:
     RAW_FILE_PATH = "./upload"
+    TEMP_FILE_PATH = "./temp"
     PREPROCESSED_FILE_PATH = "./output"
     PROGRESS_PATH = "./progress"
     FEATURE_CONFIG_PATH = "./src/features.json"

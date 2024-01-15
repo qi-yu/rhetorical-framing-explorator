@@ -8,6 +8,7 @@ logging.basicConfig(level=logging.INFO)
 
 class Preprocessing:
     inputRoot = Config.RAW_FILE_PATH
+    tempRoot = Config.TEMP_FILE_PATH
     outputRoot = Config.PREPROCESSED_FILE_PATH
     progressOutputRoot = Config.PROGRESS_PATH
 
@@ -16,8 +17,8 @@ class Preprocessing:
         step_count = 0
 
         # ----- File format conversion -----
-        convert_to_xml(self.inputRoot, self.inputRoot)
-        total_steps = len([filename for r, d, f in os.walk(self.inputRoot) for filename in f if filename.endswith(".xml") and filename.startswith(".") is False]) + 2 # +2: count the step for converting file format and loading stanza
+        convert_to_xml(self.inputRoot, self.tempRoot)
+        total_steps = len([filename for r, d, f in os.walk(self.tempRoot) for filename in f if filename.endswith(".xml") and filename.startswith(".") is False]) + 2 # +2: count the step for converting file format and loading stanza
         step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, "preprocessing.txt"))
 
         # -----Start processsing -----
@@ -30,7 +31,7 @@ class Preprocessing:
         step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, "preprocessing.txt"))
 
         logging.info("Making XML structures...")
-        for r, d, f in os.walk(self.inputRoot):
+        for r, d, f in os.walk(self.tempRoot):
             for filename in f:
                 if filename.endswith(".xml") and filename.startswith(".") is False:
                     tree, root = parse_xml_tree(os.path.join(r, filename))
