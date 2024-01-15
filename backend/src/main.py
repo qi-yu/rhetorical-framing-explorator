@@ -296,8 +296,6 @@ def annotate():
         for feature in selected_features:
             annotation.annotate_feature(feature['annotation_method'])
             
-        annotation.generate_statistics()
-            
         return jsonify({'message': 'Script executed successfully'})
         
     except Exception as e:

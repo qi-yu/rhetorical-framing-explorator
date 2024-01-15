@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IFeature } from '../feature-selection/feature';
 import { FeatureService } from '../feature-selection/feature.service';
 import { MessageService } from 'primeng/api';
+import { Message } from 'primeng/api';
 import { interval, Subscription } from 'rxjs';
 
 
@@ -16,6 +17,12 @@ export class AnnotationComponent {
   preprocessingProgressValue: number = 0;
   progressValues: { [key: string]: number } = {}; 
   progressSubscription: Subscription | undefined;
+  annotationFinished: boolean = false;
+  successMessage: Message[] = [{ 
+    severity: 'success', 
+    summary: 'Success', 
+    detail: 'Annotation finished! Click on "Next Step" to get results.' 
+  }]
 
   constructor(private featureService: FeatureService, private messageService: MessageService, ) {}
 
@@ -37,6 +44,11 @@ export class AnnotationComponent {
         next: (data) => {
           this.progressValues = data; // Update progress values
           this.updateProgressBars();
+
+          if(Object.keys(data).length === (this.selectedFeatures.length) + 1  // + 1: progress of preprocessing 
+              && Object.values(data).every(value => value === 100)) {
+            this.annotationFinished = true;
+          }
         },
         error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: err })
       });

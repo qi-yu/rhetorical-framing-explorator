@@ -9,7 +9,10 @@
             <p-progressBar [value]="feature.progress"></p-progressBar>
         </div>
         <div style="display: flex; justify-content: center; margin-top: 2rem;">
-            <p-button label="START ANNOTATION" icon="pi pi-forward" (onClick)="onStartAnnotation()"></p-button>
+            <p-button label="START ANNOTATION" icon="pi pi-forward" (onClick)="onStartAnnotation()" [disabled]="annotationFinished"></p-button>
+        </div>
+        <div *ngIf="annotationFinished">
+            <p-messages [(value)]="successMessage" [enableService]="false" [closable]="false"></p-messages>
         </div>
     </p-card>  
 </div>
