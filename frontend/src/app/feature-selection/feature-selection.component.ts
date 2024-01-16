@@ -30,15 +30,15 @@ export class FeatureSelectionComponent implements OnInit {
             this.selectedFeatures = data;
             this.selectedDimensions = [...new Set(data.map((item) => item.dimension))];
             this.featureService.setSelectedFeatures(this.selectedFeatures);
+            this.updateFeatureSelectionStatus();
           }
         })
     } else {
       this.selectedFeatures = [];
       this.selectedDimensions = [];
       this.featureService.setSelectedFeatures(this.selectedFeatures);
+      this.updateFeatureSelectionStatus();
     }
-
-    // this.updateFeatureSelectionStatus();
   }
 
   changeToggleButtonStatus(): void {
@@ -102,7 +102,7 @@ export class FeatureSelectionComponent implements OnInit {
         this.allDimensions = [...new Set(data.map((item) => item.dimension))]
       }
     })
-    
+
     this.featureService.setSelectedFeatures(this.selectedFeatures);
   }
 }
