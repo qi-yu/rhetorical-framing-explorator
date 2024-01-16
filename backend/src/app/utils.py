@@ -24,14 +24,12 @@ def convert_to_xml(filepath, outputpath):
                 df = pd.read_csv(os.path.join(r, filename), sep=separator, encoding="utf-8")
 
                 for idx, row in df.iterrows():
-                    section = ET.Element("section")
-                    topic = ET.SubElement(section, "topic")
-                    utterance = ET.SubElement(topic, "utterance")
-                    utterance.text = row["text"]
+                    document = ET.Element("document")
+                    document.text = row["text"]
 
                     currentFileName = row["id"]
 
-                    ET.ElementTree(section).write(os.path.join(outputpath, currentFileName), encoding="utf-8", xml_declaration=True)
+                    ET.ElementTree(document).write(os.path.join(outputpath, currentFileName), encoding="utf-8", xml_declaration=True)
 
 
 def parse_xml_tree(filepath):
@@ -44,7 +42,6 @@ def parse_xml_tree(filepath):
         mytree: The parsed XML-tree.
         myroot: The root of the parsed XML-tree.
     """
-    # print("Process file:", filepath, "...")
     mytree = ET.parse(filepath)
     myroot = mytree.getroot()
     return mytree, myroot
@@ -102,48 +99,6 @@ def get_sentence_as_lemmatized_text(sentence):
         sentenceAsText += lexeme.get("lemma") + " "
 
     return sentenceAsText
-
-
-def get_du_as_lexeme_list(du):
-    """Get discourse unit as a list of lexemes.
-
-    :param du: The sentence to be converted to lexeme list.
-    :return: The sentence as a list of lexemes.
-    """
-    return [lexeme for lexeme in du.findall("lexeme")]
-
-
-def get_du_as_text(du):
-    """Get discourse unit as text.
-
-    Arg:
-        du: The discourse unit to be converted to text.
-
-    Returns:
-        duAsText (str): The discourse unit as text.
-    """
-    duAsText = ""
-    for lexeme in du.findall("lexeme"):
-        duAsText += lexeme.text + " "
-
-    return duAsText
-
-
-def get_du_as_lemmatized_text(du):
-    """Get discourse unit as lemmatized text.
-
-    Arg:
-        du: The discourse unit to be converted to text.
-
-    Returns:
-        duAsText (str): The discourse unit as text.
-    """
-    duAsText = ""
-    for lexeme in du.findall("lexeme"):
-        duAsText += lexeme.get("lemma") + " "
-
-    return duAsText
-
 
 def get_wordlist_from_txt(source):
     """Create a list of keywords from .txt files.

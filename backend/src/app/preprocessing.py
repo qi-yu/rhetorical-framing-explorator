@@ -36,11 +36,11 @@ class Preprocessing:
                 if filename.endswith(".xml") and filename.startswith(".") is False:
                     tree, root = parse_xml_tree(os.path.join(r, filename))
 
-                    for utr in root.iter('utterance'):
-                        currentUtr = nlp(utr.text)
+                    for document in root.iter('document'):
+                        currentDoc = nlp(document.text)
 
-                        for s in currentUtr.sents:
-                            sentenceLabel = ET.SubElement(utr, "sentence")
+                        for s in currentDoc.sents:
+                            sentenceLabel = ET.SubElement(document, "sentence")
                             for w in s:
                                 lexemeLabel = ET.SubElement(sentenceLabel, "lexeme")
                                 lexemeLabel.text = w.text
@@ -54,7 +54,7 @@ class Preprocessing:
                                 if w.ent_type_ != "":
                                     lexemeLabel.set("ner", w.ent_type_)
 
-                        utr.text = None
+                        document.text = None
 
                     output = prettify(root)
                     with open(os.path.join(self.outputRoot, filename.split('.')[0] + "_DUS.xml"), mode="w", encoding="utf-8") as outputfile:
