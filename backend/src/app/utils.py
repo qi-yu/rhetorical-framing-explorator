@@ -26,8 +26,12 @@ def convert_to_xml(filepath, outputpath):
                 for idx, row in df.iterrows():
                     document = ET.Element("document")
                     document.text = row["text"]
+                    document.set("id", row["id"])
+                    
+                    if "label" in df.columns:
+                        document.set("label", row["label"])
 
-                    currentFileName = row["id"]
+                    currentFileName = row["id"] + ".xml"
 
                     ET.ElementTree(document).write(os.path.join(outputpath, currentFileName), encoding="utf-8", xml_declaration=True)
 
