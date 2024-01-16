@@ -77,7 +77,7 @@ export class FeatureSelectionComponent implements OnInit {
   
     if (dimensionIndex !== -1) {
       const featuresOfDimension = this.allFeatures.filter((feature) => feature.dimension === dimension);
-      this.selectedFeatures = [...this.selectedFeatures, ...featuresOfDimension];
+      this.selectedFeatures = [...new Set([...this.selectedFeatures, ...featuresOfDimension])];
       this.selectedDimensions.push(dimension);
     } else {
       this.selectedDimensions.splice(dimensionIndex, 1);
