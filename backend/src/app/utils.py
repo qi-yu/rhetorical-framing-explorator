@@ -30,6 +30,8 @@ def convert_to_xml(filepath, outputpath):
                     
                     if "label" in df.columns:
                         document.set("label", row["label"])
+                    else:
+                        document.set("label", "Default Dataset")
 
                     currentFileName = row["id"] + ".xml"
 

@@ -41,7 +41,8 @@ class Annotation:
 
     
     def generate_statistics(self):
-        all_filenames = []
+        all_ids = []
+        all_labels = []
         all_total_token_counts = []
         feature_stats = {feature: [] for feature in self.selected_features}
 
@@ -49,7 +50,8 @@ class Annotation:
             for filename in f:
                 if filename.endswith(".xml"):
                     tree, root = parse_xml_tree(os.path.join(r, filename))
-                    all_filenames.append(filename)
+                    all_ids.append(root.get("id"))
+                    all_labels.append(root.get("label"))
                     current_total_token_count = 0
 
                     for lexeme in root.iter("lexeme"):
@@ -71,8 +73,9 @@ class Annotation:
 
 
         df = pd.DataFrame(feature_stats)
-        df.insert(0, "id", all_filenames)
-        df.insert(1, "total_token_count", all_total_token_counts)
+        df.insert(0, "id", all_ids)
+        df.insert(1, "label", all_labels)
+        df.insert(2, "total_token_count", all_total_token_counts)
         csv_data = df.to_csv(sep="\t", encoding="utf-8", index=False)
         
         return csv_data
