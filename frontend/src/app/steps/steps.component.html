@@ -22,7 +22,7 @@
             iconPos="right" 
             styleClass="p-button-rounded p-button-text p-button-raised"
             (click)="goToNextStep()"
-            [disabled]="activeIndex >= items.length - 1 || nextStepAllowed === false"
+            [disabled]="nextStepAllowed === false"
         ></p-button>
     </span>
 </div>

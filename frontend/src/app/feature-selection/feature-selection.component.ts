@@ -38,7 +38,7 @@ export class FeatureSelectionComponent implements OnInit {
       this.featureService.setSelectedFeatures(this.selectedFeatures);
     }
 
-    this.updateFeatureSelectionStatus();
+    // this.updateFeatureSelectionStatus();
   }
 
   changeToggleButtonStatus(): void {
@@ -104,6 +104,5 @@ export class FeatureSelectionComponent implements OnInit {
     })
     
     this.featureService.setSelectedFeatures(this.selectedFeatures);
-    this.updateFeatureSelectionStatus();
   }
 }

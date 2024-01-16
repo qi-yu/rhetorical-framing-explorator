@@ -87,7 +87,5 @@ export class AnnotationComponent {
       this.featureService.clearProgress().subscribe();
       this.updateProgressBars();
     });
-
-    this.updateOverallAnnotationProgress()
   }
 }

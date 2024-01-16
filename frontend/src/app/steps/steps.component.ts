@@ -34,6 +34,7 @@ export class StepsComponent {
   goToNextStep(): void {
     if (this.nextStepAllowed) {
       this.activeIndex += 1;
+      this.nextStepAllowed = false
     }
     
     if (this.activeIndex > this.items.length - 1) {
