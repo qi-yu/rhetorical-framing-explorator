@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, SimpleChange, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { FeatureService } from './feature.service';
 import { IFeature } from './feature';
@@ -11,7 +11,7 @@ import { IFeature } from './feature';
 export class FeatureSelectionComponent implements OnInit {
   @Output() featureSelectionEvent: EventEmitter<boolean> = new EventEmitter()
 
-  checked: boolean = true;
+  toggleButtonChecked: boolean = true;
   selectedFeatures: Array<IFeature> = [];
   allFeatures: Array<IFeature> = [];
   selectedDimensions: Array<string> = [];
@@ -23,7 +23,7 @@ export class FeatureSelectionComponent implements OnInit {
   }
 
   onToggleSelectAll(): void {
-    if(this.checked === false) {
+    if(this.toggleButtonChecked === false) {
       this.featureService.getAllFeatures()
         .subscribe({
           next: (data) => {
@@ -41,9 +41,11 @@ export class FeatureSelectionComponent implements OnInit {
     this.updateFeatureSelectionStatus();
   }
 
-  onSelectFeature(event: any): void {
-    this.selectedFeatures.length === 0 ? this.checked  = true : this.checked = false;
+  changeToggleButtonStatus(): void {
+    this.selectedFeatures.length === 0 ? this.toggleButtonChecked  = true : this.toggleButtonChecked = false;
+  }
 
+  onSelectFeature(event: any): void {
     const dimensionsOfSelectedFeatures = [...new Set(event.checked.map((item: { dimension: string; }) => item.dimension))];
     let allDimensionsSelected: Array<string> = [];
     
@@ -64,6 +66,7 @@ export class FeatureSelectionComponent implements OnInit {
       allDimensionsSelected = [];
     }
 
+    this.changeToggleButtonStatus();
     this.selectedDimensions = allDimensionsSelected;
     this.featureService.setSelectedFeatures(this.selectedFeatures);
     this.updateFeatureSelectionStatus();
@@ -81,6 +84,7 @@ export class FeatureSelectionComponent implements OnInit {
       this.selectedFeatures = this.selectedFeatures.filter((feature) => feature.dimension !== dimension);
     }
   
+    this.changeToggleButtonStatus();
     this.featureService.setSelectedFeatures(this.selectedFeatures);
     this.updateFeatureSelectionStatus();
   }
