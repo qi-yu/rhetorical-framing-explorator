@@ -11,7 +11,6 @@ class Annotation:
     progressOutputRoot = Config.PROGRESS_PATH
     disambiguation = Disambiguation()
     selected_features = []
-    df_count = None
 
 
     def annotate_feature(self, feature):
@@ -78,12 +77,12 @@ class Annotation:
         df.insert(1, "label", all_labels)
         df.insert(2, "total_token_count", all_total_token_counts)
         count = df.to_csv(sep="\t", encoding="utf-8", index=False)
-        self.df_count = count
 
-        return count
+        return df, count
 
 
-    def generate_by_label_statistics(df_count):
+    def generate_by_label_statistics(self):
+        df_count, csv_count = self.generate_statistics()
         df_sums_by_label = df_count.drop("id", axis=1).groupby("label").sum()
         
         for col in df_sums_by_label.columns:

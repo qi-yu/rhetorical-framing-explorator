@@ -46,6 +46,11 @@ export class FeatureService {
             .pipe(catchError(this.errorHandler));
   }
 
+  getStatisticsByLabel(): Observable<any> {
+    return this.http.get(`${API_URL}/statistics_by_label`, { responseType: 'text' })
+            .pipe(catchError(this.errorHandler));
+  }
+
   errorHandler(error: HttpErrorResponse) {
     return throwError(() => (error.message || 'Server Error'));
   }
