@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { FeatureService } from './feature.service';
 import { IFeature } from './feature';
@@ -9,6 +9,8 @@ import { IFeature } from './feature';
   styleUrls: ['./feature-selection.component.css']
 })
 export class FeatureSelectionComponent implements OnInit {
+  @Output() featureSelectionEvent: EventEmitter<boolean> = new EventEmitter()
+
   checked: boolean = true;
   selectedFeatures: Array<IFeature> = [];
   allFeatures: Array<IFeature> = [];
@@ -20,7 +22,7 @@ export class FeatureSelectionComponent implements OnInit {
 
   }
 
-  onToggleSelectAll() {
+  onToggleSelectAll(): void {
     if(this.checked === false) {
       this.featureService.getAllFeatures()
         .subscribe({
@@ -35,9 +37,11 @@ export class FeatureSelectionComponent implements OnInit {
       this.selectedDimensions = [];
       this.featureService.setSelectedFeatures(this.selectedFeatures);
     }
+
+    this.updateFeatureSelectionStatus();
   }
 
-  onSelectFeature(event: any) {
+  onSelectFeature(event: any): void {
     this.selectedFeatures.length === 0 ? this.checked  = true : this.checked = false;
 
     const dimensionsOfSelectedFeatures = [...new Set(event.checked.map((item: { dimension: string; }) => item.dimension))];
@@ -62,9 +66,10 @@ export class FeatureSelectionComponent implements OnInit {
 
     this.selectedDimensions = allDimensionsSelected;
     this.featureService.setSelectedFeatures(this.selectedFeatures);
+    this.updateFeatureSelectionStatus();
   }
 
-  onSelectDimension(dimension: string) {
+  onSelectDimension(dimension: string): void {
     const dimensionIndex = this.selectedDimensions.indexOf(dimension);
   
     if (dimensionIndex !== -1) {
@@ -77,9 +82,16 @@ export class FeatureSelectionComponent implements OnInit {
     }
   
     this.featureService.setSelectedFeatures(this.selectedFeatures);
+    this.updateFeatureSelectionStatus();
   }
 
-  ngOnInit(): void {
+  updateFeatureSelectionStatus(): void {
+    this.selectedFeatures.length === 0 
+      ? this.featureSelectionEvent.emit(false)
+      : this.featureSelectionEvent.emit(true);
+  }
+
+  ngOnInit() {
     this.featureService.getAllFeatures().subscribe({
       next: data => {
         this.allFeatures = data;
@@ -88,5 +100,6 @@ export class FeatureSelectionComponent implements OnInit {
     })
     
     this.featureService.setSelectedFeatures(this.selectedFeatures);
+    this.updateFeatureSelectionStatus();
   }
 }

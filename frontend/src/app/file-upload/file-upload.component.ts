@@ -32,12 +32,12 @@ export class FileUploadComponent implements OnInit {
     private fileService: FileService) {}
 
 
-  onDragEnter(event: Event) {
+  onDragEnter(event: Event): void {
     event.preventDefault();
     this.isFileDragOver = true;
   }
 
-  onDragLeave(event: Event) {
+  onDragLeave(event: Event): void {
     event.preventDefault();
     this.isFileDragOver = false;
   }
@@ -91,17 +91,17 @@ export class FileUploadComponent implements OnInit {
     : this.fileSelectionEvent.emit(false);
   }
 
-  applyFilterGlobal($event: any, stringVal: any) {
+  applyFilterGlobal($event: any, stringVal: any): void {
     if (this.dt?.rows != 0) {
       this.dt?.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
     }
   }
 
-  onRowEditInit(file: IFile) {
+  onRowEditInit(file: IFile): void {
     this.clonedFiles[file.id] = { ...file };
   }
 
-  onRowEditSave(file: IFile, index: number) {
+  onRowEditSave(file: IFile, index: number): void {
     if (file.filename.length !== 0 && file.filename.trim() !== '') {
       this.fileService.renameFile(file.id, file.filename).subscribe({
         next: () => {
@@ -121,12 +121,12 @@ export class FileUploadComponent implements OnInit {
     }
   }
 
-  onRowEditCancel(file: IFile, index: number) {
+  onRowEditCancel(file: IFile, index: number): void {
     this.uploadedFiles[index] = this.clonedFiles[file.id];
     delete this.clonedFiles[file.id];
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.fileService.getAllFiles()
       .subscribe((data) => {
         this.uploadedFiles = data;

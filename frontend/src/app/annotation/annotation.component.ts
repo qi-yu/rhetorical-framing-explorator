@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { IFeature } from '../feature-selection/feature';
 import { FeatureService } from '../feature-selection/feature.service';
 import { MessageService } from 'primeng/api';
@@ -12,6 +12,7 @@ import { interval, Subscription } from 'rxjs';
   styleUrls: ['./annotation.component.css']
 })
 export class AnnotationComponent {
+  @Output() annotationProgressEvent: EventEmitter<boolean> = new EventEmitter();
 
   selectedFeatures: IFeature[] = [];
   preprocessingProgressValue: number = 0;
@@ -26,7 +27,7 @@ export class AnnotationComponent {
 
   constructor(private featureService: FeatureService, private messageService: MessageService, ) {}
 
-  onStartAnnotation() {
+  onStartAnnotation(): void {
     this.featureService.executeAnnotation(this.selectedFeatures).subscribe({
       next: () => {
         this.startProgressPolling();
@@ -37,7 +38,7 @@ export class AnnotationComponent {
     this.startProgressPolling();
   }
 
-  startProgressPolling() {
+  startProgressPolling(): void {
     // Poll for progress updates
     this.progressSubscription = interval(500).subscribe(() => {
       this.featureService.getProgress().subscribe({
@@ -51,18 +52,26 @@ export class AnnotationComponent {
               this.annotationFinished = true;
             }
           }, 1000);
+
+          this.updateOverallAnnotationProgress()
         },
         error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: err })
       });
     });
   }
 
-  updateProgressBars() {
+  updateProgressBars(): void {
     this.preprocessingProgressValue = Number(this.progressValues['preprocessing']);
 
     this.selectedFeatures.forEach((feature, index) => {
       feature.progress = Number(this.progressValues[feature.annotation_method]);
     });
+  }
+
+  updateOverallAnnotationProgress(): void {
+    this.annotationFinished
+      ? this.annotationProgressEvent.emit(true)
+      : this.annotationProgressEvent.emit(false);
   }
 
   ngOnDestroy() {
@@ -78,6 +87,7 @@ export class AnnotationComponent {
       this.featureService.clearProgress().subscribe();
       this.updateProgressBars();
     });
-  }
 
+    this.updateOverallAnnotationProgress()
+  }
 }

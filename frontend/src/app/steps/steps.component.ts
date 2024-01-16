@@ -15,11 +15,11 @@ export class StepsComponent {
 
   constructor(private messageService: MessageService, private fileService: FileService) {}
 
-  onActiveIndexChange(event: number) {
+  onActiveIndexChange(event: number): void {
     this.activeIndex = event;
   }
 
-  goToPreviousStep() {
+  goToPreviousStep(): void {
     this.activeIndex -= 1;
 
     if(this.activeIndex < 0) {
@@ -31,7 +31,7 @@ export class StepsComponent {
     }
   }
 
-  goToNextStep() {
+  goToNextStep(): void {
     if (this.nextStepAllowed) {
       this.activeIndex += 1;
     }
@@ -41,8 +41,16 @@ export class StepsComponent {
     }
    }
 
-  onFileSelectionChange(uploadCompleted: boolean) {
+  onFileSelectionChange(uploadCompleted: boolean): void {
     this.nextStepAllowed = uploadCompleted;
+  }
+
+  onFeatureSelectionChange(selectionCompleted: boolean): void {
+    this.nextStepAllowed = selectionCompleted;
+  }
+
+  onAnnotationStatusChange(annotationCompleted: boolean): void {
+    this.nextStepAllowed = annotationCompleted;
   }
   
   ngOnInit() {

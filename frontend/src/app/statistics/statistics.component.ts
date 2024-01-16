@@ -19,7 +19,7 @@ export class StatisticsComponent {
 
   constructor(private featureService: FeatureService) {}
 
-  downloadStatistics() {
+  downloadStatistics(): void {
     this.featureService.getFeatureStatistics()
       .subscribe({
         next: data => {
@@ -38,7 +38,7 @@ export class StatisticsComponent {
   }
 
 
-  setDataForPlot(labels: Array<string>, featureSums: Array<number>) {
+  setDataForPlot(labels: Array<string>, featureSums: Array<number>): void {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
     const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
@@ -90,7 +90,7 @@ export class StatisticsComponent {
   }
 
 
-  makePlot() {
+  makePlot(): void {
     this.featureService.selectedFeatures$
       .subscribe((features) => {
         this.selectedFeatures = features;
