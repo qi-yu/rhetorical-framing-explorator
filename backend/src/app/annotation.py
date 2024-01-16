@@ -76,9 +76,18 @@ class Annotation:
         df.insert(0, "id", all_ids)
         df.insert(1, "label", all_labels)
         df.insert(2, "total_token_count", all_total_token_counts)
-        csv_data = df.to_csv(sep="\t", encoding="utf-8", index=False)
+        count = df.to_csv(sep="\t", encoding="utf-8", index=False)
         
-        return csv_data
+        df_sums_by_label = df.drop("id", axis=1).groupby("label").sum()
+        
+        for col in df_sums_by_label.columns:
+            if col != "label" and col != "total_token_count": 
+                df_sums_by_label[col] = df_sums_by_label[col] / df_sums_by_label["total_token_count"]
+
+        df_sums_by_label = df_sums_by_label.drop(["total_token_count"], axis=1) 
+        by_label_freq = df_sums_by_label.to_csv(sep="\t", encoding="utf-8")
+
+        return count, by_label_freq
 
                             
 

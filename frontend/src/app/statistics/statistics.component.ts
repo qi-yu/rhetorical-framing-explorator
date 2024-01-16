@@ -11,7 +11,6 @@ import { IFeature } from '../feature-selection/feature';
 })
 export class StatisticsComponent {
   selectedFeatures: Array<IFeature> = [];
-  featureStatistics: Array<any> = [];
   featureSums: Array<number> = [];
   labels: Array<string> = [];
   data: any;
@@ -99,11 +98,11 @@ export class StatisticsComponent {
     this.featureService.getFeatureStatistics()
       .subscribe({
         next: (raw) => {
-          this.featureStatistics = parse(raw, { delimiter: "\t", header: true }).data.slice(0, -1)
-
+          const featureStatistics: Array<any> = parse(raw, { delimiter: "\t", header: true }).data.slice(0, -1)
           const sums: { [key: string]: number } = {};
     
-          this.featureStatistics.forEach((obj) => {
+          featureStatistics.forEach((obj) => {
+            console.log(obj)
             this.selectedFeatures.forEach((feature) => {
               sums[feature.annotation_method] = (sums[feature.annotation_method] || 0) + parseInt(obj[feature.annotation_method], 10);
             });
