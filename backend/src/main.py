@@ -312,7 +312,7 @@ def annotate():
 @app.route('/download', methods=['GET'])
 def download_feature_statistics():
     annotation = Annotation()
-    count_data, by_label_data = annotation.generate_statistics()
+    count_data = annotation.generate_statistics()
 
     response_count = make_response(count_data)
     response_count.headers["Content-Disposition"] = "attachment; filename=feature_statistics.csv"

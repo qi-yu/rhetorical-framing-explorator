@@ -1,4 +1,4 @@
-import logging, os, datetime
+import logging, os
 import pandas as pd
 from src.config import Config
 from src.app.disambiguation import Disambiguation
@@ -11,6 +11,7 @@ class Annotation:
     progressOutputRoot = Config.PROGRESS_PATH
     disambiguation = Disambiguation()
     selected_features = []
+    df_count = None
 
 
     def annotate_feature(self, feature):
@@ -77,18 +78,21 @@ class Annotation:
         df.insert(1, "label", all_labels)
         df.insert(2, "total_token_count", all_total_token_counts)
         count = df.to_csv(sep="\t", encoding="utf-8", index=False)
-        
-        df_sums_by_label = df.drop("id", axis=1).groupby("label").sum()
+        self.df_count = count
+
+        return count
+
+
+    def generate_by_label_statistics(df_count):
+        df_sums_by_label = df_count.drop("id", axis=1).groupby("label").sum()
         
         for col in df_sums_by_label.columns:
             if col != "label" and col != "total_token_count": 
                 df_sums_by_label[col] = df_sums_by_label[col] / df_sums_by_label["total_token_count"]
 
         df_sums_by_label = df_sums_by_label.drop(["total_token_count"], axis=1) 
-        by_label_freq = df_sums_by_label.to_csv(sep="\t", encoding="utf-8")
+        by_label_freq = df_sums_by_label.to_csv(sep="\t", encoding="utf-8")   
 
-        return count, by_label_freq
-
-                            
+        return by_label_freq            
 
                         
