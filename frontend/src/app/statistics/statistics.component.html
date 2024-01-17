@@ -2,5 +2,7 @@
     <p-button label="DOWNLOAD" icon="pi pi-download" (onClick)="downloadStatistics()"></p-button>
 </p-card>
 <p-card header="Feature Statistics Dashboard">
-    <p-chart type="bar" [data]="data" [options]="options"></p-chart>
+    <p-chart type="doughnut" [data]="tokenCountPlotData" [options]="tokenCountPlotOptions" width="400"></p-chart>
+    <p-chart type="bar" [data]="byGroupPlotData" [options]="byGroupPlotOptions"></p-chart> 
 </p-card>
+

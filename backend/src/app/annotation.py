@@ -89,7 +89,6 @@ class Annotation:
             if col != "label" and col != "total_token_count": 
                 df_sums_by_label[col] = df_sums_by_label[col] / df_sums_by_label["total_token_count"]
 
-        df_sums_by_label = df_sums_by_label.drop(["total_token_count"], axis=1) 
         by_label_freq = df_sums_by_label.to_csv(sep="\t", encoding="utf-8")   
 
         return by_label_freq            

@@ -1,7 +1,6 @@
 import { parse } from 'papaparse';
 import { Component } from '@angular/core';
 import { FeatureService } from '../feature-selection/feature.service';
-import { forkJoin } from 'rxjs';
 import { IFeature } from '../feature-selection/feature';
 
 @Component({
@@ -11,9 +10,10 @@ import { IFeature } from '../feature-selection/feature';
 })
 export class StatisticsComponent {
   selectedFeatures: Array<IFeature> = [];
-  data: any;
-  options: any;
-  datasetsByGroup: Array<any> = [];
+  byGroupPlotData: any;
+  byGroupPlotOptions: any;
+  tokenCountPlotData: any;
+  tokenCountPlotOptions: any;
 
   constructor(private featureService: FeatureService) {}
 
@@ -36,18 +36,19 @@ export class StatisticsComponent {
   }
 
 
-  configPlot(labels: Array<string>, datasets: Array<any>): void {
+  configByGroupPlot(labels: Array<string>, datasets: Array<any>): void {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
     const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
-    this.data = {
+    this.byGroupPlotData = {
       labels: labels,
       datasets: datasets
     }
 
-    this.options = {
+    this.byGroupPlotOptions = {
+      // indexAxis: 'y',
       maintainAspectRatio: false,
       aspectRatio: 0.8,
       plugins: {
@@ -84,6 +85,29 @@ export class StatisticsComponent {
     };
   }
 
+  configTokenCountPlot(labels: Array<string>, data: Array<number>) {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+
+    this.tokenCountPlotData = {
+      labels: labels,
+      datasets: [{
+        data: data
+      }]
+    }
+
+    this.tokenCountPlotOptions = {
+      cutout: '60%',
+      plugins: {
+          legend: {
+              labels: {
+                  color: textColor
+              }
+          }
+      }
+    };
+  }
+
 
   makePlot(): void {
     this.featureService.selectedFeatures$
@@ -94,21 +118,32 @@ export class StatisticsComponent {
     this.featureService.getStatisticsByLabel().subscribe({
       next: (raw) => {
         const df: Array<any> = parse(raw, { delimiter: "\t", header: true }).data.slice(0, -1)
+        const tokenCountPlotData: { labels: string[], data: number[] } = {
+          labels: [],
+          data: []
+        }; 
+        let datasetsByGroup: Array<any> = [];
 
         df.forEach((obj) => {
+          // Get data for token count:
+          tokenCountPlotData.labels.push(obj['label'])
+          tokenCountPlotData.data.push(obj['total_token_count'])
+
+          // Get data for feature statistics:
           let currentFeatureData: Array<number> = [];
 
           this.selectedFeatures.forEach((feature) => {
             currentFeatureData.push(obj[feature.annotation_method])
           })
 
-          this.datasetsByGroup.push({
+          datasetsByGroup.push({
               label: obj["label"],
               data: currentFeatureData
           })
         })
 
-        this.configPlot(this.selectedFeatures.map(feature => feature.name), this.datasetsByGroup)
+        this.configTokenCountPlot(tokenCountPlotData.labels, tokenCountPlotData.data);
+        this.configByGroupPlot(this.selectedFeatures.map(feature => feature.name), datasetsByGroup)
       }
     })
   }
