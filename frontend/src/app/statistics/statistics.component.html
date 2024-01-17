@@ -1,8 +1,17 @@
-<p-card header="Click to Download Feature Statistics">
-    <p-button label="DOWNLOAD" icon="pi pi-download" (onClick)="downloadStatistics()"></p-button>
-</p-card>
-<p-card header="Feature Statistics Dashboard">
-    <p-chart type="doughnut" [data]="tokenCountPlotData" [options]="tokenCountPlotOptions" width="400"></p-chart>
-    <p-chart type="bar" [data]="byGroupPlotData" [options]="byGroupPlotOptions"></p-chart> 
-</p-card>
-
+<div class="not-full-width">
+    <div class="download-panel">
+        <p-card header="Click to Download Feature Statistics">
+            <p-button label="DOWNLOAD" icon="pi pi-download" (onClick)="downloadStatistics()"></p-button>
+        </p-card>
+    </div>
+    <div>
+        <p-card header="Feature Statistics Dashboard">
+            <p-panel header="Token Distribution" [toggleable]="true">
+                <p-chart type="doughnut" [data]="tokenCountPlotData" [options]="tokenCountPlotOptions" width="400"></p-chart>
+            </p-panel>
+            <p-panel header="Feature Frequency By Dataset" [toggleable]="true">
+                <p-chart type="bar" [data]="byGroupPlotData" [options]="byGroupPlotOptions"></p-chart> 
+            </p-panel>
+        </p-card>    
+    </div>
+</div>
