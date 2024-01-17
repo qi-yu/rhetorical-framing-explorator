@@ -11,10 +11,9 @@ import { IFeature } from '../feature-selection/feature';
 })
 export class StatisticsComponent {
   selectedFeatures: Array<IFeature> = [];
-  featureSums: Array<number> = [];
-  labels: Array<string> = [];
   data: any;
   options: any;
+  datasetsByGroup: Array<any> = [];
 
   constructor(private featureService: FeatureService) {}
 
@@ -37,7 +36,7 @@ export class StatisticsComponent {
   }
 
 
-  setDataForPlot(labels: Array<string>, featureSums: Array<number>): void {
+  configPlot(labels: Array<string>, datasets: Array<any>): void {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
     const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
@@ -45,10 +44,7 @@ export class StatisticsComponent {
 
     this.data = {
       labels: labels,
-      datasets: [{
-        label: 'Dataset 1',
-        data: featureSums
-      }]
+      datasets: datasets
     }
 
     this.options = {
@@ -95,23 +91,26 @@ export class StatisticsComponent {
         this.selectedFeatures = features;
       });
 
-    this.featureService.getFeatureStatistics()
-      .subscribe({
-        next: (raw) => {
-          const featureStatistics: Array<any> = parse(raw, { delimiter: "\t", header: true }).data.slice(0, -1)
-          const sums: { [key: string]: number } = {};
-    
-          featureStatistics.forEach((obj) => {
-            console.log(obj)
-            this.selectedFeatures.forEach((feature) => {
-              sums[feature.annotation_method] = (sums[feature.annotation_method] || 0) + parseInt(obj[feature.annotation_method], 10);
-            });
-          });
+    this.featureService.getStatisticsByLabel().subscribe({
+      next: (raw) => {
+        const df: Array<any> = parse(raw, { delimiter: "\t", header: true }).data.slice(0, -1)
 
-          this.featureSums = this.selectedFeatures.map(feature => sums[feature.annotation_method]);
-          this.setDataForPlot(this.selectedFeatures.map(feature => feature.name), this.featureSums)
-        }
-      }) 
+        df.forEach((obj) => {
+          let currentFeatureData: Array<number> = [];
+
+          this.selectedFeatures.forEach((feature) => {
+            currentFeatureData.push(obj[feature.annotation_method])
+          })
+
+          this.datasetsByGroup.push({
+              label: obj["label"],
+              data: currentFeatureData
+          })
+        })
+
+        this.configPlot(this.selectedFeatures.map(feature => feature.name), this.datasetsByGroup)
+      }
+    })
   }
 
   ngOnInit() {
