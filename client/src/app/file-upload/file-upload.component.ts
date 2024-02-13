@@ -19,6 +19,7 @@ export class FileUploadComponent implements OnInit {
   @Output() fileSelectionEvent: EventEmitter<boolean> = new EventEmitter();
   @ViewChild('dt') dt: Table | undefined;
 
+  url = `${API_URL}`;
   isFileDragOver: boolean = false;
   uploadedFiles: IFile[] = [];
   filesSelectedForAnalyses: IFile[] = [];
