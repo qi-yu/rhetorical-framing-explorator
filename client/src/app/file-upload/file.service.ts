@@ -16,6 +16,11 @@ export class FileService {
             .pipe(catchError(this.errorHandler))
   }
 
+  uploadFiles(files: File[]): Observable<any> {
+    return this.http.post<IFile>(`${API_URL}/upload`, { myfile: files })
+            .pipe(catchError(this.errorHandler))
+  }
+
   deleteFile(fileId: number): Observable<void> {
     const deleteUrl = `${API_URL}/delete/${fileId}`;
     return this.http.delete<void>(deleteUrl);

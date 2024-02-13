@@ -26,6 +26,10 @@ import { AnnotationComponent } from './annotation/annotation.component';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { StatisticsComponent } from './statistics/statistics.component';
 import { ChartModule } from 'primeng/chart';
+import { HomeComponent } from './home/home.component';
+import { KeywordExploratorComponent } from './keyword-explorator/keyword-explorator.component';
+import { RadioButtonModule } from 'primeng/radiobutton';
+
 
 @NgModule({
   declarations: [
@@ -35,7 +39,9 @@ import { ChartModule } from 'primeng/chart';
     FeatureSelectionComponent,
     FileSizePipe,
     AnnotationComponent,
-    StatisticsComponent
+    StatisticsComponent,
+    HomeComponent,
+    KeywordExploratorComponent
   ],
   imports: [
     BrowserModule,
@@ -57,7 +63,8 @@ import { ChartModule } from 'primeng/chart';
     TableModule,
     DividerModule,
     ProgressBarModule,
-    ChartModule
+    ChartModule,
+    RadioButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

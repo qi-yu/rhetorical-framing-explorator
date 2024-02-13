@@ -1,5 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, SimpleChange, SimpleChanges } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FeatureService } from './feature.service';
 import { IFeature } from './feature';
 
@@ -16,6 +15,8 @@ export class FeatureSelectionComponent implements OnInit {
   allFeatures: Array<IFeature> = [];
   selectedDimensions: Array<string> = [];
   allDimensions: Array<string> = [];
+  allNonAuxiliaryDimensions: Array<string> = [];
+  allAuxiliaryDimensions: Array<string> = [];
   errorMsg: any;
 
   constructor(private featureService: FeatureService) {
@@ -100,6 +101,16 @@ export class FeatureSelectionComponent implements OnInit {
       next: data => {
         this.allFeatures = data;
         this.allDimensions = [...new Set(data.map((item) => item.dimension))]
+        
+        this.allNonAuxiliaryDimensions = [...new Set(
+          data.filter((feature) => !feature.is_auxiliary)
+            .map((item) => item.dimension)
+          )]
+        
+        this.allAuxiliaryDimensions = [...new Set(
+          data.filter((feature) => feature.is_auxiliary)
+            .map((item) => item.dimension)
+          )]
       }
     })
 

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Output, EventEmitter, OnInit, ViewChild } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, ViewChild, Input } from '@angular/core';
 import { API_URL } from '../env';
 import { IFile } from './file';
 import { MessageService } from 'primeng/api';
@@ -19,7 +19,6 @@ export class FileUploadComponent implements OnInit {
   @Output() fileSelectionEvent: EventEmitter<boolean> = new EventEmitter();
   @ViewChild('dt') dt: Table | undefined;
 
-  url = `${API_URL}`;
   isFileDragOver: boolean = false;
   uploadedFiles: IFile[] = [];
   filesSelectedForAnalyses: IFile[] = [];
@@ -43,19 +42,19 @@ export class FileUploadComponent implements OnInit {
   }
   
   onUploadFiles(event: any): void {
-    this.http.post<IFile>(`${this.url}/upload`, event.files).subscribe({
+    this.fileService.uploadFiles(event.files).subscribe({
       next: () => {
         this.fileService.getAllFiles().subscribe((data) => {
-          this.uploadedFiles = data;
-          this.filesSelectedForAnalyses = data;
-          this.onSelectFiles();
+                this.uploadedFiles = data;
+                this.filesSelectedForAnalyses = data;
+                this.onSelectFiles();
         });
-
+      
         this.messageService.add({severity: 'success', summary: 'Success', detail: 'File(s) uploaded successfully!'});
       },
 
       error: () => this.messageService.add({severity: 'error', summary: 'Error', detail: 'File(s) cannot be uploaded'}) 
-    });
+    })
   }
 
   onDeleteFiles(): void {

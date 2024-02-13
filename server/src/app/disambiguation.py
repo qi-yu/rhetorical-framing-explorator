@@ -696,3 +696,200 @@ class Disambiguation:
             #TODO: Items that are difficult to disambiguate: wiederum, selbst, allein, auch nur
 
     
+    def indirect_speech(self, lexemeList):
+        attr_name = self.indirect_speech.__name__
+        has_konjunktiv_1 = False
+        
+        for idx, lexeme in enumerate(lexemeList):
+            if re.search("Mood=Sub", lexeme.get("feats")):
+                currentLemma = lexeme.get("lemma")
+                currentText = lexeme.text
+
+                ### ----- Third person singular -----
+                if re.search("Number=Sing\|Person=3", lexeme.get("feats")):
+                    if currentLemma[-2:] == "en" and currentText == currentLemma[:-2] + "e":
+                        has_konjunktiv_1 = True
+
+                    if currentLemma[-2:] != "en" and currentText == currentLemma[:-1] + "e":
+                        has_konjunktiv_1 = True
+
+                ### ----- Verb "sein" -----
+                if re.fullmatch("(seie?st|seien|seiet|sei)", currentText):
+                    has_konjunktiv_1 = True
+
+        if has_konjunktiv_1 == True:
+            for lexeme in lexemeList:
+                lexeme.set(attr_name, "y")
+
+
+    def direct_speech(self, lexemeList):
+        attr_name = self.direct_speech.__name__
+        #TODO: finish implementation
+        pass
+
+    
+    def economy(self, lexemeList):
+        attr_name = self.economy.__name__
+        cueList = self.word_lists[self.economy.__name__]
+
+        # ----- 1. Items that do not need disambiguation -----
+        for lexeme in lexemeList:
+            if lexeme.get("lemma") in cueList:
+                lexeme.set(attr_name, lexeme.get("lemma"))
+
+        # ----- 2. Deal with particle verbs -----
+        self.finite_particle_verbs(lexemeList, cueList, attr_name)
+
+    
+    def identity(self, lexemeList):
+        attr_name = self.identity.__name__
+        cueList = self.word_lists[self.identity.__name__]
+
+        # ----- 1. Items that do not need disambiguation -----
+        for lexeme in lexemeList:
+            if lexeme.get("lemma") in cueList:
+                lexeme.set(attr_name, lexeme.get("lemma"))
+
+            # ----- Deal with multi-word expressions / ambiguous words -----
+            ## "Christin":
+            if lexeme.text == "Christin" and lexeme.get("pos") != "NE":
+                lexeme.set("identity", "Christin")
+
+        # ----- 2. Deal with particle verbs -----
+        self.finite_particle_verbs(lexemeList, cueList, attr_name)
+
+    
+    def legal(self, lexemeList):
+        attr_name = self.legal.__name__
+        cueList = self.word_lists[self.legal.__name__]
+
+        for idx, lexeme in enumerate(lexemeList):
+            if lexeme.get("lemma") in cueList:
+                lexeme.set(attr_name, lexeme.get("lemma"))
+
+            # ----- Deal with multi-word expressions / ambiguous words -----
+            ## "Burka-Verbot":
+            if lexeme.text == "Burka" and idx < len(lexemeList) - 2 and lexemeList[idx+1].text == "-" and lexemeList[idx+2].text == "Verbot":
+                lexeme.set("attr_name", "Burka-Verbot")
+                lexemeList[idx + 1].set(attr_name + "_2", "-")
+                lexemeList[idx + 2].set(attr_name + "_3", "Verbot")
+
+        # ----- Deal with particle verbs -----
+        self.finite_particle_verbs(lexemeList, cueList, attr_name)
+
+
+    def morality(self, lexemeList):
+        attr_name = self.morality.__name__
+        cueList = self.word_lists[self.morality.__name__]
+
+        # ----- 1. Items that do not need disambiguation -----
+        for lexeme in lexemeList:
+            if lexeme.get("lemma") in cueList:
+                lexeme.set(attr_name, lexeme.get("lemma"))
+
+        # ----- 2. Deal with particle verbs -----
+        self.finite_particle_verbs(lexemeList, cueList, attr_name)
+
+    
+    def policy(self, lexemeList):
+        attr_name = self.policy.__name__
+        cueList = self.word_lists[self.policy.__name__]
+
+        for idx, lexeme in enumerate(lexemeList):
+            if lexeme.get("lemma") in cueList:
+                lexeme.set(attr_name, lexeme.get("lemma"))
+
+            # ----- Deal with multi-word expressions / ambiguous words -----
+            ## "Genfer Flüchtlingskonvention":
+            if lexeme.text == "Genfer" and idx < len(lexemeList) - 1 and re.fullmatch("(Flüchtlingskonvention|Flüchtlingskonventionen|Konventionen|Abkommen)", lexemeList[idx+1].text):
+                lexeme.set(attr_name, "Genfer_Fluechtlingskonvention")
+                lexemeList[idx+1].set(attr_name + "_2", "Fluechtlingskonvention")
+
+        # ----- Deal with particle verbs -----
+        self.finite_particle_verbs(lexemeList, cueList, attr_name)
+       
+
+    def politics(self, lexemeList):
+        attr_name = self.politics.__name__
+        cueList = self.word_lists[self.politics.__name__]
+
+        for idx, lexeme in enumerate(lexemeList):
+            if lexeme.get("lemma") in cueList:
+                lexeme.set(attr_name, lexeme.get("lemma"))
+
+            # ----- Deal with multi-word expressions / ambiguous words -----
+            ## "grün-rot", "grün-schwarz" etc.:
+            if idx < len(lexemeList) - 2 and lexeme.get("lemma") in ["gelb", "grün", "rot", "schwarz"] and lexemeList[idx+1].text == "-" and lexemeList[idx+2].get("lemma") in ["gelb", "grün", "rot", "schwarz"]:
+                lexeme.set(attr_name, lexeme.get("lemma"))
+                lexemeList[idx + 1].set(attr_name + "_2", "-")
+                lexemeList[idx + 2].set(attr_name + "_3", lexemeList[idx+2].get("lemma"))
+
+        # ----- Deal with particle verbs -----
+        self.finite_particle_verbs(lexemeList, cueList, attr_name)
+
+    
+    def public_opinion(self, lexemeList):
+        attr_name = self.public_opinion.__name__
+        cueList = self.word_lists[self.public_opinion.__name__]
+
+        for idx, lexeme in enumerate(lexemeList):
+            if lexeme.get("lemma") in cueList:
+                lexeme.set(attr_name, lexeme.get("lemma"))
+
+            # ----- Deal with multi-word expressions / ambiguous words -----
+            ## "Öffentlich* Eindruck/Gefühl/Interesse":
+            if lexeme.get("lemma") == "öffentlich" and idx < len(lexemeList) - 1 and lexemeList[idx+1].get("lemma") == "Eindruck":
+                lexeme.set(attr_name, "oeffentlicher_Eindruck")
+                lexemeList[idx+1].set(attr_name + "_2", "Eindruck")
+
+            if lexeme.get("lemma") == "öffentlich" and idx < len(lexemeList) - 1 and lexemeList[idx+1].get("lemma") == "Gefühl":
+                lexeme.set(attr_name, "oeffentliches_Gefuehl")
+                lexemeList[idx+1].set(attr_name + "_2", "Gefuehl")
+
+            if lexeme.get("lemma") == "öffentlich" and idx < len(lexemeList) - 1 and lexemeList[idx+1].get("lemma") == "Interesse":
+                lexeme.set(attr_name, "oeffentliches_Interesse")
+                lexemeList[idx+1].set(attr_name + "_2", "Interesse")
+
+        # ----- Deal with particle verbs -----
+        self.finite_particle_verbs(lexemeList, cueList, attr_name)
+
+
+    def security(self, lexemeList):
+        attr_name = self.security.__name__
+        cueList = self.word_lists[self.security.__name__]
+
+        for idx, lexeme in enumerate(lexemeList):
+            if lexeme.get("lemma") in cueList:
+                lexeme.set(attr_name, lexeme.get("lemma"))
+
+            # ----- Deal with multi-word expressions / ambiguous words -----
+            ## "U-Haft":
+            if lexeme.text == "U-" and idx < len(lexemeList) - 1 and lexemeList[idx+1].text == "Haft":
+                lexeme.set(attr_name, "U-Haft")
+                lexemeList[idx+1].set(attr_name + "_2", "Haft")
+
+        # ----- Deal with particle verbs -----
+        self.finite_particle_verbs(lexemeList, cueList, attr_name)
+
+    
+    def welfare(self, lexemeList):
+        attr_name = self.welfare.__name__
+        cueList = self.word_lists[self.welfare.__name__]
+
+        for idx, lexeme in enumerate(lexemeList):
+            if lexeme.get("lemma") in cueList:
+                lexeme.set(attr_name, lexeme.get("lemma"))
+
+            # ----- Deal with multi-word expressions / ambiguous words -----
+            ## "finanzielle Unterstützung": 
+            if lexeme.get("lemma") == "finanziell" and idx < len(lexemeList) - 1 and lexemeList[idx+1].get("lemma") == "Unterstützung":
+                lexeme.set(attr_name, "finanzielle_Unterstuetzung")
+                lexemeList[idx+1].set(attr_name + "_2", "Unterstuetzung")
+            
+            ## "Soziale Sicherung":
+            if lexeme.get("lemma") == "sozial" and idx < len(lexemeList) - 1 and lexemeList[idx+1].get("lemma") == "Sicherung":
+                lexeme.set(attr_name, "soziale_Sicherung")
+                lexemeList[idx+1].set(attr_name + "_2", "Sicherung")
+
+        # ----- Deal with particle verbs -----
+        self.finite_particle_verbs(lexemeList, cueList, attr_name)

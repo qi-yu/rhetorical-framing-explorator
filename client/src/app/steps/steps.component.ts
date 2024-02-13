@@ -1,6 +1,8 @@
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
 import { FileService } from '../file-upload/file.service';
+import { StepsService } from './steps.service';
 
 @Component({
   selector: 'app-steps',
@@ -12,8 +14,13 @@ export class StepsComponent {
   items: Array<MenuItem> = [];
   activeIndex = 0;
   nextStepAllowed = false;
+  currentRoute: string | undefined;
 
-  constructor(private messageService: MessageService, private fileService: FileService) {}
+  constructor(
+    private stepsService: StepsService,
+    private activatedRoute: ActivatedRoute,
+    private fileService: FileService,
+  ) { }
 
   onActiveIndexChange(event: number): void {
     this.activeIndex = event;
@@ -55,11 +62,7 @@ export class StepsComponent {
   }
   
   ngOnInit() {
-    this.items = [
-      { label: "Upload File" },
-      { label: "Select Features" },
-      { label: "Start Annotation" },
-      { label: "Get Results" },
-    ];
+    this.currentRoute = this.activatedRoute.snapshot.routeConfig?.path
+    this.items = this.stepsService.getSteps(this.activatedRoute.snapshot.routeConfig?.path);
   }
 }

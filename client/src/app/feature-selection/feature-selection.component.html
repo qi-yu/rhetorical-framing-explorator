@@ -1,4 +1,4 @@
-<div class="not-full-width">
+<div class="card flex justify-content-center not-full-width">
     <p-card header="Select Features to Annotate:">
         <div style="padding-bottom: 1rem;">
             <p-toggleButton 
@@ -12,7 +12,27 @@
         </div>
 
         <div class="grid-container">
-            <div *ngFor="let dimension of allDimensions">
+            <div *ngFor="let dimension of allNonAuxiliaryDimensions">
+                <p-fieldset>
+                    <ng-template pTemplate="header">
+                        <div class="flex align-items-center text-primary">
+                            <p-checkbox name="dimension" [value]="dimension" [label]="dimension" [(ngModel)]="selectedDimensions" (onChange)="onSelectDimension(dimension)"></p-checkbox>
+                        </div>
+                    </ng-template>
+                    <div *ngFor="let feature of allFeatures">
+                        <div *ngIf="feature.dimension === dimension" style="padding-bottom: 1rem;">
+                            <p-checkbox name="feature" [value]="feature" [label]="feature.name" [(ngModel)]="selectedFeatures" (onChange)="onSelectFeature($event)"></p-checkbox>
+                        </div>
+                    </div>
+                </p-fieldset> 
+            </div>
+        </div>
+
+        <p-divider></p-divider>
+        <h2>Other auxiliary features:</h2>
+
+        <div class="grid-container">
+            <div *ngFor="let dimension of allAuxiliaryDimensions">
                 <p-fieldset>
                     <ng-template pTemplate="header">
                         <div class="flex align-items-center text-primary">
