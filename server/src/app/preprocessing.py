@@ -57,7 +57,7 @@ class Preprocessing:
                         document.text = None
 
                     output = prettify(root)
-                    with open(os.path.join(self.outputRoot, filename.split('.')[0] + "_DUS.xml"), mode="w", encoding="utf-8") as outputfile:
+                    with open(os.path.join(self.outputRoot, filename), mode="w", encoding="utf-8") as outputfile:
                         outputfile.write(output)
 
                     step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, "preprocessing.txt"))
