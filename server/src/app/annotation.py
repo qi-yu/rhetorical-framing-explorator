@@ -55,7 +55,8 @@ class Annotation:
         all_ids = []
         all_labels = []
         all_total_token_counts = []
-        feature_stats = {feature: [] for feature in self.selected_features}
+        feature_stats = {feature['annotation_method']: [] for feature in self.selected_features if feature["is_auxiliary"] == False}
+        selected_auxiliary_features = [feature['annotation_method'] for feature in self.selected_features if feature["is_auxiliary"] == True]
 
         for r, d, f in os.walk(self.inputRoot):
             for filename in f:
@@ -76,9 +77,26 @@ class Annotation:
                         for s in root.iter("sentence"):
                             lexeme_list = get_sentence_as_lexeme_list(s)
                         
-                            for lexeme in lexeme_list:
-                                if lexeme.get(feature):
-                                    current_feature_count += 1
+                            if selected_auxiliary_features:
+                                for lexeme in lexeme_list:
+                                    found_auxiliary_feature = False
+                                    #found_auxiliary_feature = {aux_feature: False for aux_feature in selected_auxiliary_features}
+
+                                    for aux_feature in selected_auxiliary_features:
+                                        if lexeme.get(aux_feature):
+                                            found_auxiliary_feature = True
+                                            break
+                                            #found_auxiliary_feature[aux_feature] = True
+
+                                    # if not any(found_auxiliary_feature.values()) and lexeme.get(feature): 
+                                    if not found_auxiliary_feature and lexeme.get(feature):
+                                        logging.info(filename + " " + lexeme.get("lemma"))
+                                        current_feature_count += 1
+                                        
+                            else:
+                                for lexeme in lexeme_list:
+                                    if lexeme.get(feature):
+                                        current_feature_count += 1
                                     
                         feature_stats[feature].append(current_feature_count)
 

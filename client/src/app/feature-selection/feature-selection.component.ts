@@ -103,12 +103,12 @@ export class FeatureSelectionComponent implements OnInit {
         this.allDimensions = [...new Set(data.map((item) => item.dimension))]
         
         this.allNonAuxiliaryDimensions = [...new Set(
-          data.filter((feature) => !feature.is_auxiliary)
+          data.filter((feature) => feature.is_rhetorical_feature)
             .map((item) => item.dimension)
           )]
         
         this.allAuxiliaryDimensions = [...new Set(
-          data.filter((feature) => feature.is_auxiliary)
+          data.filter((feature) => !feature.is_rhetorical_feature)
             .map((item) => item.dimension)
           )]
       }

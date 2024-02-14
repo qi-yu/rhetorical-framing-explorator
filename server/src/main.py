@@ -39,6 +39,7 @@ def create_feature_table():
         id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         dimension TEXT NOT NULL,
+        is_rhetorical_feature BOOLEAN NOT NULL,
         is_auxiliary BOOLEAN NOT NULL,
         annotation_method TEXT NOT NULL,
         CONSTRAINT unique_name_dimension UNIQUE (name, dimension)
@@ -53,10 +54,10 @@ def create_feature_table():
 
     for item in data:
         insert_query = '''
-        INSERT INTO rhetorical_framing_features (name, dimension, is_auxiliary, annotation_method) VALUES (%s, %s, %s, %s)
+        INSERT INTO rhetorical_framing_features (name, dimension, is_rhetorical_feature, is_auxiliary, annotation_method) VALUES (%s, %s, %s, %s, %s)
         ON CONFLICT (name, dimension) DO NOTHING
         '''
-        cursor.execute(insert_query, (item['name'], item['dimension'], item['is_auxiliary'], item['annotation_method']))
+        cursor.execute(insert_query, (item['name'], item['dimension'], item['is_rhetorical_feature'], item['is_auxiliary'], item['annotation_method']))
 
     conn.commit()
 
@@ -118,7 +119,13 @@ def get_features():
         cursor.execute(select_query)
 
         # Fetch all data and store in a list of dictionaries
-        data = [{'id': row[0], 'name': row[1], 'dimension': row[2], 'is_auxiliary':row[3], 'annotation_method': row[4]} for row in cursor.fetchall()]
+        data = [{
+            'id': row[0], 
+            'name': row[1], 
+            'dimension': row[2], 
+            'is_rhetorical_feature': row[3], 
+            'is_auxiliary':row[4], 
+            'annotation_method': row[5]} for row in cursor.fetchall()]
 
         cursor.close()
         conn.close()
@@ -295,7 +302,7 @@ def annotate():
     logging.info('Start annotation...')
 
     preprocessing = Preprocessing()
-    Annotation.selected_features = [feature["annotation_method"] for feature in selected_features]
+    Annotation.selected_features = [feature for feature in selected_features]
     annotation = Annotation()
 
     try:

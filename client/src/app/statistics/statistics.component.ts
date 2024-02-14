@@ -10,6 +10,7 @@ import { IFeature } from '../feature-selection/feature';
 })
 export class StatisticsComponent {
   selectedFeatures: Array<IFeature> = [];
+  selectedNonAuxiliaryFeatures: Array<IFeature> = [];
   byGroupPlotData: any;
   byGroupPlotOptions: any;
   tokenCountPlotData: any;
@@ -113,6 +114,7 @@ export class StatisticsComponent {
     this.featureService.selectedFeatures$
       .subscribe((features) => {
         this.selectedFeatures = features;
+        this.selectedNonAuxiliaryFeatures = features.filter((feature) => !feature.is_auxiliary)
       });
 
     this.featureService.getStatisticsByLabel().subscribe({
@@ -132,7 +134,7 @@ export class StatisticsComponent {
           // Get data for feature statistics:
           let currentFeatureData: Array<number> = [];
 
-          this.selectedFeatures.forEach((feature) => {
+          this.selectedNonAuxiliaryFeatures.forEach((feature) => {
             currentFeatureData.push(obj[feature.annotation_method])
           })
 
@@ -143,7 +145,7 @@ export class StatisticsComponent {
         })
 
         this.configTokenCountPlot(tokenCountPlotData.labels, tokenCountPlotData.data);
-        this.configByGroupPlot(this.selectedFeatures.map(feature => feature.name), datasetsByGroup)
+        this.configByGroupPlot(this.selectedNonAuxiliaryFeatures.map(feature => feature.name), datasetsByGroup)
       }
     })
   }

@@ -2,151 +2,176 @@
     {
         "name": "Boosters",
         "dimension": "Language Affectiveness",
+        "is_rhetorical_feature": "true",
         "is_auxiliary": "false",
         "annotation_method": "boosters"
     },
     {
         "name": "Hedges",
         "dimension": "Language Affectiveness",
+        "is_rhetorical_feature": "true",
         "is_auxiliary": "false",
         "annotation_method": "hedges"
     },
     {
         "name": "Adverbs for Iteration/Continuation",
         "dimension": "Non-Propositional Content",
+        "is_rhetorical_feature": "true",
         "is_auxiliary": "false",
         "annotation_method": "adverbs_for_iteration_or_continuation"
     },
     {
         "name": "Scalar Particles",
         "dimension": "Non-Propositional Content",
+        "is_rhetorical_feature": "true",
         "is_auxiliary": "false",
         "annotation_method": "scalar_particles"
     },
     {
         "name": "Factive Verbs",
         "dimension": "Non-Propositional Content",
+        "is_rhetorical_feature": "true",
         "is_auxiliary": "false",
         "annotation_method": "factive_verbs"
     },
     {
         "name": "Modal Particles for Common Ground",
         "dimension": "Non-Propositional Content",
+        "is_rhetorical_feature": "true",
         "is_auxiliary": "false",
         "annotation_method": "modal_particles_for_common_ground"
     },
     {
         "name": "Modal Particles for Resigned Acceptance",
         "dimension": "Non-Propositional Content",
+        "is_rhetorical_feature": "true",
         "is_auxiliary": "false",
         "annotation_method": "modal_particles_for_resigned_acceptance"
     },
     {
         "name": "Modal Particles for Weakened Commitment",
         "dimension": "Non-Propositional Content",
+        "is_rhetorical_feature": "true",
         "is_auxiliary": "false",
         "annotation_method": "modal_particles_for_weakened_commitment"
     },
     {
         "name": "Questions",
         "dimension": "Sentence Type",
+        "is_rhetorical_feature": "true",
         "is_auxiliary": "false",
         "annotation_method": "questions"
     },
     {
         "name": "Exclamations",
         "dimension": "Sentence Type",
+        "is_rhetorical_feature": "true",
         "is_auxiliary": "false",
         "annotation_method": "exclamations"
     },
     {
         "name": "Causal Discourse Relation",
         "dimension": "Discourse Relation",
+        "is_rhetorical_feature": "true",
         "is_auxiliary": "false",
         "annotation_method": "causal"
     },
     {
         "name": "Conditional Discourse Relation",
         "dimension": "Discourse Relation",
+        "is_rhetorical_feature": "true",
         "is_auxiliary": "false",
         "annotation_method": "conditional"
     },
     {
         "name": "Concessive Discourse Relation",
         "dimension": "Discourse Relation",
+        "is_rhetorical_feature": "true",
         "is_auxiliary": "false",
         "annotation_method": "concessive"
     },
     {
         "name": "Adversative Discourse Relation",
         "dimension": "Discourse Relation",
+        "is_rhetorical_feature": "true",
         "is_auxiliary": "false",
         "annotation_method": "adversative"
     },
     {
         "name": "Direct Speech",
         "dimension": "Quotation",
+        "is_rhetorical_feature": "false",
         "is_auxiliary": "true",
         "annotation_method": "direct_speech"
     },
     {
         "name": "Indirect Speech",
         "dimension": "Quotation",
+        "is_rhetorical_feature": "false",
         "is_auxiliary": "true",
         "annotation_method": "indirect_speech"
     },
     {
         "name": "Economy",
         "dimension": "Refugees and Migration Framing Vocabulary (for project Framing Inequality)",
-        "is_auxiliary": "true",
+        "is_rhetorical_feature": "false",
+        "is_auxiliary": "false",
         "annotation_method": "economy"
     },
     {
         "name": "Identity",
         "dimension": "Refugees and Migration Framing Vocabulary (for project Framing Inequality)",
-        "is_auxiliary": "true",
+        "is_rhetorical_feature": "false",
+        "is_auxiliary": "false",
         "annotation_method": "identity"
     },
     {
         "name": "Legal",
         "dimension": "Refugees and Migration Framing Vocabulary (for project Framing Inequality)",
-        "is_auxiliary": "true",
+        "is_rhetorical_feature": "false",
+        "is_auxiliary": "false",
         "annotation_method": "legal"
     },
     {
         "name": "Morality",
         "dimension": "Refugees and Migration Framing Vocabulary (for project Framing Inequality)",
-        "is_auxiliary": "true",
+        "is_rhetorical_feature": "false",
+        "is_auxiliary": "false",
         "annotation_method": "morality"
     },
     {
         "name": "Policy",
         "dimension": "Refugees and Migration Framing Vocabulary (for project Framing Inequality)",
-        "is_auxiliary": "true",
+        "is_rhetorical_feature": "false",
+        "is_auxiliary": "false",
         "annotation_method": "policy"
     },
     {
         "name": "Politics",
         "dimension": "Refugees and Migration Framing Vocabulary (for project Framing Inequality)",
-        "is_auxiliary": "true",
+        "is_rhetorical_feature": "false",
+        "is_auxiliary": "false",
         "annotation_method": "politics"
     },
     {
         "name": "Public Opinion",
         "dimension": "Refugees and Migration Framing Vocabulary (for project Framing Inequality)",
-        "is_auxiliary": "true",
+        "is_rhetorical_feature": "false",
+        "is_auxiliary": "false",
         "annotation_method": "public_opinion"
     },
     {
         "name": "Security",
         "dimension": "Refugees and Migration Framing Vocabulary (for project Framing Inequality)",
-        "is_auxiliary": "true",
+        "is_rhetorical_feature": "false",
+        "is_auxiliary": "false",
         "annotation_method": "security"
     },
     {
         "name": "Welfare",
         "dimension": "Refugees and Migration Framing Vocabulary (for project Framing Inequality)",
-        "is_auxiliary": "true",
+        "is_rhetorical_feature": "false",
+        "is_auxiliary": "false",
         "annotation_method": "welfare"
     }
 ]
