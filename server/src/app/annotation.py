@@ -80,15 +80,12 @@ class Annotation:
                             if selected_auxiliary_features:
                                 for lexeme in lexeme_list:
                                     found_auxiliary_feature = False
-                                    #found_auxiliary_feature = {aux_feature: False for aux_feature in selected_auxiliary_features}
-
+                        
                                     for aux_feature in selected_auxiliary_features:
                                         if lexeme.get(aux_feature):
                                             found_auxiliary_feature = True
                                             break
-                                            #found_auxiliary_feature[aux_feature] = True
-
-                                    # if not any(found_auxiliary_feature.values()) and lexeme.get(feature): 
+                                             
                                     if not found_auxiliary_feature and lexeme.get(feature):
                                         logging.info(filename + " " + lexeme.get("lemma"))
                                         current_feature_count += 1
