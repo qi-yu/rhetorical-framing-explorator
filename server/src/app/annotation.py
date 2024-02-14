@@ -23,15 +23,26 @@ class Annotation:
             for filename in f:
                 if filename.endswith(".xml"):
                     tree, root = parse_xml_tree(os.path.join(r, filename))
+                    all_lexemes = []                
 
                     for s in root.iter("sentence"):
                         lexeme_list = get_sentence_as_lexeme_list(s)
+                        all_lexemes += lexeme_list
 
-                        if hasattr(Disambiguation, feature) and callable(getattr(self.disambiguation, feature)):
-                            method_to_call = getattr(self.disambiguation, feature)
-                            method_to_call(lexeme_list)  
-                        else:
-                            logging.info(f"Method '{feature}' does not exist or is not callable.")
+                        if feature != "direct_speech":
+                            try:
+                                if hasattr(Disambiguation, feature) and callable(getattr(self.disambiguation, feature)):
+                                    method_to_call = getattr(self.disambiguation, feature)
+                                    method_to_call(lexeme_list)  
+
+                            except Exception as e:
+                                logging.info(e)
+
+                    try:
+                        self.disambiguation.direct_speech(all_lexemes)
+                    except Exception as e:
+                        logging.info(e)
+
 
                     tree.write(os.path.join(r, filename), encoding="utf-8")
                     step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, feature + ".txt"))
