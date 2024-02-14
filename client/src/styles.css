@@ -20,7 +20,7 @@ body {
 .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    grid-gap: 10px; /* Optional: Add gap between cards */
+    grid-gap: 1em; /* Optional: Add gap between cards */
 }
 
 
