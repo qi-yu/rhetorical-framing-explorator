@@ -20,7 +20,7 @@
                         </div>
                     </ng-template>
                     <div *ngFor="let feature of allFeatures">
-                        <div *ngIf="feature.dimension === dimension" style="padding-bottom: 1rem;">
+                        <div *ngIf="feature.dimension === dimension" class="feature-checkbox">
                             <p-checkbox name="feature" [value]="feature" [label]="feature.name" [(ngModel)]="selectedFeatures" (onChange)="onSelectFeature($event)"></p-checkbox>
                         </div>
                     </div>
@@ -40,7 +40,7 @@
                         </div>
                     </ng-template>
                     <div *ngFor="let feature of allFeatures">
-                        <div *ngIf="feature.dimension === dimension" style="padding-bottom: 1rem;">
+                        <div *ngIf="feature.dimension === dimension" class="feature-checkbox">
                             <p-checkbox name="feature" [value]="feature" [label]="feature.name" [(ngModel)]="selectedFeatures" (onChange)="onSelectFeature($event)"></p-checkbox>
                         </div>
                     </div>

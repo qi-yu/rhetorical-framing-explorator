@@ -48,7 +48,7 @@ class Disambiguation:
 
         for lexeme in lexemeList:
             if lexeme.text == "?":
-                lexeme.set(attr_name, "y")
+                lexeme.set(attr_name, "true")
 
 
     def exclamations(self, lexemeList):
@@ -56,7 +56,7 @@ class Disambiguation:
 
         for lexeme in lexemeList:
             if lexeme.text == "!":
-                lexeme.set(attr_name, "y")
+                lexeme.set(attr_name, "true")
 
 
     def causal(self, lexemeList):
@@ -405,8 +405,8 @@ class Disambiguation:
 
     def conditional(self, lexemeList):
         """
-        Declaration of authorship:
-        The annotation rules of this method was originally implemented by Marina Janka-Ramm.
+        Authorship Declaration:
+        The disambiguation rules of this method (conditional) was originally implemented by Marina Janka-Ramm.
         Qi Yu made the following changes:
             1) some minor adaption to the rule; 
             2) the integration of the rules into the architecture of the current app.
@@ -719,7 +719,7 @@ class Disambiguation:
 
         if has_konjunktiv_1 == True:
             for lexeme in lexemeList:
-                lexeme.set(attr_name, "y")
+                lexeme.set(attr_name, "true")
 
 
     def direct_speech(self, allLexemesOfDocument):
@@ -735,7 +735,7 @@ class Disambiguation:
                     second_quotation_idx = idx
 
                     for i in allLexemesOfDocument[first_quotation_idx + 1 : second_quotation_idx]:
-                        i.set(attr_name, "y")
+                        i.set(attr_name, "true")
 
                         first_quotation_idx = None
                         second_quotation_idx = None
@@ -779,13 +779,6 @@ class Disambiguation:
         for idx, lexeme in enumerate(lexemeList):
             if lexeme.get("lemma") in cueList:
                 lexeme.set(attr_name, lexeme.get("lemma"))
-
-            # ----- Deal with multi-word expressions / ambiguous words -----
-            ## "Burka-Verbot":
-            if lexeme.text == "Burka" and idx < len(lexemeList) - 2 and lexemeList[idx+1].text == "-" and lexemeList[idx+2].text == "Verbot":
-                lexeme.set("attr_name", "Burka-Verbot")
-                lexemeList[idx + 1].set(attr_name + "_2", "-")
-                lexemeList[idx + 2].set(attr_name + "_3", "Verbot")
 
         # ----- Deal with particle verbs -----
         self.finite_particle_verbs(lexemeList, cueList, attr_name)
@@ -831,11 +824,9 @@ class Disambiguation:
                 lexeme.set(attr_name, lexeme.get("lemma"))
 
             # ----- Deal with multi-word expressions / ambiguous words -----
-            ## "grün-rot", "grün-schwarz" etc.:
-            if idx < len(lexemeList) - 2 and lexeme.get("lemma") in ["gelb", "grün", "rot", "schwarz"] and lexemeList[idx+1].text == "-" and lexemeList[idx+2].get("lemma") in ["gelb", "grün", "rot", "schwarz"]:
+            ## names of political party coalitions, e.g., "grün-rot", "grün-schwarz":
+            if re.fullmatch('(?:[Gg]elbe?|[Gg]rüne?|[Rr]ote?|[Ss]chwarze?)(?:-(?:[Gg]elbe?|[Gg]rüne?|[Rr]ote?|[Ss]chwarze?))*', lexeme.get("lemma")):
                 lexeme.set(attr_name, lexeme.get("lemma"))
-                lexemeList[idx + 1].set(attr_name + "_2", "-")
-                lexemeList[idx + 2].set(attr_name + "_3", lexemeList[idx+2].get("lemma"))
 
         # ----- Deal with particle verbs -----
         self.finite_particle_verbs(lexemeList, cueList, attr_name)
@@ -874,12 +865,6 @@ class Disambiguation:
         for idx, lexeme in enumerate(lexemeList):
             if lexeme.get("lemma") in cueList:
                 lexeme.set(attr_name, lexeme.get("lemma"))
-
-            # ----- Deal with multi-word expressions / ambiguous words -----
-            ## "U-Haft":
-            if lexeme.text == "U-" and idx < len(lexemeList) - 1 and lexemeList[idx+1].text == "Haft":
-                lexeme.set(attr_name, "U-Haft")
-                lexemeList[idx+1].set(attr_name + "_2", "Haft")
 
         # ----- Deal with particle verbs -----
         self.finite_particle_verbs(lexemeList, cueList, attr_name)

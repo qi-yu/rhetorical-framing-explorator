@@ -46,4 +46,15 @@ body {
 
 .drag-over {
     border-color: #6d58ea !important;
-  }
+}
+
+.p-fieldset {
+    display: flex;
+    flex-direction: column;
+    height: 100%; 
+}
+
+/* .p-fieldset > * {
+    break-inside: avoid; 
+    column-width: 20rem;
+} */
