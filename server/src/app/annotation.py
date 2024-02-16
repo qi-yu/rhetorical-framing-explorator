@@ -54,6 +54,8 @@ class Annotation:
     def generate_statistics(self):
         all_ids = []
         all_labels = []
+        all_texts = []
+        all_preprocessed_texts = []
         all_total_token_counts = []
         feature_stats = {feature['annotation_method']: [] for feature in self.selected_features if feature["is_auxiliary"] == False}
         selected_auxiliary_features = [feature['annotation_method'] for feature in self.selected_features if feature["is_auxiliary"] == True]
@@ -66,10 +68,20 @@ class Annotation:
                     all_labels.append(root.get("label"))
                     current_total_token_count = 0
 
+                    tree_raw, root_raw = parse_xml_tree(os.path.join(Config.TEMP_FILE_PATH, filename))
+                    current_text = root_raw.text
+                    all_texts.append(current_text)
+
+                    current_preprocessed_text = ""
                     for lexeme in root.iter("lexeme"):
                         current_total_token_count += 1
+                        if lexeme.get("pos").startswith("$"):
+                            current_preprocessed_text += lexeme.text + " "
+                        else:
+                            current_preprocessed_text += lexeme.get("lemma") + " "
                     
                     all_total_token_counts.append(current_total_token_count)
+                    all_preprocessed_texts.append(current_preprocessed_text)
 
                     for feature in feature_stats.keys():
                         current_feature_count = 0
@@ -101,7 +113,9 @@ class Annotation:
         df = pd.DataFrame(feature_stats)
         df.insert(0, "id", all_ids)
         df.insert(1, "label", all_labels)
-        df.insert(2, "total_token_count", all_total_token_counts)
+        df.insert(2, "text", all_texts)
+        df.insert(3, "text_preprocessed", all_preprocessed_texts)
+        df.insert(4, "total_token_count", all_total_token_counts)
         count = df.to_csv(sep="\t", encoding="utf-8", index=False)
 
         return df, count
@@ -112,7 +126,7 @@ class Annotation:
         df_sums_by_label = df_count.drop("id", axis=1).groupby("label").sum()
         
         for col in df_sums_by_label.columns:
-            if col != "label" and col != "total_token_count": 
+            if col not in ["label", "text",  "text_preprocessed", "total_token_count"]: 
                 df_sums_by_label[col] = df_sums_by_label[col] / df_sums_by_label["total_token_count"]
 
         by_label_freq = df_sums_by_label.to_csv(sep="\t", encoding="utf-8")   
