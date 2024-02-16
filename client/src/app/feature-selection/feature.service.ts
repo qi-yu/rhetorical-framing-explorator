@@ -42,7 +42,7 @@ export class FeatureService {
   }
 
   getFeatureStatistics(): Observable<any> {
-    return this.http.get(`${API_URL}/download`, { responseType: 'text' })
+    return this.http.get(`${API_URL}/download`, { responseType: 'blob' })
             .pipe(catchError(this.errorHandler));
   }
 

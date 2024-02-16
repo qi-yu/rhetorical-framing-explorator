@@ -2,7 +2,8 @@ import logging, os
 import pandas as pd
 from src.config import Config
 from src.app.disambiguation import Disambiguation
-from src.app.utils import parse_xml_tree, get_sentence_as_lexeme_list, update_progress
+from src.app.utils import parse_xml_tree, get_document_as_text, get_document_as_lemmatized_text, \
+    get_sentence_as_lexeme_list, get_sentence_as_text, get_sentence_as_lemmatized_text, update_progress
 
 logging.basicConfig(level=logging.INFO)
 
@@ -51,78 +52,98 @@ class Annotation:
         logging.info("Done with annotating " + feature + ".")
 
     
-    def generate_statistics(self):
-        all_ids = []
-        all_labels = []
-        all_texts = []
-        all_preprocessed_texts = []
-        all_total_token_counts = []
-        feature_stats = {feature['annotation_method']: [] for feature in self.selected_features if feature["is_auxiliary"] == False}
+    def aggregate_statistics(self):
         selected_auxiliary_features = [feature['annotation_method'] for feature in self.selected_features if feature["is_auxiliary"] == True]
 
         for r, d, f in os.walk(self.inputRoot):
             for filename in f:
                 if filename.endswith(".xml"):
                     tree, root = parse_xml_tree(os.path.join(r, filename))
-                    all_ids.append(root.get("id"))
-                    all_labels.append(root.get("label"))
-                    current_total_token_count = 0
+                    doc_feature_stats = {**{"total_token_count": 0}, **{feature['annotation_method']: 0 for feature in self.selected_features if feature["is_auxiliary"] == False}}
 
-                    tree_raw, root_raw = parse_xml_tree(os.path.join(Config.TEMP_FILE_PATH, filename))
-                    current_text = root_raw.text
-                    all_texts.append(current_text)
-
-                    current_preprocessed_text = ""
-                    for lexeme in root.iter("lexeme"):
-                        current_total_token_count += 1
-                        if lexeme.get("pos").startswith("$"):
-                            current_preprocessed_text += lexeme.text + " "
-                        else:
-                            current_preprocessed_text += lexeme.get("lemma") + " "
                     
-                    all_total_token_counts.append(current_total_token_count)
-                    all_preprocessed_texts.append(current_preprocessed_text)
+                    for s in root.iter("sentence"):
+                        lexeme_list = get_sentence_as_lexeme_list(s)
+                        sent_feature_stats = {**{"total_token_count": 0}, **{feature['annotation_method']: 0 for feature in self.selected_features if feature["is_auxiliary"] == False}}
+                            
+                        if selected_auxiliary_features:
+                            for lexeme in lexeme_list:
+                                sent_feature_stats["total_token_count"] += 1
+                                found_auxiliary_feature = False
 
-                    for feature in feature_stats.keys():
-                        current_feature_count = 0
+                                for aux_feature in selected_auxiliary_features:
+                                    if lexeme.get(aux_feature):
+                                        found_auxiliary_feature = True
+                                        break
 
-                        for s in root.iter("sentence"):
-                            lexeme_list = get_sentence_as_lexeme_list(s)
-                        
-                            if selected_auxiliary_features:
-                                for lexeme in lexeme_list:
-                                    found_auxiliary_feature = False
-                        
-                                    for aux_feature in selected_auxiliary_features:
-                                        if lexeme.get(aux_feature):
-                                            found_auxiliary_feature = True
-                                            break
-                                             
-                                    if not found_auxiliary_feature and lexeme.get(feature):
-                                        logging.info(filename + " " + lexeme.get("lemma"))
-                                        current_feature_count += 1
-                                        
-                            else:
-                                for lexeme in lexeme_list:
+                                if not found_auxiliary_feature:
+                                     for feature in sent_feature_stats.keys():
+                                        if lexeme.get(feature):
+                                            sent_feature_stats[feature] += 1
+                        else:
+                            for lexeme in lexeme_list:
+                                sent_feature_stats["total_token_count"] += 1
+                                for feature in sent_feature_stats.keys():
                                     if lexeme.get(feature):
-                                        current_feature_count += 1
-                                    
-                        feature_stats[feature].append(current_feature_count)
+                                        sent_feature_stats[feature] += 1
 
+                        for k, v in sent_feature_stats.items():
+                            s.set(k, str(v))
+                            doc_feature_stats[k] += v
 
-        df = pd.DataFrame(feature_stats)
+                    for k, v in doc_feature_stats.items():
+                        root.set(k, str(v))
+
+                    tree.write(os.path.join(r, filename), encoding="utf-8")
+                    
+
+    def generate_statistics_table(self, level):
+        all_ids = []
+        all_labels = []
+        all_sentence_indices = []
+        all_texts = []
+        all_preprocessed_texts = []
+        all_stats = {**{"total_token_count": []}, **{feature['annotation_method']: [] for feature in self.selected_features if feature["is_auxiliary"] == False}}
+
+        for r, d, f in os.walk(self.inputRoot):
+            for filename in f:
+                if filename.endswith(".xml"):
+                    tree, root = parse_xml_tree(os.path.join(r, filename))
+
+                    if level == "document":
+                        all_ids.append(root.get("id"))
+                        all_labels.append(root.get("label"))
+                        all_texts.append(get_document_as_text(root))
+                        all_preprocessed_texts.append(get_document_as_lemmatized_text(root))
+                        
+                        for key in all_stats.keys():
+                            all_stats[key].append(int(root.get(key)))
+
+                    if level == "sentence":
+                        for s in root.iter("sentence"):
+                            all_ids.append(root.get("id"))
+                            all_labels.append(root.get("label"))
+                            all_sentence_indices.append(s.get("index"))
+                            all_texts.append(get_sentence_as_text(s))
+                            all_preprocessed_texts.append(get_sentence_as_lemmatized_text(s))
+
+                            for key in all_stats.keys():
+                                all_stats[key].append(int(s.get(key)))
+
+        df = pd.DataFrame(all_stats)
         df.insert(0, "id", all_ids)
         df.insert(1, "label", all_labels)
         df.insert(2, "text", all_texts)
         df.insert(3, "text_preprocessed", all_preprocessed_texts)
-        df.insert(4, "total_token_count", all_total_token_counts)
-        count = df.to_csv(sep="\t", encoding="utf-8", index=False)
 
-        return df, count
+        if level == "sentence":
+            df.insert(1, "sentence_index", all_sentence_indices)
 
+        return df
+    
 
     def generate_by_label_statistics(self):
-        df_count, csv_count = self.generate_statistics()
+        df_count = self.generate_statistics_table("document")
         df_sums_by_label = df_count.drop("id", axis=1).groupby("label").sum()
         
         for col in df_sums_by_label.columns:

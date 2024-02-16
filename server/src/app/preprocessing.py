@@ -39,8 +39,9 @@ class Preprocessing:
                     for document in root.iter('document'):
                         currentDoc = nlp(document.text)
 
-                        for s in currentDoc.sents:
+                        for s_idx, s in enumerate(currentDoc.sents):
                             sentenceLabel = ET.SubElement(document, "sentence")
+                            sentenceLabel.set("index", str(s_idx))
                             for w in s:
                                 lexemeLabel = ET.SubElement(sentenceLabel, "lexeme")
                                 lexemeLabel.text = w.text

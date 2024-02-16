@@ -22,11 +22,11 @@ export class StatisticsComponent {
     this.featureService.getFeatureStatistics()
       .subscribe({
         next: data => {
-          const blob = new Blob([data], { type: 'text/csv' });
+          const blob = new Blob([data], { type: 'application/zip' });
           const link = document.createElement('a');
           
           link.href = window.URL.createObjectURL(blob);
-          link.download = 'feature_statistics.csv';
+          link.download = 'feature_statistics.zip';
           link.click();
         }, 
 

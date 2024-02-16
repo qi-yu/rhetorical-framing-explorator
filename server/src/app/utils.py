@@ -5,9 +5,6 @@ from xml.dom import minidom
 
 
 def convert_to_xml(filepath, outputpath):
-    """
-    Convert .zip, .csv and .tsv files to XML.
-    """
     for r, d, f in os.walk(filepath):
         for filename in f:
             if filename.endswith(".zip"):
@@ -37,39 +34,34 @@ def convert_to_xml(filepath, outputpath):
 
                     ET.ElementTree(document).write(os.path.join(outputpath, currentFileName), encoding="utf-8", xml_declaration=True)
 
-
 def parse_xml_tree(filepath):
-    """Parse an XML-file using xml.etree.ElementTree.
-
-    Args:
-        filepath (str): The path of the file to be parsed.
-
-    Returns:
-        mytree: The parsed XML-tree.
-        myroot: The root of the parsed XML-tree.
-    """
     mytree = ET.parse(filepath)
     myroot = mytree.getroot()
     return mytree, myroot
 
 
 def prettify(elem):
-    """Return a pretty-printed XML string for the Element.
-
-    Args:
-        elem: The XML element to be prettified.
-    """
     rough_string = ET.tostring(elem, 'utf-8')
     reparsed = minidom.parseString(rough_string)
     return reparsed.toprettyxml(indent="\t")
 
+def get_document_as_text(root):
+    documentAsText = ""
+    for s in root.iter("sentence"):
+        for lexeme in s.findall("lexeme"):
+            documentAsText += lexeme.text + " "
+
+    return documentAsText
+
+def get_document_as_lemmatized_text(root):
+    documentAsText = ""
+    for s in root.iter("sentence"):
+        for lexeme in s.findall("lexeme"):
+            documentAsText += lexeme.get("lemma") + " "
+
+    return documentAsText
 
 def get_sentence_as_lexeme_list(sentence):
-    """Get sentence as a list of lexemes.
-
-    :param sentence: The sentence to be converted to lexeme list.
-    :return: The sentence as a list of lexemes.
-    """
     lexemeList = []
     for lexeme in sentence.findall("lexeme"):
         lexemeList.append(lexeme)
@@ -77,14 +69,6 @@ def get_sentence_as_lexeme_list(sentence):
     return lexemeList
 
 def get_sentence_as_text(sentence):
-    """Get sentence as text.
-
-    Arg:
-        sentence: The sentence to be converted to text.
-
-    Returns:
-        sentencAsText (str): The sentence as text.
-    """
     sentenceAsText = ""
     for lexeme in sentence.findall("lexeme"):
         sentenceAsText += lexeme.text + " "
@@ -92,14 +76,6 @@ def get_sentence_as_text(sentence):
     return sentenceAsText
 
 def get_sentence_as_lemmatized_text(sentence):
-    """Get sentence as lemmatized text.
-
-    Arg:
-        sentence: The sentence to be converted to text.
-
-    Returns:
-        sentencAsText (str): The sentence as text.
-    """
     sentenceAsText = ""
     for lexeme in sentence.findall("lexeme"):
         sentenceAsText += lexeme.get("lemma") + " "
@@ -107,14 +83,6 @@ def get_sentence_as_lemmatized_text(sentence):
     return sentenceAsText
 
 def get_wordlist_from_txt(source):
-    """Create a list of keywords from .txt files.
-
-    Args:
-        source: the path of the source lexicon.
-
-    Returns:
-        keywordList: A list of keywords.
-    """
     keywordList = []
     with open(source) as f:
         for line in f.readlines():
@@ -124,9 +92,6 @@ def get_wordlist_from_txt(source):
 
 
 def update_progress(step_counter, total_step_amount, save_path):
-    """
-    Updating annotation progress.
-    """
     step_counter += 1
     progress = step_counter / total_step_amount * 100
     

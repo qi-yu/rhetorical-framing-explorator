@@ -1,6 +1,6 @@
-import json, os, logging, shutil
+import json, os, logging, shutil, io, zipfile
 import psycopg2
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, jsonify, request, make_response, send_file
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from src.config import Config
@@ -310,6 +310,7 @@ def annotate():
 
         for feature in selected_features:
             annotation.annotate_feature(feature['annotation_method'])
+        annotation.aggregate_statistics()
             
         return jsonify({'message': 'Script executed successfully'})
         
@@ -320,13 +321,18 @@ def annotate():
 @app.route('/download', methods=['GET'])
 def download_feature_statistics():
     annotation = Annotation()
-    df, csv = annotation.generate_statistics()
 
-    response = make_response(csv)
-    response.headers["Content-Disposition"] = "attachment; filename=feature_statistics.csv"
-    response.headers["Content-Type"] = "text/csv"
+    csv_doc = annotation.generate_statistics_table("document").to_csv(sep="\t", encoding="utf-8", index=False) 
+    csv_sent = annotation.generate_statistics_table("sentence").to_csv(sep="\t", encoding="utf-8", index=False) 
 
-    return response
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED, False) as zip_file:
+        zip_file.writestr("document_level_statistics.csv", csv_doc)
+        zip_file.writestr("sentence_level_statistics.csv", csv_sent)
+
+    zip_buffer.seek(0)
+
+    return send_file(zip_buffer, as_attachment=True, mimetype='application/zip', download_name="feature_statistics.zip")
 
 
 @app.route('/statistics_by_label', methods=['GET'])
