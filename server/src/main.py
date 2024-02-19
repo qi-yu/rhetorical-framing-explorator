@@ -311,6 +311,11 @@ def annotate():
         for feature in selected_features:
             annotation.annotate_feature(feature['annotation_method'])
         annotation.aggregate_statistics()
+
+        global csv_doc, csv_sent, by_label_data
+        csv_doc = annotation.generate_statistics_table("document").to_csv(sep="\t", encoding="utf-8", index=False) 
+        csv_sent = annotation.generate_statistics_table("sentence").to_csv(sep="\t", encoding="utf-8", index=False) 
+        by_label_data = annotation.generate_by_label_statistics()
             
         return jsonify({'message': 'Script executed successfully'})
         
@@ -320,11 +325,6 @@ def annotate():
 
 @app.route('/download', methods=['GET'])
 def download_feature_statistics():
-    annotation = Annotation()
-
-    csv_doc = annotation.generate_statistics_table("document").to_csv(sep="\t", encoding="utf-8", index=False) 
-    csv_sent = annotation.generate_statistics_table("sentence").to_csv(sep="\t", encoding="utf-8", index=False) 
-
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED, False) as zip_file:
         zip_file.writestr("document_level_statistics.csv", csv_doc)
@@ -337,9 +337,6 @@ def download_feature_statistics():
 
 @app.route('/statistics_by_label', methods=['GET'])
 def get_by_label_statistics():
-    annotation = Annotation()
-    by_label_data = annotation.generate_by_label_statistics()
-
     response = make_response(by_label_data)
     response.headers["Content-Disposition"] = "attachment; filename=feature_statistics_by_label.csv"
     response.headers["Content-Type"] = "text/csv"

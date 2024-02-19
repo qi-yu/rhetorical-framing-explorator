@@ -567,12 +567,11 @@ class Disambiguation:
                     lexeme.attrib.pop(attr_name, None)
 
                 # Exclude "ja" surrounded by punctuations
-                if idx > 0 and idx < len(lexemeList)-1 and (re.fullmatch("\$[,.(]",lexemeList[idx-1].get("pos")) or re.fullmatch("\$[,.(]", lexemeList[idx+1].get("pos"))):
+                if idx < len(lexemeList)-1 and re.fullmatch("\$[,.(]", lexemeList[idx+1].get("pos")):
                     lexeme.attrib.pop(attr_name, None)
 
-                # Exclude "ja" at the beginning of a sentence or a part-sentence
-                # if idx > 0 and re.fullmatch("\$[,.(]", lexemeList[idx-1].get("pos")):
-                #     lexeme.attrib.pop(attr_name, None)
+                if idx > 0 and re.fullmatch("\$[,.(]",lexemeList[idx-1].get("pos")):
+                    lexeme.attrib.pop(attr_name, None)
 
                 # Exclude "ja" in "..., ja genau, ..."
                 if idx < len(lexemeList) - 2 and lexemeList[idx+1].get("lemma") == "genau" and re.fullmatch("[,.!-]", lexemeList[idx+2].text):

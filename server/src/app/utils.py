@@ -23,10 +23,10 @@ def convert_to_xml(filepath, outputpath):
                 for idx, row in df.iterrows():
                     document = ET.Element("document")
                     document.text = row["text"]
-                    document.set("id", row["id"])
+                    document.set("id", str(row["id"]))
                     
                     if "label" in df.columns:
-                        document.set("label", row["label"])
+                        document.set("label", str(row["label"]))
                     else:
                         document.set("label", "Default Dataset")
 

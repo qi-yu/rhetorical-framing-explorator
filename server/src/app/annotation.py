@@ -144,10 +144,10 @@ class Annotation:
 
     def generate_by_label_statistics(self):
         df_count = self.generate_statistics_table("document")
-        df_sums_by_label = df_count.drop("id", axis=1).groupby("label").sum()
+        df_sums_by_label = df_count.drop(["id", "text", "text_preprocessed"], axis=1).groupby("label").sum()
         
         for col in df_sums_by_label.columns:
-            if col not in ["label", "text",  "text_preprocessed", "total_token_count"]: 
+            if col not in ["label", "total_token_count"]: 
                 df_sums_by_label[col] = df_sums_by_label[col] / df_sums_by_label["total_token_count"]
 
         by_label_freq = df_sums_by_label.to_csv(sep="\t", encoding="utf-8")   
