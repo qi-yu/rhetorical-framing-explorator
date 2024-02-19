@@ -150,8 +150,23 @@ class Annotation:
             if col not in ["label", "total_token_count"]: 
                 df_sums_by_label[col] = df_sums_by_label[col] / df_sums_by_label["total_token_count"]
 
-        by_label_freq = df_sums_by_label.to_csv(sep="\t", encoding="utf-8")   
+        by_label_freq = df_sums_by_label
 
         return by_label_freq            
 
-                        
+
+    def get_statistics(self):
+        step_count = 0
+        total_steps = 4
+
+        self.aggregate_statistics()
+        step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, "statistics.txt"))
+
+        self.generate_statistics_table("document").to_csv(Config.STATISTICS_DOCUMENT_LEVEL_PATH, sep="\t", encoding="utf-8", index=False) 
+        step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, "statistics.txt"))
+
+        self.generate_statistics_table("sentence").to_csv(Config.STATISTICS_SENTENCE_LEVEL_PATH, sep="\t", encoding="utf-8", index=False) 
+        step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, "statistics.txt"))
+
+        self.generate_by_label_statistics().to_csv(Config.STATISTICS_BY_LABEL_PATH, sep="\t", encoding="utf-8")                      
+        step_count = update_progress(step_count, total_steps, os.path.join(self.progressOutputRoot, "statistics.txt"))

@@ -8,6 +8,10 @@
             <p >{{ feature.name }}</p>
             <p-progressBar [value]="feature.progress"></p-progressBar>
         </div>
+        <div class="grid-container">
+            <p >(GENERATE STATISTICS)</p>
+            <p-progressBar [value]="statisticsProgressValue"></p-progressBar>
+        </div>
         <div style="display: flex; justify-content: center; margin-top: 2rem;">
             <p-button label="START ANNOTATION" icon="pi pi-forward" (onClick)="onStartAnnotation()" [disabled]="annotationFinished"></p-button>
         </div>

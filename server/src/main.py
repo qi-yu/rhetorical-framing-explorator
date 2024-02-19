@@ -310,13 +310,8 @@ def annotate():
 
         for feature in selected_features:
             annotation.annotate_feature(feature['annotation_method'])
-        annotation.aggregate_statistics()
+        annotation.get_statistics()
 
-        global csv_doc, csv_sent, by_label_data
-        csv_doc = annotation.generate_statistics_table("document").to_csv(sep="\t", encoding="utf-8", index=False) 
-        csv_sent = annotation.generate_statistics_table("sentence").to_csv(sep="\t", encoding="utf-8", index=False) 
-        by_label_data = annotation.generate_by_label_statistics()
-            
         return jsonify({'message': 'Script executed successfully'})
         
     except Exception as e:
@@ -327,8 +322,13 @@ def annotate():
 def download_feature_statistics():
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED, False) as zip_file:
-        zip_file.writestr("document_level_statistics.csv", csv_doc)
-        zip_file.writestr("sentence_level_statistics.csv", csv_sent)
+        with open(Config.STATISTICS_DOCUMENT_LEVEL_PATH, "rb") as stat_doc:
+            csv_doc = stat_doc.read()
+        zip_file.writestr("document_level_statistics.tsv", csv_doc)
+
+        with open(Config.STATISTICS_SENTENCE_LEVEL_PATH, "rb") as stat_sent:
+            csv_sent = stat_sent.read()
+        zip_file.writestr("sentence_level_statistics.tsv", csv_sent)
 
     zip_buffer.seek(0)
 
@@ -337,6 +337,9 @@ def download_feature_statistics():
 
 @app.route('/statistics_by_label', methods=['GET'])
 def get_by_label_statistics():
+    with open(Config.STATISTICS_BY_LABEL_PATH, 'rb') as stat_by_label:
+        by_label_data = stat_by_label.read()
+
     response = make_response(by_label_data)
     response.headers["Content-Disposition"] = "attachment; filename=feature_statistics_by_label.csv"
     response.headers["Content-Type"] = "text/csv"

@@ -16,6 +16,7 @@ export class AnnotationComponent {
 
   selectedFeatures: IFeature[] = [];
   preprocessingProgressValue: number = 0;
+  statisticsProgressValue: number = 0;
   progressValues: { [key: string]: number } = {}; 
   progressSubscription: Subscription | undefined;
   annotationFinished: boolean = false;
@@ -47,7 +48,7 @@ export class AnnotationComponent {
           this.updateProgressBars();
 
           setTimeout(() => {
-            if(Object.keys(data).length === (this.selectedFeatures.length) + 1  // + 1: progress of preprocessing 
+            if(Object.keys(data).length === (this.selectedFeatures.length) + 2  // + 1: progress of preprocessing and writing statistics
               && Object.values(data).every(value => value === 100)) {
               this.annotationFinished = true;
             }
@@ -66,6 +67,8 @@ export class AnnotationComponent {
     this.selectedFeatures.forEach((feature, index) => {
       feature.progress = Number(this.progressValues[feature.annotation_method]);
     });
+
+    this.statisticsProgressValue = Number(this.progressValues['statistics']);
   }
 
   updateOverallAnnotationProgress(): void {
