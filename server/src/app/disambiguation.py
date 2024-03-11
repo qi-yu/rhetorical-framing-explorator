@@ -890,3 +890,60 @@ class Disambiguation:
 
         # ----- Deal with particle verbs -----
         self.finite_particle_verbs(lexemeList, cueList, attr_name)
+
+
+    def topoi_of_natural_disaster(self, lexemeList):
+        attr_name = self.topoi_of_natural_disaster.__name__
+        
+        for idx, lexeme in enumerate(lexemeList):
+            currentLemma = lexeme.get("lemma")
+
+            for keyword in ["strom", "welle", "zustrom", "ansturm", "katastrophe"]:
+                pattern = re.compile(keyword + "$")
+
+                if pattern.search(currentLemma.lower()) and lexeme.get("pos") == "NN": # Exclude adjectives, e.g., "spielend"
+                    lexeme.set(attr_name, currentLemma)
+
+                    # ----- Disambiguating "welle": -----
+                    ## 1. Exclude "Deutsche Welle"
+                    if idx > 0 and currentLemma == "Welle" and lexemeList[idx-1].text == "Deutsche":
+                        lexeme.attrib.pop(attr_name, None)
+
+                    ## 2. Exclude word "*schwelle"
+                        lexeme.attrib.pop(attr_name, None)
+
+
+    def topoi_of_abuse_and_tragedy(self, lexemeList):
+        attr_name = self.topoi_of_abuse_and_tragedy.__name__
+        cueList = self.word_lists[self.topoi_of_abuse_and_tragedy.__name__]
+
+        for idx, lexeme in enumerate(lexemeList):
+            currentLemma = lexeme.get("lemma")
+
+            for keyword in cueList:
+                pattern = re.compile(keyword + "$")
+
+                if pattern.search(currentLemma.lower()) and lexeme.get("pos") == "NN":
+                    lexeme.set(attr_name, currentLemma)
+
+
+    def every_xth(self, lexemeList):
+        attr_name = self.every_xth.__name__
+        ordinal_num_prefixes = ("zweit", "dritt", "viert", "fünft", "sechst", "siebt", "siebent", "acht", "neunt", "zehnt", "elft", "zwölft")
+
+        for idx, lexeme in enumerate(lexemeList):
+            currentLemma = lexeme.get("lemma")
+
+            if currentLemma == "jeder":
+                if lexemeList[idx+1].get("pos") == "CARD":
+                    lexeme.set(attr_name, currentLemma)
+                    lexemeList[idx+1].set(attr_name + "_2", lexemeList[idx+1].get("lemma"))
+
+                # ----- Deal with cases like "jede dritte", where the number is not tagged as CARD (cardinal number) by the POS-tagger: -----
+                if lexemeList[idx+1].get("lemma").lower().startswith(ordinal_num_prefixes):
+                    lexeme.set(attr_name, currentLemma)
+                    lexemeList[idx+1].set(attr_name + "_2", lexemeList[idx+1].get("lemma"))
+
+                if re.match("(zehnt|zigst|ßigst|hundertst|tausendst|millionst)en?$", lexemeList[idx+1].get("lemma").lower()):
+                    lexeme.set(attr_name, currentLemma)
+                    lexemeList[idx+1].set(attr_name + "_2", lexemeList[idx+1].get("lemma"))

@@ -173,5 +173,26 @@
         "is_rhetorical_feature": "false",
         "is_auxiliary": "false",
         "annotation_method": "welfare"
+    },
+    {
+        "name": "Topoi of Natural Disaster",
+        "dimension": "Event-Specific Topoi (for project Framing Inequality)",
+        "is_rhetorical_feature": "false",
+        "is_auxiliary": "false",
+        "annotation_method": "topoi_of_natural_disaster"
+    },
+    {
+        "name": "Topoi of Abuse and Tragedy",
+        "dimension": "Event-Specific Topoi (for project Framing Inequality)",
+        "is_rhetorical_feature": "false",
+        "is_auxiliary": "false",
+        "annotation_method": "topoi_of_abuse_and_tragedy"
+    },
+    {
+        "name": "Expression \"Every X-th\"",
+        "dimension": "Event-Specific Topoi (for project Framing Inequality)",
+        "is_rhetorical_feature": "false",
+        "is_auxiliary": "false",
+        "annotation_method": "every_xth"
     }
 ]
