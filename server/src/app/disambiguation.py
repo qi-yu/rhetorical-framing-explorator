@@ -114,7 +114,7 @@ class Disambiguation:
                 if currentPos == "KON" and idx+1 < len(lexemeList) and lexemeList[idx+1].get("lemma") != "je":
                     lexeme.set(attr_name, "denn")
 
-                if idx+1 < len(lexemeList) and lexemeList[idx+1].get("lemma") == ":":
+                if idx+1 < len(lexemeList) and lexemeList[idx+1].text == ":":
                     lexeme.set(attr_name, "denn")
 
                 # Exclude "denn" in "Es sei denn, ..."
