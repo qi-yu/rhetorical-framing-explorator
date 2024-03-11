@@ -396,7 +396,13 @@ def clear_processed_files():
     
 
 if __name__ == '__main__':
-    for folder in [Config.RAW_FILE_PATH, Config.TEMP_FILE_PATH, Config.PREPROCESSED_FILE_PATH, Config.PROGRESS_PATH]:
+    for folder in [
+        Config.RAW_FILE_PATH, 
+        Config.TEMP_FILE_PATH, 
+        Config.PREPROCESSED_FILE_PATH, 
+        Config.PROGRESS_PATH, 
+        Config.STATISTICS_PATH
+    ]:
         if os.path.exists(folder):
             shutil.rmtree(folder)
         os.mkdir(folder)
