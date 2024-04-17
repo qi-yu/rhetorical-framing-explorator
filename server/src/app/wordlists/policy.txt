@@ -173,7 +173,6 @@ Kürzung
 Küstenschutz
 lahmlegen
 Länderebene
-Landesebene
 Landesamt
 Landesebene
 Landeseinrichtung
