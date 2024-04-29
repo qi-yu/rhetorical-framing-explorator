@@ -1,3 +1,16 @@
 .download-panel {
     margin-bottom: 5rem;
 }
+
+.statistics-dasboard {
+    display: flex;
+}
+
+.plot-token-distribution {
+    flex: 2; 
+    margin-right: 2rem;
+}
+
+.plot-feature-frequency {
+    flex: 8;
+}
