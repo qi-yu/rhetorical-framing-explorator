@@ -9,6 +9,7 @@
 #ganz und gar
 #gänzlich
 #groß
+#hoch
 #höchst
 #komplett
 #recht
@@ -45,7 +46,6 @@ gehörig
 geradezu
 gottserbärmlich
 großartig
-hoch
 hochgradig
 immens
 insbesondere

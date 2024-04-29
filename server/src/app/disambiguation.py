@@ -319,8 +319,8 @@ class Disambiguation:
                 lexemeList[idx + 1].set(attr_name + "_3", "gar")
 
             # ----- 3. Items that need disambiguation:
-            # 3.1 Items that should only be annotated as booster when bearing the POS "ADJD":
-            if currentLemma in ["ausgesprochen", "entschieden", "komplett", "wesentlich"] and currentPos == "ADJD":
+            # 3.1 Items that should only be annotated as booster when bearing the POS "ADJD" or "ADV":
+            if currentLemma in ["ausgesprochen", "entschieden", "komplett", "wesentlich"] and currentPos in ["ADJD", "ADV"]:
                 lexeme.set(attr_name, currentLemma)
 
             ## 3.2 Items that should only be annotated as booster when bearing the POS "ADV":
@@ -342,7 +342,7 @@ class Disambiguation:
                 lexeme.set(attr_name, currentLemma)
 
             ## 3.6. ganz:
-            if currentLemma == "ganz" and currentPos in ["ADJD", "ADV"] and lexeme.get("booster") != "ganz_und_gar": # not already annotated as "ganz und gar"
+            if currentLemma == "ganz" and currentPos == "ADV" and lexeme.get("booster") != "ganz_und_gar": # not already annotated as "ganz und gar"
                 lexeme.set(attr_name, currentLemma)
 
             ## 3.7 höchst:
@@ -530,8 +530,8 @@ class Disambiguation:
 
             ## 3.2 Modal verbs:
             # TODO: CHECK IF THE RULES ARE CORRECT!
-            if currentLemma in ["können", "müssen", "sollen", "werden"] and re.match("(könnt|müsst|sollt|würd)", lexeme.text):
-                lexeme.set(attr_name, currentLemma)
+            # if currentLemma in ["können", "müssen", "sollen", "werden"] and re.match("(könnt|müsst|sollt|würd)", lexeme.text):
+            #     lexeme.set(attr_name, currentLemma)
 
             ## 3.3 Items that should only be annotated as hedge when bearing the POS "ADV":
             if currentLemma in ["etwas", "grob"] and currentPos == "ADV":
@@ -541,7 +541,7 @@ class Disambiguation:
             if lexeme.get("lemma") == "annähernd":
                 lexeme.set(attr_name, currentLemma)
 
-            ## 3.5 wohl: annotated by the method "modal_particles.py"
+            ## 3.5 wohl: annotated by the method "modal_particles_for_weakened_commitment"
 
 
     def modal_particles_for_common_ground(self, lexemeList):
