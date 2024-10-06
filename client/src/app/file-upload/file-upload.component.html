@@ -1,97 +1,95 @@
 <p-toast [position]="'top-right'"></p-toast>
 <div class="card flex justify-content-center not-full-width">
-    <p-card header="Upload File to Annotate:">
-        <p-fileUpload 
-            name="myfile" 
-            [url]="url+'/upload'" 
-            [multiple]="true" 
-            accept=".xml, .csv, .tsv" 
-            [auto]="true"
-            (onUpload)="onUploadFiles($event)"
-        >
-            <ng-template pTemplate="content">
-                <div (dragenter)="onDragEnter($event)" (dragleave)="onDragLeave($event)">
-                   <div class="drag-and-drop-box" [ngClass]="{'drag-over': isFileDragOver}">
-                        <p>(Drag and drop files here to upload)</p>
-                   </div>
-                </div>       
+    <p-fileUpload 
+        name="myfile" 
+        [url]="url+'/upload'" 
+        [multiple]="true" 
+        accept=".xml, .csv, .tsv" 
+        [auto]="true"
+        (onUpload)="onUploadFiles($event)"
+    >
+        <ng-template pTemplate="content">
+            <div (dragenter)="onDragEnter($event)" (dragleave)="onDragLeave($event)">
+                <div class="drag-and-drop-box" [ngClass]="{'drag-over': isFileDragOver}">
+                    <p>(Drag and drop files here to upload)</p>
+                </div>
+            </div>       
                 
-                <ng-container>
-                    <h1><b>Files selected for analyses:</b></h1>
-                    <p-table 
-                        #dt
-                        [value]="uploadedFiles" 
-                        [(selection)]="filesSelectedForAnalyses" 
-                        dataKey="id"
-                        [paginator]="true"
-                        [rows]="5"
-                        [showCurrentPageReport]="true"
-                        [tableStyle]="{ 'min-width': '50rem' }"
-                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" 
-                        [globalFilterFields]="['filename']"
-                        editMode="row"
-                        styleClass="p-datatable-striped"
-                    >
-                        <ng-template pTemplate="header">
-                            <tr>
-                                <th class="select-and-delete">
-                                    <div class="multiple-element-cells">
-                                        <p-tableHeaderCheckbox (click)="onSelectFiles()"></p-tableHeaderCheckbox>
-                                        <button 
-                                            pButton 
-                                            type="button" 
-                                            icon="pi pi-trash" 
-                                            class="p-button-text p-button-danger" 
-                                            (click)="onDeleteFiles()"
-                                            [disabled]="filesSelectedForAnalyses.length == 0"
-                                        ></button>
-                                    </div>
-                                </th>
-                                <th pSortableColumn="filename">File <p-sortIcon field="filename"></p-sortIcon></th>
-                                <th pSortableColumn="format">Format <p-sortIcon field="format"></p-sortIcon></th>
-                                <th pSortableColumn="size">Size <p-sortIcon field="size"></p-sortIcon></th>
-                            </tr>
-                            <tr>
-                                <th></th>
-                                <th>
-                                    <input pInputText type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Search by Name">
-                                </th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-file let-editing="editing" let-ri="rowIndex">
-                            <tr [pEditableRow]="file">
-                                <td>
-                                    <p-tableCheckbox [value]="file" (click)="onChangeSelectionStatus(); onSelectFiles()"></p-tableCheckbox>
-                                </td>
-                                <td>
-                                    <div class="multiple-element-cells">
-                                        <p-cellEditor>
-                                            <ng-template pTemplate="input">
-                                                <input pInputText type="text" [(ngModel)]="file.filename">
-                                            </ng-template>
-                                            <ng-template pTemplate="output">
-                                                {{file.filename}}
-                                            </ng-template>
-                                        </p-cellEditor>
-                                        <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(file)" class="p-button-rounded p-button-text"></button>
-                                        <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="onRowEditSave(file, ri)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
-                                        <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times" (click)="onRowEditCancel(file, ri)" class="p-button-rounded p-button-text p-button-danger"></button>
-                                    </div>
-                                </td>
-                                <td>{{ file.format }}</td>
-                                <td>{{ file.size | fileSize }}</td>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="emptymessage">
-                            <tr>
-                                <td colspan="4">No file found.</td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-                </ng-container>
-            </ng-template>
-        </p-fileUpload>
-    </p-card>
+            <ng-container>
+                <h1><b>Files selected for analyses:</b></h1>
+                <p-table 
+                    #dt
+                    [value]="uploadedFiles" 
+                    [(selection)]="filesSelectedForAnalyses" 
+                    dataKey="id"
+                    [paginator]="true"
+                    [rows]="5"
+                    [showCurrentPageReport]="true"
+                    [tableStyle]="{ 'min-width': '50rem' }"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" 
+                    [globalFilterFields]="['filename']"
+                    editMode="row"
+                    styleClass="p-datatable-striped"
+                >
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="select-and-delete">
+                                <div class="multiple-element-cells">
+                                    <p-tableHeaderCheckbox (click)="onSelectFiles()"></p-tableHeaderCheckbox>
+                                    <button 
+                                        pButton 
+                                        type="button" 
+                                        icon="pi pi-trash" 
+                                        class="p-button-text p-button-danger" 
+                                        (click)="onDeleteFiles()"
+                                        [disabled]="filesSelectedForAnalyses.length == 0"
+                                    ></button>
+                                </div>
+                            </th>
+                            <th pSortableColumn="filename">File <p-sortIcon field="filename"></p-sortIcon></th>
+                            <th pSortableColumn="format">Format <p-sortIcon field="format"></p-sortIcon></th>
+                            <th pSortableColumn="size">Size <p-sortIcon field="size"></p-sortIcon></th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th>
+                                <input pInputText type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Search by Name">
+                            </th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-file let-editing="editing" let-ri="rowIndex">
+                        <tr [pEditableRow]="file">
+                            <td>
+                                <p-tableCheckbox [value]="file" (click)="onChangeSelectionStatus(); onSelectFiles()"></p-tableCheckbox>
+                            </td>
+                            <td>
+                                <div class="multiple-element-cells">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <input pInputText type="text" [(ngModel)]="file.filename">
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            {{file.filename}}
+                                        </ng-template>
+                                    </p-cellEditor>
+                                    <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(file)" class="p-button-rounded p-button-text"></button>
+                                    <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="onRowEditSave(file, ri)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                                    <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times" (click)="onRowEditCancel(file, ri)" class="p-button-rounded p-button-text p-button-danger"></button>
+                                </div>
+                            </td>
+                            <td>{{ file.format }}</td>
+                            <td>{{ file.size | fileSize }}</td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td colspan="4">No file found.</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </ng-container>
+        </ng-template>
+    </p-fileUpload>
 </div>

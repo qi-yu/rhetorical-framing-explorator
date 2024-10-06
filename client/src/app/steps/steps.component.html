@@ -1,11 +1,7 @@
-<div class="not-full-width">
+<div class="not-full-width" style="padding-top: 100px;">
     <p-steps [model]="items" [readonly]="true" [(activeIndex)]="activeIndex" (activeIndexChange)="onActiveIndexChange($event)"></p-steps>
 </div>
-<app-file-upload *ngIf="activeIndex === 0" (fileSelectionEvent)="onFileSelectionChange($event)"></app-file-upload>
-<app-feature-selection *ngIf="activeIndex === 1" (featureSelectionEvent)="onFeatureSelectionChange($event)"></app-feature-selection>
-<app-annotation *ngIf="activeIndex === 2" (annotationProgressEvent)="onAnnotationStatusChange($event)"></app-annotation>
-<app-statistics *ngIf="activeIndex === 3"></app-statistics>
-<div class="center" style="padding-top: 15px;">
+<div class="not-full-width" style="padding-top: 15px;">
     <span style="padding-right: 30px;">
         <p-button 
             label="Previous Step" 
@@ -26,4 +22,9 @@
         ></p-button>
     </span>
 </div>
+<app-file-upload *ngIf="activeIndex === 0" (fileSelectionEvent)="onFileSelectionChange($event)"></app-file-upload>
+<app-feature-selection *ngIf="activeIndex === 1" (featureSelectionEvent)="onFeatureSelectionChange($event)"></app-feature-selection>
+<app-annotation *ngIf="activeIndex === 2" (annotationProgressEvent)="onAnnotationStatusChange($event)"></app-annotation>
+<app-statistics *ngIf="activeIndex === 3"></app-statistics>
+
 

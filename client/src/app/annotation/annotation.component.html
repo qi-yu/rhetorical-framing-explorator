@@ -2,15 +2,15 @@
     <p-card header="Annotate the Following Features:">
         <div class="grid-container">
             <p >(PREPROCESSING)</p>
-            <p-progressBar [value]="preprocessingProgressValue"></p-progressBar>
+            <p-progressBar [value]="preprocessingProgressValue" [showValue]="false"></p-progressBar>
         </div>
         <div *ngFor="let feature of selectedFeatures" class="grid-container">
             <p >{{ feature.name }}</p>
-            <p-progressBar [value]="feature.progress"></p-progressBar>
+            <p-progressBar [value]="feature.progress" [showValue]="false"></p-progressBar>
         </div>
         <div class="grid-container">
             <p >(GENERATE STATISTICS)</p>
-            <p-progressBar [value]="statisticsProgressValue"></p-progressBar>
+            <p-progressBar [value]="statisticsProgressValue" [showValue]="false"></p-progressBar>
         </div>
         <div style="display: flex; justify-content: center; margin-top: 2rem;">
             <p-button label="START ANNOTATION" icon="pi pi-forward" (onClick)="onStartAnnotation()" [disabled]="annotationFinished"></p-button>
