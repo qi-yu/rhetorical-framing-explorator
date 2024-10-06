@@ -26,8 +26,6 @@ import { AnnotationComponent } from './annotation/annotation.component';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { StatisticsComponent } from './statistics/statistics.component';
 import { ChartModule } from 'primeng/chart';
-import { HomeComponent } from './home/home.component';
-import { KeywordExploratorComponent } from './keyword-explorator/keyword-explorator.component';
 import { RadioButtonModule } from 'primeng/radiobutton';
 
 
@@ -39,9 +37,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     FeatureSelectionComponent,
     FileSizePipe,
     AnnotationComponent,
-    StatisticsComponent,
-    HomeComponent,
-    KeywordExploratorComponent
+    StatisticsComponent
   ],
   imports: [
     BrowserModule,

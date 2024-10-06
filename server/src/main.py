@@ -12,7 +12,7 @@ db_params = {
     'dbname': 'rhetorical-framing-explorator',
     'user': 'postgres',
     'password': 'rfe2023',
-    'host': 'localhost',
+    'host': 'db',
     'port': '5432'
 }
 
